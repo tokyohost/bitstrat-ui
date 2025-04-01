@@ -81,5 +81,24 @@ export default {
     layoutSetting: '布局设置',
     personalCenter: '个人中心',
     logout: '退出登录'
+  },
+  bybit:{
+    task:{
+      form:{
+        id:"id",
+        name:'任务名称',
+        symbol:"币种"
+      },
+      placeholder:{
+        id:"",
+        name:"请输入任务名称",
+        symbol:"请选择币种",
+      },
+      rule:{
+        id:"id 不能为空",
+        name:"任务名称不能为空",
+        symbol:"币种不能为空"
+      }
+    }
   }
 };

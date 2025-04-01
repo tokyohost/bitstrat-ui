@@ -81,5 +81,24 @@ export default {
     layoutSetting: 'Layout Setting',
     personalCenter: 'Personal Center',
     logout: 'Logout'
+  },
+  bybit:{
+    task:{
+      form:{
+        id:"id",
+        name:'Task Name',
+        symbol:"Coins Name"
+      },
+      placeholder:{
+        id:"",
+        name:"please enter your task name",
+        symbol:"please select coins name",
+      },
+      rule:{
+        id:"id can not be empty",
+        name:"task name cannot be empty",
+        symbol:"symbol cannot be empty"
+      }
+    }
   }
 };

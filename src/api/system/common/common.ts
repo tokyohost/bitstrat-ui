@@ -1,0 +1,29 @@
+import request from '@/utils/request';
+import { AxiosPromise } from 'axios';
+import { TaskQuery, TaskVO } from '@/api/system/task/types';
+import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
+
+
+export const listTask = (query?: TaskQuery): AxiosPromise<TaskVO[]> => {
+  return request({
+    url: '/system/task/list',
+    method: 'get',
+    params: query
+  });
+};
+export function listBybitSupportSymbols(query?: Object) {
+  return request({
+    url: '/common/bybit/symbols',
+    method: 'get',
+    params: query
+  })
+}
+
+export const listAiConfig4Select = (query?: Object): AxiosPromise<AiConfigVO[]> => {
+  return request({
+    url: '/system/aiConfig/list4Select',
+    method: 'get',
+    params: query
+  });
+};
+
