@@ -82,22 +82,84 @@ export default {
     personalCenter: 'Personal Center',
     logout: 'Logout'
   },
-  bybit:{
-    task:{
-      form:{
-        id:"id",
-        name:'Task Name',
-        symbol:"Coins Name"
+  //menu 国际化
+  menu: {
+    首页: 'home',
+    用户管理: 'Users',
+    系统管理: 'System',
+    租户管理: 'Tenant',
+    系统监控: 'Monitor',
+    系统工具: 'Tools',
+    AI策略: 'AI',
+    任务管理: 'Task'
+  },
+  //通用
+  common: {
+    opt: {
+      search: 'Search',
+      reset: 'Reset',
+      add: 'Add',
+      edit: 'Edit',
+      delete: 'Delete',
+      export: 'Export',
+      show: 'Detail',
+      opt: 'Action',
+      stop: 'Stop',
+      start: 'Start'
+    },
+    dialog: {
+      confirm: 'Confirm',
+      cancel: 'Cancel'
+    }
+  },
+  bybit: {
+    task: {
+      status: {
+        已创建: 'Created',
+        正在运行: 'Running',
+        已终止: 'Stopped'
       },
-      placeholder:{
-        id:"",
-        name:"please enter your task name",
-        symbol:"please select coins name",
+      title: {
+        add: 'Create Task',
+        edit: 'Edit Task',
+        show: 'Task Detail'
       },
-      rule:{
-        id:"id can not be empty",
-        name:"task name cannot be empty",
-        symbol:"symbol cannot be empty"
+      form: {
+        id: 'id',
+        name: 'Task Name',
+        symbol: 'Coins Name',
+        singleOrder: 'Order Limit',
+        balance: 'Position',
+        coldSec: 'Cooldown Time',
+        totalBalance: 'Available Credit',
+        taskType: 'Type'
+      },
+      table: {
+        id: 'id',
+        name: 'Name',
+        symbol: 'Coins Name',
+        balance: 'Position',
+        singleOrder: 'Order Limit',
+        coldSec: 'Cooldown Time',
+        totalBalance: 'Available Credit',
+        lastOrderTime: 'Last Order Time',
+        taskType: 'Type',
+        createUserName: 'Create',
+        status: 'Status',
+        avgPrice: 'Average Position Price',
+        positionValue: 'Position Value',
+        markPrice: 'Market Price',
+        unrealisedPnl: 'Profit and Loss'
+      },
+      placeholder: {
+        id: '',
+        name: 'please enter your task name',
+        symbol: 'please select coins name'
+      },
+      rule: {
+        id: 'id can not be empty',
+        name: 'task name cannot be empty',
+        symbol: 'symbol cannot be empty'
       }
     }
   }

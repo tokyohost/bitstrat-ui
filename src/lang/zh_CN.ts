@@ -82,22 +82,72 @@ export default {
     personalCenter: '个人中心',
     logout: '退出登录'
   },
-  bybit:{
-    task:{
-      form:{
-        id:"id",
-        name:'任务名称',
-        symbol:"币种"
+  //menu 国际化
+  menu: {
+    首页: '首页'
+  },
+  //通用
+  common: {
+    opt: {
+      search: '查询',
+      reset: '重置',
+      add: '新增',
+      edit: '修改',
+      delete: '删除',
+      export: '导出',
+      show: '查看',
+      opt: '操作',
+      stop: '停止',
+      start: '启动'
+    },
+    dialog: {
+      confirm: '确 定',
+      cancel: '取 消'
+    }
+  },
+  bybit: {
+    task: {
+      status: {
+        已创建: '已创建',
+        正在运行: '正在运行',
+        已终止: '已终止'
       },
-      placeholder:{
-        id:"",
-        name:"请输入任务名称",
-        symbol:"请选择币种",
+      title: {
+        add: '创建任务',
+        edit: '修改任务',
+        show: '任务详情'
       },
-      rule:{
-        id:"id 不能为空",
-        name:"任务名称不能为空",
-        symbol:"币种不能为空"
+      form: {
+        id: 'id',
+        name: '任务名称',
+        symbol: '币种'
+      },
+      table: {
+        id: 'id',
+        name: '任务名称',
+        symbol: '币种',
+        balance: '持仓',
+        singleOrder: '下单限制',
+        coldSec: '冷却时间',
+        totalBalance: '可用额度',
+        lastOrderTime: '最近下单时间',
+        taskType: '策略类型',
+        createUserName: '创建人',
+        status: '任务状态',
+        avgPrice: '平均持仓价格',
+        positionValue: '仓位价值',
+        markPrice: '市场价',
+        unrealisedPnl: '盈亏'
+      },
+      placeholder: {
+        id: '',
+        name: '请输入任务名称',
+        symbol: '请选择币种'
+      },
+      rule: {
+        id: 'id 不能为空',
+        name: '任务名称不能为空',
+        symbol: '币种不能为空'
       }
     }
   }

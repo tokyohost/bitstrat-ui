@@ -27,6 +27,11 @@ declare global {
      * 是否显示
      */
     visible: boolean;
+
+    /**
+     * 是否禁用
+     */
+    disabled: boolean;
   }
 
   declare interface UploadOption {

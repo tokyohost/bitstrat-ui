@@ -63,12 +63,10 @@ export interface TaskVO {
    * 任务状态 1-已创建 2-正在运行 3-已终止
    */
   status: number;
-
 }
 
 export interface SymbolVO {
   name: string;
-
 }
 
 export interface TaskForm extends BaseEntity {
@@ -117,6 +115,9 @@ export interface TaskForm extends BaseEntity {
    */
   taskType?: string;
 
+  strategyConfig?: string;
+  interval?: string;
+  strategyConfigJSON?: object;
   /**
    * ai 流水线id
    */
@@ -136,11 +137,9 @@ export interface TaskForm extends BaseEntity {
    * 任务状态 1-已创建 2-正在运行 3-已终止
    */
   status?: number;
-
 }
 
 export interface TaskQuery extends PageQuery {
-
   /**
    * 任务名称
    */
@@ -201,11 +200,8 @@ export interface TaskQuery extends PageQuery {
    */
   status?: number;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
-
-
-

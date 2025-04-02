@@ -5,7 +5,7 @@
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
           <svg-icon :icon-class="onlyOneChild.meta.icon || (item.meta && item.meta.icon)" />
           <template #title>
-            <span class="menu-title" :title="hasTitle(onlyOneChild.meta.title)">{{ onlyOneChild.meta.title }}</span>
+            <span class="menu-title" :title="hasTitle(onlyOneChild.meta.title)">{{ i18nMsg(onlyOneChild.meta.title) }}</span>
           </template>
         </el-menu-item>
       </app-link>
@@ -14,7 +14,7 @@
     <el-sub-menu v-else ref="subMenu" :index="resolvePath(item.path)" teleported>
       <template v-if="item.meta" #title>
         <svg-icon :icon-class="item.meta ? item.meta.icon : ''" />
-        <span class="menu-title" :title="hasTitle(item.meta?.title)">{{ item.meta?.title }}</span>
+        <span class="menu-title" :title="hasTitle(item.meta?.title)">{{ i18nMsg(item.meta?.title) }}</span>
       </template>
 
       <sidebar-item
@@ -34,7 +34,9 @@ import { isExternal } from '@/utils/validate';
 import AppLink from './Link.vue';
 import { getNormalPath } from '@/utils/ruoyi';
 import { RouteRecordRaw } from 'vue-router';
+import { i18nMsg } from '../index';
 
+let { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const props = defineProps({
   item: {
     type: Object as PropType<RouteRecordRaw>,
@@ -50,6 +52,27 @@ const props = defineProps({
   }
 });
 
+// const i18nMsg = <T extends string>(key: T): string => {
+//   const instance = getCurrentInstance();
+//   if (!instance) {
+//     console.warn('i18nMsg called outside of Vue instance');
+//     return key;
+//   }
+//
+//   const proxy = instance.proxy;
+//   if (!proxy || !proxy.$t) {
+//     console.warn('Vue instance proxy or $t not available');
+//     return key;
+//   }
+//
+//   let ivalue
+//   if(proxy.$te(`menu.${key}` as unknown as Parameters<typeof proxy.$te>[0])){
+//     ivalue= proxy.$t(`menu.${key}` as unknown as Parameters<typeof proxy.$t>[0]);
+//   }else{
+//     ivalue = key
+//   }
+//   return ivalue ;
+// };
 const onlyOneChild = ref<any>({});
 
 const hasOneShowingChild = (parent: RouteRecordRaw, children?: RouteRecordRaw[]) => {
@@ -96,6 +119,7 @@ const hasTitle = (title: string | undefined): string => {
   if (!title || title.length <= 5) {
     return '';
   }
-  return title;
+
+  return i18nMsg(title);
 };
 </script>

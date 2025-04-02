@@ -12,7 +12,7 @@
         @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
         @contextmenu.prevent="openMenu(tag, $event)"
       >
-        {{ tag.title }}
+        {{ i18nMsg(tag.title) }}
         <span v-if="!isAffix(tag)" @click.prevent.stop="closeSelectedTag(tag)">
           <close class="el-icon-close" style="width: 1em; height: 1em; vertical-align: middle" />
         </span>
@@ -36,6 +36,7 @@ import { useSettingsStore } from '@/store/modules/settings';
 import { usePermissionStore } from '@/store/modules/permission';
 import { useTagsViewStore } from '@/store/modules/tagsView';
 import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
+import { i18nMsg } from '@/layout/components';
 
 const visible = ref(false);
 const top = ref(0);

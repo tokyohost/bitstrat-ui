@@ -8,7 +8,7 @@
           :index="index"
           :class="item.elTagClass"
         >
-          {{ item.label + ' ' }}
+          {{ i18nValue(item.label) + ' ' }}
         </span>
         <el-tag
           v-else
@@ -26,7 +26,7 @@
           "
           :class="item.elTagClass"
         >
-          {{ item.label + ' ' }}
+          {{ i18nValue(item.label) + ' ' }}
         </el-tag>
       </template>
     </template>
@@ -37,17 +37,27 @@
 </template>
 
 <script setup lang="ts">
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface Props {
   options: Array<DictDataOption>;
   value: number | string | Array<number | string>;
   showValue?: boolean;
   separator?: string;
+  i18nProfilx?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
   showValue: true,
   separator: ','
 });
 
+const i18nValue = (nval) => {
+  let value = nval;
+  if (props.i18nProfilx && proxy.$te(`${props.i18nProfilx}.${nval}`)) {
+    value = proxy.$t(`${props.i18nProfilx}.${nval}`);
+  }
+
+  return value;
+};
 const values = computed(() => {
   if (props.value === '' || props.value === null || typeof props.value === 'undefined') return [];
   return Array.isArray(props.value) ? props.value.map((item) => '' + item) : String(props.value).split(props.separator);

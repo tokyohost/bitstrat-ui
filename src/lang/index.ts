@@ -27,7 +27,6 @@ const i18n = createI18n({
     en_US: en_US
   }
 });
-
 export default i18n;
 
 export type LanguageType = typeof zh_CN;
