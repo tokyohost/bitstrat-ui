@@ -31,6 +31,12 @@ export const supportNormalStrategy = (): AxiosPromise<any[]> => {
     method: 'get'
   });
 };
+export const supportPositionStrategy = (): AxiosPromise<any[]> => {
+  return request({
+    url: '/common/bybit/supportPositionStrategy',
+    method: 'get'
+  });
+};
 export const supportMarketInterval = (): AxiosPromise<any[]> => {
   return request({
     url: '/common/bybit/marketInterval',

@@ -98,7 +98,9 @@ export default {
       show: '查看',
       opt: '操作',
       stop: '停止',
-      start: '启动'
+      start: '启动',
+      log: '日志',
+      editRole: '修改'
     },
     dialog: {
       confirm: '确 定',
@@ -115,7 +117,9 @@ export default {
       title: {
         add: '创建任务',
         edit: '修改任务',
-        show: '任务详情'
+        editRole: '修改策略',
+        show: '任务详情',
+        log: '任务日志'
       },
       form: {
         id: 'id',

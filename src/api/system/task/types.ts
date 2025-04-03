@@ -118,6 +118,9 @@ export interface TaskForm extends BaseEntity {
   strategyConfig?: string;
   interval?: string;
   strategyConfigJSON?: object;
+  scale?: number;
+  sellRoleId?: number;
+  buyRoleId?: number;
   /**
    * ai 流水线id
    */

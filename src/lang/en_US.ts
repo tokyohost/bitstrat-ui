@@ -105,7 +105,9 @@ export default {
       show: 'Detail',
       opt: 'Action',
       stop: 'Stop',
-      start: 'Start'
+      start: 'Start',
+      log: 'logger',
+      editRole: 'Edit Role'
     },
     dialog: {
       confirm: 'Confirm',
@@ -122,7 +124,9 @@ export default {
       title: {
         add: 'Create Task',
         edit: 'Edit Task',
-        show: 'Task Detail'
+        editRole: 'Edit Role',
+        show: 'Task Detail',
+        log: 'Task Log'
       },
       form: {
         id: 'id',

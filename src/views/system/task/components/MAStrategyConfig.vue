@@ -11,6 +11,12 @@ const props = defineProps({
   }
 });
 
+const updataModel = (val: any) => {
+  // data.value = val;
+  // console.log(val);
+  // emit('update:modelValue', val);
+};
+
 // 通过 defineEmits 定义一个事件，用来将数据更新同步到父组件
 const emit = defineEmits(['update:modelValue']);
 const defaultValue: object = {
@@ -32,14 +38,15 @@ const validate = async (editor) => {
   // res 是错误列表，如果是空数组，则表示检测没有错误
   console.log(res);
   console.log(data.value);
-
+  // ElMessage.success('已保存');
   // 发射事件更新父组件的 data
   emit('update:modelValue', data.value);
 };
 </script>
 
 <template>
-  <JsonEditorVue class="editor" v-model="data" @blur="validate" />
+  <JsonEditorVue class="editor" @update:modelValue="updataModel" v-model="data" @blur="validate" />
+  <el-button>保存</el-button>
 </template>
 
 <style scoped lang="scss"></style>

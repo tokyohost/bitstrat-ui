@@ -29,21 +29,21 @@
               proxy.$t('common.opt.add')
             }}</el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:task:edit']">{{
-              proxy.$t('common.opt.edit')
-            }}</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:task:remove']">{{
-              proxy.$t('common.opt.delete')
-            }}</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:task:export']">{{
-              proxy.$t('common.opt.export')
-            }}</el-button>
-          </el-col>
+          <!--          <el-col :span="1.5">-->
+          <!--            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:task:edit']">{{-->
+          <!--              proxy.$t('common.opt.edit')-->
+          <!--            }}</el-button>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="1.5">-->
+          <!--            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:task:remove']">{{-->
+          <!--              proxy.$t('common.opt.delete')-->
+          <!--            }}</el-button>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="1.5">-->
+          <!--            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:task:export']">{{-->
+          <!--              proxy.$t('common.opt.export')-->
+          <!--            }}</el-button>-->
+          <!--          </el-col>-->
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
@@ -60,27 +60,35 @@
         </el-table-column>
         <el-table-column :label="proxy.$t('bybit.task.table.avgPrice')" align="center" prop="avgPrice">
           <template #default="scope">
-            <span>{{ scope.row.avgPrice ? scope.row.avgPrice : '-' }}</span>
+            <span>{{ scope.row.avgPrice ? scope.row.avgPrice + 'USDT' : '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column :label="proxy.$t('bybit.task.table.positionValue')" align="center" prop="positionValue">
           <template #default="scope">
-            <span>{{ scope.row.positionValue ? scope.row.positionValue : '-' }}</span>
+            <span>{{ scope.row.positionValue ? scope.row.positionValue + 'USDT' : '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column :label="proxy.$t('bybit.task.table.markPrice')" align="center" prop="markPrice">
           <template #default="scope">
-            <span>{{ scope.row.markPrice ? scope.row.markPrice : '-' }}</span>
+            <span>{{ scope.row.markPrice ? scope.row.markPrice + 'USDT' : '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column :label="proxy.$t('bybit.task.table.unrealisedPnl')" align="center" prop="unrealisedPnl">
           <template #default="scope">
-            <span>{{ scope.row.unrealisedPnl ? scope.row.unrealisedPnl : '-' }}</span>
+            <span>{{ scope.row.unrealisedPnl ? scope.row.unrealisedPnl + 'USDT' : '-' }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="proxy.$t('bybit.task.table.singleOrder')" align="center" prop="singleOrder" />
+        <el-table-column :label="proxy.$t('bybit.task.table.singleOrder')" align="center" prop="singleOrder">
+          <template #default="scope">
+            <span>{{ scope.row.singleOrder ? scope.row.singleOrder + scope.row.symbol : '-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column :label="proxy.$t('bybit.task.table.coldSec')" align="center" prop="coldSec" />
-        <el-table-column :label="proxy.$t('bybit.task.table.totalBalance')" align="center" prop="totalBalance" />
+        <el-table-column :label="proxy.$t('bybit.task.table.totalBalance')" align="center" prop="totalBalance">
+          <template #default="scope">
+            <span>{{ scope.row.totalBalance ? scope.row.totalBalance + scope.row.symbol : '-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column :label="proxy.$t('bybit.task.table.lastOrderTime')" align="center" prop="lastOrderTime" width="180">
           <template #default="scope">
             <span>{{ scope.row.lastOrderTime ? parseTime(scope.row.lastOrderTime, '{y}-{m}-{d}') : '-' }}</span>
@@ -98,17 +106,23 @@
             <el-tooltip :content="proxy.$t('common.opt.edit')" placement="top" v-if="scope.row.status === 1">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:task:edit']"></el-button>
             </el-tooltip>
+            <el-tooltip :content="proxy.$t('common.opt.editRole')" placement="top" v-if="scope.row.status === 2">
+              <el-button link type="primary" icon="Edit" @click="handleUpdateRole(scope.row)" v-hasPermi="['system:task:edit']"></el-button>
+            </el-tooltip>
             <el-tooltip :content="proxy.$t('common.opt.show')" placement="top">
               <el-button link type="primary" icon="MoreFilled" @click="handleShow(scope.row)" v-hasPermi="['system:task:show']"></el-button>
             </el-tooltip>
-            <el-tooltip :content="proxy.$t('common.opt.delete')" placement="top">
+            <el-tooltip :content="proxy.$t('common.opt.log')" placement="top" v-if="scope.row.status !== 1">
+              <el-button link type="primary" icon="Film" @click="handleLog(scope.row)" v-hasPermi="['system:task:show']"></el-button>
+            </el-tooltip>
+            <el-tooltip :content="proxy.$t('common.opt.delete')" placement="top" v-if="scope.row.status !== 2">
               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:task:remove']"></el-button>
             </el-tooltip>
             <el-tooltip :content="proxy.$t('common.opt.stop')" placement="top" v-if="scope.row.status === 2">
-              <el-button link type="danger" icon="SwitchButton" @click="handleDelete(scope.row)" v-hasPermi="['system:task:stop']"></el-button>
+              <el-button link type="danger" icon="SwitchButton" @click="handleStop(scope.row)" v-hasPermi="['system:task:stop']"></el-button>
             </el-tooltip>
-            <el-tooltip :content="proxy.$t('common.opt.start')" placement="top" v-if="scope.row.status === 1">
-              <el-button link type="success" icon="CaretRight" @click="handleDelete(scope.row)" v-hasPermi="['system:task:start']"></el-button>
+            <el-tooltip :content="proxy.$t('common.opt.start')" placement="top" v-if="scope.row.status !== 2">
+              <el-button link type="success" icon="CaretRight" @click="handleStart(scope.row)" v-hasPermi="['system:task:start']"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -185,6 +199,29 @@
           </el-col>
         </el-row>
         <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="连续买入策略" prop="scale">
+              <el-select v-model="form.buyRoleId" placeholder="请选择策略">
+                <el-option :label="item.name" :value="item.id" v-for="item in positionList"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="连续卖出策略" prop="scale">
+              <el-select v-model="form.sellRoleId" placeholder="请选择策略">
+                <el-option :label="item.name" :value="item.id" v-for="item in positionList"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="仓位计算小数位数" prop="scale">
+              <el-input v-model="form.scale" type="number" min="1" max="100000" step="1" placeholder="仓位计算小数位数" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="策略配置" prop="strategyConfigJSON">
               <MAStrategyConfig
@@ -205,17 +242,52 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog :title="taskLogDialog.title" v-model="taskLogDialog.visible" width="1200px" append-to-body>
+      <TaskLog :model-value="form" :key="new Date().getTime()"></TaskLog>
+    </el-dialog>
+
+    <el-dialog :title="roleDialog.title" v-model="roleDialog.visible" width="800px" append-to-body>
+      <el-form ref="taskFormRef" :model="form" :rules="rules" label-width="80px" :label-position="'top'" :disabled="roleDialog.disabled">
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="策略配置" prop="strategyConfigJSON">
+              <MAStrategyConfig
+                v-model="form.strategyConfigJSON"
+                :key="new Date().getTime()"
+                v-if="form.taskType === 'normal' && form.roleId == 1"
+              ></MAStrategyConfig>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button :loading="buttonLoading" type="primary" v-if="roleDialog.disabled === false" @click="submitRoleForm">{{
+            proxy.$t('common.dialog.confirm')
+          }}</el-button>
+          <el-button @click="cancelOther(roleDialog)">{{ proxy.$t('common.dialog.cancel') }}</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Task" lang="ts">
-import { listTask, getTask, delTask, addTask, updateTask } from '@/api/system/task';
+import TaskLog from '@/views/system/taskLog/index.vue';
+import { listTask, getTask, delTask, addTask, updateTask, stopTask, startTask } from '@/api/system/task';
 import { TaskVO, TaskQuery, TaskForm, SymbolVO } from '@/api/system/task/types';
 import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
-import { listAiConfig4Select, listBybitSupportSymbols, supportMarketInterval, supportNormalStrategy } from '@/api/system/common/common';
+import {
+  listAiConfig4Select,
+  listBybitSupportSymbols,
+  supportMarketInterval,
+  supportNormalStrategy,
+  supportPositionStrategy
+} from '@/api/system/common/common';
 import { listAiConfig } from '@/api/system/aiConfig';
 import MAStrategyConfig from '@/views/system/task/components/MAStrategyConfig.vue';
-import { MarketIntervalVo, StrategyVo } from '@/api/system/common/types';
+import { MarketIntervalVo, PositionStrategyVo, StrategyVo } from '@/api/system/common/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -224,6 +296,7 @@ const { bybit_task_status } = toRefs<any>(proxy?.useDict('bybit_task_status'));
 const symbolList = ref<SymbolVO[]>([]);
 const workFlowList = ref<AiConfigVO[]>([]);
 const normalList = ref<StrategyVo[]>([]);
+const positionList = ref<PositionStrategyVo[]>([]);
 const intervalList = ref<MarketIntervalVo[]>([]);
 const taskList = ref<TaskVO[]>([]);
 const buttonLoading = ref(false);
@@ -242,6 +315,16 @@ const dialog = reactive<DialogOption>({
   title: '',
   disabled: false
 });
+const taskLogDialog = reactive<DialogOption>({
+  visible: false,
+  title: '',
+  disabled: true
+});
+const roleDialog = reactive<DialogOption>({
+  visible: false,
+  title: '',
+  disabled: true
+});
 
 const initFormData: TaskForm = {
   id: undefined,
@@ -254,6 +337,9 @@ const initFormData: TaskForm = {
   lastOrderTime: undefined,
   taskType: 'AI',
   strategyConfig: undefined,
+  scale: undefined,
+  sellRoleId: undefined,
+  buyRoleId: undefined,
   strategyConfigJSON: {},
   aiWorkflowId: undefined,
   roleId: undefined,
@@ -340,6 +426,18 @@ const loadNormalStrategy = async () => {
   }
   loading.value = false;
 };
+const loadPositionStrategy = async () => {
+  loading.value = true;
+  const res = await supportPositionStrategy();
+  console.log(res);
+  if (res.code == 200) {
+    positionList.value = res.data;
+  } else {
+    const msg = res.msg;
+    ElMessage.error(msg);
+  }
+  loading.value = false;
+};
 const loadInterval = async () => {
   loading.value = true;
   const res = await supportMarketInterval();
@@ -358,12 +456,17 @@ const cancel = () => {
   reset();
   dialog.visible = false;
 };
+const cancelOther = (item: DialogOption) => {
+  reset();
+  item.visible = false;
+};
 
 /** 表单重置 */
 const reset = () => {
   form.value = { ...initFormData };
   taskFormRef.value?.resetFields();
   loadNormalStrategy();
+  loadPositionStrategy();
   loadInterval();
 };
 
@@ -406,6 +509,16 @@ const handleUpdate = async (row?: TaskVO) => {
   dialog.disabled = false;
   dialog.title = proxy.$t('bybit.task.title.edit');
 };
+const handleUpdateRole = async (row?: TaskVO) => {
+  reset();
+  const _id = row?.id || ids.value[0];
+  const res = await getTask(_id);
+  Object.assign(form.value, res.data);
+  form.value.strategyConfigJSON = JSON.parse(form.value.strategyConfig);
+  roleDialog.visible = true;
+  roleDialog.disabled = false;
+  roleDialog.title = proxy.$t('bybit.task.title.editRole');
+};
 
 /** 查看按钮操作 */
 const handleShow = async (row?: TaskVO) => {
@@ -417,6 +530,17 @@ const handleShow = async (row?: TaskVO) => {
   dialog.visible = true;
   dialog.disabled = true;
   dialog.title = proxy.$t('bybit.task.title.show');
+};
+/** 查看日志操作 */
+const handleLog = async (row?: TaskVO) => {
+  reset();
+  const _id = row?.id || ids.value[0];
+  const res = await getTask(_id);
+  Object.assign(form.value, res.data);
+  form.value.strategyConfigJSON = JSON.parse(form.value.strategyConfig);
+  taskLogDialog.title = proxy.$t('bybit.task.title.log');
+  taskLogDialog.visible = true;
+  taskLogDialog.disabled = true;
 };
 
 /** 提交按钮 */
@@ -442,12 +566,52 @@ const submitForm = () => {
   });
 };
 
+/** 提交按钮 */
+const submitRoleForm = () => {
+  taskFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      buttonLoading.value = true;
+      if (form.value.id) {
+        form.value.strategyConfig = JSON.stringify(form.value.strategyConfigJSON);
+        const data = JSON.parse(JSON.stringify(toRaw(form.value)));
+        delete data.strategyConfigJSON;
+        await updateTask(data).finally(() => (buttonLoading.value = false));
+      } else {
+        form.value.strategyConfig = JSON.stringify(form.value.strategyConfigJSON);
+        const data = JSON.parse(JSON.stringify(toRaw(form.value)));
+        delete data.strategyConfigJSON;
+        await addTask(data).finally(() => (buttonLoading.value = false));
+      }
+      proxy?.$modal.msgSuccess('操作成功');
+      roleDialog.visible = false;
+      await getList();
+    }
+  });
+};
+
 /** 删除按钮操作 */
 const handleDelete = async (row?: TaskVO) => {
   const _ids = row?.id || ids.value;
   await proxy?.$modal.confirm('是否确认删除任务管理编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
   await delTask(_ids);
   proxy?.$modal.msgSuccess('删除成功');
+  await getList();
+};
+/** 停止按钮操作 */
+const handleStop = async (row?: TaskVO) => {
+  const _ids = row?.id || ids.value;
+  await proxy?.$modal.confirm('是否停止任务"' + row.name + '"？').finally(() => (loading.value = false));
+  await stopTask(_ids);
+  proxy?.$modal.msgSuccess('停止成功');
+  await getList();
+};
+
+/** 启动按钮操作 */
+const handleStart = async (row?: TaskVO) => {
+  const _ids = row?.id || ids.value;
+  await proxy?.$modal.confirm('是否启动任务"' + row.name + '"？').finally(() => (loading.value = false));
+  await startTask(_ids);
+  proxy?.$modal.msgSuccess('启动成功');
   await getList();
 };
 
@@ -467,6 +631,7 @@ onMounted(() => {
   loadSymbol();
   loadAiConfig();
   loadNormalStrategy();
+  loadPositionStrategy();
   loadInterval();
 });
 </script>

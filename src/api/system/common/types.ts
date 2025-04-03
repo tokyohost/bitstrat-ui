@@ -3,6 +3,12 @@ export interface StrategyVo {
   id: number;
 }
 
+export interface PositionStrategyVo {
+  name: string;
+  description: string;
+  id: number;
+}
+
 export interface MarketIntervalVo {
   name: string;
   interval: string;

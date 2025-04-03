@@ -61,3 +61,15 @@ export const delTask = (id: string | number | Array<string | number>) => {
     method: 'delete'
   });
 };
+export const stopTask = (id: string | number | Array<string | number>) => {
+  return request({
+    url: '/system/task/stop/' + id,
+    method: 'get'
+  });
+};
+export const startTask = (id: string | number | Array<string | number>) => {
+  return request({
+    url: '/system/task/start/' + id,
+    method: 'get'
+  });
+};
