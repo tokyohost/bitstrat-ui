@@ -103,7 +103,7 @@
         </el-table-column>
         <el-table-column :label="proxy.$t('common.opt.opt')" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-tooltip :content="proxy.$t('common.opt.edit')" placement="top" v-if="scope.row.status === 1">
+            <el-tooltip :content="proxy.$t('common.opt.edit')" placement="top" v-if="scope.row.status !== 2">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:task:edit']"></el-button>
             </el-tooltip>
             <el-tooltip :content="proxy.$t('common.opt.editRole')" placement="top" v-if="scope.row.status === 2">
@@ -206,11 +206,41 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="12" v-if="form.buyRoleId == 3">
+            <el-form-item label="买入百分比设置" prop="scale">
+              <template #label>
+                <span>买入百分比设置</span>
+                <el-tooltip content="如当前市场价距离持仓成本价涨跌百分比达到或超过此值，触发继续买入(可为负数)" placement="top" effect="light">
+                  <el-icon><WarningFilled /></el-icon>
+                </el-tooltip>
+              </template>
+              <el-input v-model="form.buyRoleParams" type="number" min="0.0001" max="100000" step="0.0001" placeholder="请输入百分比" >
+                <template #suffix>
+                  <span>%</span>
+                </template>
+              </el-input>
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="连续卖出策略" prop="scale">
               <el-select v-model="form.sellRoleId" placeholder="请选择策略">
                 <el-option :label="item.name" :value="item.id" v-for="item in positionList"></el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if="form.sellRoleId == 3">
+            <el-form-item label="卖出百分比设置" prop="scale">
+              <template #label>
+                <span>卖出百分比设置</span>
+                <el-tooltip content="如当前市场价距离持仓成本价涨跌百分比达到或超过此值，触发继续卖出(可为负数)" placement="top" effect="light">
+                  <el-icon><WarningFilled /></el-icon>
+                </el-tooltip>
+              </template>
+              <el-input v-model="form.sellRoleParams" type="number" min="0.0001" max="100000" step="0.0001" placeholder="请输入百分比" >
+                <template #suffix>
+                  <span>%</span>
+                </template>
+              </el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -360,6 +390,8 @@ const data = reactive<PageData<TaskForm, TaskQuery>>({
     lastOrderTime: undefined,
     taskType: undefined,
     aiWorkflowId: undefined,
+    buyRoleParams: undefined,
+    sellRoleParams: undefined,
     roleId: undefined,
     createUserId: undefined,
     status: undefined,

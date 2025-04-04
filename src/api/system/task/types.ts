@@ -121,6 +121,8 @@ export interface TaskForm extends BaseEntity {
   scale?: number;
   sellRoleId?: number;
   buyRoleId?: number;
+  buyRoleParams?: any;
+  sellRoleParams?: any;
   /**
    * ai 流水线id
    */

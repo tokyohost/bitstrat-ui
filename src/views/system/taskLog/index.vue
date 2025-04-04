@@ -64,6 +64,13 @@
             </el-tooltip>
           </template>
         </el-table-column>
+        <el-table-column label="日志" align="center" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-tooltip :content="'下载日志'" placement="top">
+              <el-icon @click="downloadTxt(scope.row.log)"><Download /></el-icon>
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
@@ -154,7 +161,24 @@ const data = reactive<PageData<TaskLogForm, TaskLogQuery>>({
     id: [{ required: true, message: 'id不能为空', trigger: 'blur' }]
   }
 });
+const downloadTxt = (content) => {
+  const filename = "log.txt";
+  if(!content){
+    content = "暂无日志"
+  }
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const link = document.createElement("a");
 
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // 释放内存
+  URL.revokeObjectURL(link.href);
+};
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询任务买入卖出日志列表 */
