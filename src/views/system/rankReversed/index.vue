@@ -253,3 +253,11 @@ onMounted(() => {
   getList();
 });
 </script>
+<style scoped>
+.up{
+  color:green;
+}
+.down{
+  color:red;
+}
+</style>

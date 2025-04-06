@@ -143,7 +143,7 @@
             <el-form-item :label="proxy.$t('bybit.task.form.symbol')" prop="symbol">
               <!--              <el-input v-model="form.symbol" placeholder="请输入币种" />-->
               <el-select v-model="form.symbol" :placeholder="proxy.$t('bybit.task.placeholder.symbol')" :filterable="true">
-                <el-option :label="item.name" :value="item.name" v-for="item in symbolList"></el-option>
+                <el-option :label="item.symbol" :value="item.symbol" v-for="item in symbolList"></el-option>
               </el-select>
             </el-form-item>
           </el-col>

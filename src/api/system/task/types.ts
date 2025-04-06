@@ -67,6 +67,7 @@ export interface TaskVO {
 
 export interface SymbolVO {
   name: string;
+  symbol:string;
 }
 
 export interface TaskForm extends BaseEntity {
