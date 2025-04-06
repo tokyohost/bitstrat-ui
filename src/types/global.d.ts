@@ -31,7 +31,7 @@ declare global {
     /**
      * 是否禁用
      */
-    disabled: boolean;
+    disabled?: boolean;
   }
 
   declare interface UploadOption {

@@ -5,5 +5,7 @@ declare module 'axios' {
     msg: string;
     rows: T;
     total: number;
+    extCode?:number;
+    extInfo?:string;
   }
 }
