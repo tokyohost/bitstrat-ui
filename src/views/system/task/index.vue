@@ -9,7 +9,7 @@
             </el-form-item>
             <el-form-item :label="proxy.$t('bybit.task.form.symbol')" prop="symbol" :label-width="120">
               <el-select v-model="queryParams.symbol" :placeholder="proxy.$t('bybit.task.placeholder.symbol')" :filterable="true" clearable>
-                <el-option :label="item.name" :value="item.name" v-for="item in symbolList"></el-option>
+                <el-option :label="item.symbol" :value="item.symbol" v-for="item in symbolList"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -214,7 +214,7 @@
                   <el-icon><WarningFilled /></el-icon>
                 </el-tooltip>
               </template>
-              <el-input v-model="form.buyRoleParams" type="number" min="0.0001" max="100000" step="0.0001" placeholder="请输入百分比" >
+              <el-input v-model="form.buyRoleParams" type="number" min="0.0001" max="100000" step="0.0001" placeholder="请输入百分比">
                 <template #suffix>
                   <span>%</span>
                 </template>
@@ -236,7 +236,7 @@
                   <el-icon><WarningFilled /></el-icon>
                 </el-tooltip>
               </template>
-              <el-input v-model="form.sellRoleParams" type="number" min="0.0001" max="100000" step="0.0001" placeholder="请输入百分比" >
+              <el-input v-model="form.sellRoleParams" type="number" min="0.0001" max="100000" step="0.0001" placeholder="请输入百分比">
                 <template #suffix>
                   <span>%</span>
                 </template>
