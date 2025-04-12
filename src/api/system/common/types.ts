@@ -22,6 +22,10 @@ export interface SyncLossPoint {
   clientId?: string | number;
   lossPointId?: string | number;
 }
+export interface EnableLossPointBody {
+  lossPointId?: string | number;
+  enable?: number;
+}
 export interface DeviceInfo {
   clientId?: string | number;
   delay?: string | number;
@@ -33,4 +37,10 @@ export interface ExchangeData {
   delay?: string | number;
   nodeName?: string | number;
   exchangeName?: string | number;
+}
+export interface SetLeverageBody {
+   category?: string | number;
+   symbol?: string | number;
+   buyLeverage?: string | number;
+   sellLeverage?: string | number;
 }

@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { LossPointVO, LossPointForm, LossPointQuery } from '@/api/system/lossPoint/types';
-import { SyncLossPoint } from '@/api/system/common/types';
+import { EnableLossPointBody, SyncLossPoint } from '@/api/system/common/types';
 
 /**
  * 查询滑点管理列表
@@ -70,6 +70,28 @@ export const delLossPoint = (id: string | number | Array<string | number>) => {
 export const syncLossPoint = (data: SyncLossPoint) => {
   return request({
     url: '/system/lossPoint/sync',
+    method: 'post',
+    data: data
+  });
+};
+/**
+ * 下发所有
+ * @param id
+ */
+export const syncAllLossPoint = (data: SyncLossPoint) => {
+  return request({
+    url: '/system/lossPoint/syncAll',
+    method: 'post',
+    data: data
+  });
+};
+/**
+ * 启用禁用
+ * @param id
+ */
+export const enableLossPoint = (data: EnableLossPointBody) => {
+  return request({
+    url: '/system/lossPoint/enable',
     method: 'post',
     data: data
   });

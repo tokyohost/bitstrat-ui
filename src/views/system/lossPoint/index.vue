@@ -44,6 +44,16 @@
               >删除
             </el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button type="danger" plain icon="Edit" @click="handleSetLeverageBody()" v-hasPermi="['system:lossPoint:edit']"
+              >设置杠杆倍数
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="danger" plain icon="Edit" @click="syncAll()" v-hasPermi="['system:lossPoint:edit']"
+              >全量同步
+            </el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
@@ -57,6 +67,11 @@
         <!--        <el-table-column label="触发价2" align="center" prop="triggerPrice2" />-->
         <el-table-column label="回撤率" align="center" prop="retread" />
         <el-table-column label="下单数量" align="center" prop="quantity" />
+        <el-table-column label="启用" align="center" prop="enable" >
+          <template #default="scope">
+            <el-switch v-model="scope.row.enable" :active-value="2" :inactive-value="1" @change="changeEnable(scope.row)"/>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" align="center" prop="status">
           <template #default="scope">
             <dict-tag :options="loss_point_status" :value="scope.row.status" />
@@ -139,14 +154,54 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog :title="setLeverageDialog.title" v-model="setLeverageDialog.visible" width="500px" append-to-body>
+      <el-form ref="leverageFormRef" :model="leverageForm" :rules="leverageRole" label-width="80px" :label-position="'top'">
+        <el-form-item :label="proxy.$t('bybit.task.form.symbol')" prop="symbol">
+          <!--              <el-input v-model="form.symbol" placeholder="请输入币种" />-->
+          <el-select v-model="leverageForm.symbol" :placeholder="proxy.$t('bybit.task.placeholder.symbol')" :filterable="true">
+            <el-option :label="item.symbol" :value="item.symbol" v-for="item in symbolList"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="做多倍数" prop="buyLeverage">
+          <el-input v-model="leverageForm.buyLeverage" placeholder="请输入做多倍数"  :min="1" :max="500" :step="1"/>
+        </el-form-item>
+        <el-form-item label="做空倍数" prop="sellLeverage">
+          <el-input v-model="leverageForm.sellLeverage" placeholder="请输入做空倍数"  :min="1" :max="500" :step="1"/>
+        </el-form-item>
+      </el-form>
+
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button :loading="buttonLoading" type="primary" @click="submitSetLeverage">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="LossPoint" lang="ts">
-import { listLossPoint, getLossPoint, delLossPoint, addLossPoint, updateLossPoint, syncLossPoint, stopLossPoint } from '@/api/system/lossPoint';
+import {
+  listLossPoint,
+  getLossPoint,
+  delLossPoint,
+  addLossPoint,
+  updateLossPoint,
+  syncLossPoint,
+  stopLossPoint,
+  enableLossPoint, syncAllLossPoint
+} from '@/api/system/lossPoint';
 import { LossPointVO, LossPointQuery, LossPointForm } from '@/api/system/lossPoint/types';
-import { DeviceInfo, ExchangeData, ExchangeVo, SyncLossPoint } from '@/api/system/common/types';
-import { getSupportExchange, listBybitSupportSymbols, queryExchangeStatus, queryNodeStatus } from '@/api/system/common/common';
+import { DeviceInfo, ExchangeData, ExchangeVo, SetLeverageBody, SyncLossPoint } from '@/api/system/common/types';
+import {
+  getSupportExchange,
+  listBybitSupportSymbols,
+  queryExchangeStatus,
+  queryNodeStatus,
+  setLeverageBody
+} from '@/api/system/common/common';
 import { SymbolVO } from '@/api/system/task/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -157,6 +212,7 @@ const supportExchangeList = ref<ExchangeVo[]>([]);
 const nodeList = ref<ExchangeData[]>([]);
 const symbolList = ref<SymbolVO[]>([]);
 const buttonLoading = ref(false);
+const enableLoading = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
@@ -166,11 +222,24 @@ const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
 const lossPointFormRef = ref<ElFormInstance>();
+const leverageFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
+const setLeverageDialog = reactive<DialogOption>({
+  visible: false,
+  title: '设置杠杆倍率'
+});
+const leverageForm = reactive<SetLeverageBody>({})
+const leverageRole = {
+  id: [{ required: true, message: 'id不能为空', trigger: 'blur' }],
+  symbol: [{ required: true, message: '币种不能为空', trigger: 'blur' }],
+  buyLeverage: [{ required: true, message: '做多倍数不能为空', trigger: 'blur' }],
+  sellLeverage: [{ required: true, message: '做空倍数不能为空', trigger: 'blur' }],
+}
+
 
 const initFormData: LossPointForm = {
   id: undefined,
@@ -235,6 +304,7 @@ const getList = async () => {
 const cancel = () => {
   reset();
   dialog.visible = false;
+  setLeverageDialog.visible = false
 };
 
 /** 表单重置 */
@@ -287,6 +357,17 @@ const handleSelectionChange = (selection: LossPointVO[]) => {
   multiple.value = !selection.length;
 };
 
+
+const changeEnable = async (row:LossPointVO) =>{
+  const oldStatus = row.enable
+  console.log("oldStatus "+oldStatus);
+  loading.value = true;
+  await enableLossPoint({lossPointId:row.id,enable: oldStatus});
+  loading.value = false;
+  await getList()
+
+
+}
 /** 新增按钮操作 */
 const handleAdd = () => {
   reset();
@@ -320,6 +401,19 @@ const submitForm = () => {
     }
   });
 };
+const submitSetLeverage = () => {
+  leverageFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      buttonLoading.value = true;
+
+      await setLeverageBody(leverageForm);
+
+      proxy?.$modal.msgSuccess('操作成功');
+      setLeverageDialog.visible = false;
+      await getList();
+    }
+  });
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: LossPointVO) => {
@@ -338,6 +432,16 @@ const handleSync = async (row?: LossPointVO) => {
   proxy?.$modal.msgSuccess('同步成功');
   await getList();
 };
+const syncAll = async (row?: LossPointVO) => {
+  const data: SyncLossPoint = {
+  };
+  await syncAllLossPoint(data);
+  proxy?.$modal.msgSuccess('同步成功');
+  await getList();
+};
+const handleSetLeverageBody = ()=>{
+  setLeverageDialog.visible = true
+}
 const handleStop = async (row?: LossPointVO) => {
   const data: SyncLossPoint = {
     lossPointId: row.id,

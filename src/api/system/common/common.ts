@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { TaskQuery, TaskVO } from '@/api/system/task/types';
 import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
-import { DeviceInfo, ExchangeData } from '@/api/system/common/types';
+import { DeviceInfo, ExchangeData, SetLeverageBody } from '@/api/system/common/types';
 
 export const listTask = (query?: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
@@ -60,5 +60,12 @@ export const queryExchangeStatus = (): AxiosPromise<ExchangeData[]> => {
   return request({
     url: '/common/queryExchangeStatus',
     method: 'get'
+  });
+};
+export const setLeverageBody = (data:SetLeverageBody): AxiosPromise<ExchangeData[]> => {
+  return request({
+    url: '/common/setLeverageBody',
+    method: 'post',
+    data,
   });
 };

@@ -19,6 +19,7 @@ export interface LossPointVO {
    * 价格
    */
   price: number;
+  enable: number;
 
   /**
    * 回撤率
