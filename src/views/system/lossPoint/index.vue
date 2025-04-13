@@ -6,10 +6,11 @@
                     :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
-              <el-form ref="queryFormRef" :model="queryParams" :inline="true">
+              <el-form ref="queryFormRef" :model="queryParams" :inline="true" :label-width="120">
                 <el-form-item label="交易所名称" prop="exchangeName">
-                  <el-input v-model="queryParams.exchangeName" placeholder="请输入交易所名称" clearable
-                            @keyup.enter="handleQuery" />
+                  <el-select v-model="queryParams.exchangeName" :placeholder="'请选择交易所'" :filterable="true" clearable @keyup.enter="handleQuery">
+                    <el-option :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="币种" prop="symbol">
                   <el-input v-model="queryParams.symbol" placeholder="请输入币种" clearable @keyup.enter="handleQuery" />
@@ -17,13 +18,7 @@
                 <el-form-item label="价格" prop="price">
                   <el-input v-model="queryParams.price" placeholder="请输入价格" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
-                <el-form-item label="回撤率" prop="retread">
-                  <el-input v-model="queryParams.retread" placeholder="请输入回撤率" clearable @keyup.enter="handleQuery" />
-                </el-form-item>
-                <el-form-item label="下单数量" prop="quantity">
-                  <el-input v-model="queryParams.quantity" placeholder="请输入下单数量" clearable
-                            @keyup.enter="handleQuery" />
-                </el-form-item>
+
                 <el-form-item>
                   <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                   <el-button icon="Refresh" @click="resetQuery">重置</el-button>
