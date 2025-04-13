@@ -86,6 +86,17 @@ export const syncAllLossPoint = (data: SyncLossPoint) => {
   });
 };
 /**
+ * 清除所有
+ * @param id
+ */
+export const syncDeleteAllLossPoint = (data: SyncLossPoint) => {
+  return request({
+    url: '/system/lossPoint/syncDeleteAll',
+    method: 'post',
+    data: data
+  });
+};
+/**
  * 启用禁用
  * @param id
  */

@@ -37,6 +37,8 @@ export interface ExchangeData {
   delay?: string | number;
   nodeName?: string | number;
   exchangeName?: string | number;
+  status?: string | number;
+  ip?: string | number;
 }
 export interface SetLeverageBody {
    category?: string | number;
