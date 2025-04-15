@@ -55,6 +55,7 @@ export interface LossPointForm extends BaseEntity {
   price?: number;
   triggerPrice1?: number;
   triggerPrice2?: number;
+  stopLossCalcLimit?: number;
 
   /**
    * 回撤率
