@@ -41,8 +41,8 @@ export interface ExchangeData {
   ip?: string | number;
 }
 export interface SetLeverageBody {
-   category?: string | number;
-   symbol?: string | number;
-   buyLeverage?: string | number;
-   sellLeverage?: string | number;
+  category?: string | number;
+  symbol?: string | number;
+  buyLeverage?: string | number;
+  sellLeverage?: string | number;
 }
