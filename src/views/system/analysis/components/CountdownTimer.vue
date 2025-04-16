@@ -1,5 +1,5 @@
 <template>
-  <span>{{ formattedTime }}</span>
+  <span class="text-sm font-bold text-gray-600">{{ formattedTime }}</span>
 </template>
 
 <script setup lang="ts">

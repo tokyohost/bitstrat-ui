@@ -1,5 +1,5 @@
 <template>
-  <span>${{ formatted }}</span>
+  <span class="text-sm font-bold text-gray-600">${{ formatted }}</span>
 </template>
 
 <script setup lang="ts">
