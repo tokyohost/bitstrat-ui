@@ -21,20 +21,11 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Refresh" @click="handleSync" v-hasPermi="['system:rank:edit']">手动同步</el-button>
+            <!--            <el-button type="warning" plain icon="Refresh" @click="handleSync" v-hasPermi="['system:rank:edit']">手动同步</el-button>-->
           </el-col>
           <el-col :span="1.5">
-            <el-tag
-              type="warning"
-              effect="plain"
-              v-if="syncStatus == 1"
-            >正在同步...
-            </el-tag>
-            <el-tag v-else
-                    type="success"
-                    effect="plain"
-            >同步完成 {{lastFinishTime}}
-            </el-tag>
+            <el-tag type="warning" effect="plain" v-if="syncStatus == 1">正在同步... </el-tag>
+            <el-tag v-else type="success" effect="plain">同步完成 {{ lastFinishTime }} </el-tag>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
@@ -42,19 +33,17 @@
 
       <el-table v-loading="loading" :data="rankReversedList" @selection-change="handleSelectionChange">
         <el-table-column label="币种" align="center" prop="symbol" />
-        <el-table-column label="" align="center" prop="score" >
-          <template #header="scope">
-            得分
-          </template>
+        <el-table-column label="" align="center" prop="score">
+          <template #header="scope"> 得分 </template>
         </el-table-column>
         <el-table-column label="当前市价" align="center" prop="marketPrice" />
 
-        <el-table-column label="涨跌幅度(24H)" align="center" prop="percentage" >
+        <el-table-column label="涨跌幅度(24H)" align="center" prop="percentage">
           <template #default="scope">
-            <span class="up" v-if="scope.row.percentage > 0">{{ scope.row.percentage ? scope.row.percentage + "%" : '-' }}</span>
-            <span class="down" v-else-if="scope.row.percentage < 0">{{ scope.row.percentage ? scope.row.percentage + "%" : '-' }}</span>
-            <span v-else-if="scope.row.percentage == 0">{{ scope.row.percentage ? scope.row.percentage + "%" : '-' }}</span>
-            <span v-else-if="scope.row.percentage == null">{{ scope.row.percentage ? scope.row.percentage + "%" : '-' }}</span>
+            <span class="up" v-if="scope.row.percentage > 0">{{ scope.row.percentage ? scope.row.percentage + '%' : '-' }}</span>
+            <span class="down" v-else-if="scope.row.percentage < 0">{{ scope.row.percentage ? scope.row.percentage + '%' : '-' }}</span>
+            <span v-else-if="scope.row.percentage == 0">{{ scope.row.percentage ? scope.row.percentage + '%' : '-' }}</span>
+            <span v-else-if="scope.row.percentage == null">{{ scope.row.percentage ? scope.row.percentage + '%' : '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="同步时间" align="center" prop="updateTime" />
@@ -107,7 +96,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const syncStatus = ref(0);
-const lastFinishTime = ref("");
+const lastFinishTime = ref('');
 
 const queryFormRef = ref<ElFormInstance>();
 const rankReversedFormRef = ref<ElFormInstance>();
@@ -115,10 +104,10 @@ const handleSync = async () => {
   reset();
   // const loadingInstance1 = ElLoading.service({ fullscreen: true })
   const res = await syncRank();
-  await getList()
-  ElMessage.success("已触发，稍后刷新查看最新数据")
+  await getList();
+  ElMessage.success('已触发，稍后刷新查看最新数据');
   // loadingInstance1.close()
-}
+};
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -131,10 +120,10 @@ const initFormData: RankReversedForm = {
   score: undefined,
   marketPrice: undefined,
   percentage: undefined,
-  rank: undefined,
-}
+  rank: undefined
+};
 const data = reactive<PageData<RankReversedForm, RankReversedQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -143,13 +132,10 @@ const data = reactive<PageData<RankReversedForm, RankReversedQuery>>({
     marketPrice: undefined,
     percentage: undefined,
     rank: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {
-    id: [
-      { required: true, message: "id不能为空", trigger: "blur" }
-    ],
+    id: [{ required: true, message: 'id不能为空', trigger: 'blur' }]
   }
 });
 
@@ -162,59 +148,59 @@ const getList = async () => {
   queryParams.value.isAsc = 'desc';
   const res = await listRankReversed(queryParams.value);
   rankReversedList.value = res.rows;
-  syncStatus.value = res.extCode
-  lastFinishTime.value = res.extInfo
+  syncStatus.value = res.extCode;
+  lastFinishTime.value = res.extInfo;
   total.value = res.total;
   loading.value = false;
-}
+};
 
 /** 取消按钮 */
 const cancel = () => {
   reset();
   dialog.visible = false;
-}
+};
 
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
+  form.value = { ...initFormData };
   rankReversedFormRef.value?.resetFields();
-}
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: RankReversedVO[]) => {
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-}
+};
 
 /** 新增按钮操作 */
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = "添加山寨币排行(反向)";
-}
+  dialog.title = '添加山寨币排行(反向)';
+};
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: RankReversedVO) => {
   reset();
-  const _id = row?.id || ids.value[0]
+  const _id = row?.id || ids.value[0];
   const res = await getRankReversed(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = "修改山寨币排行(反向)";
-}
+  dialog.title = '修改山寨币排行(反向)';
+};
 
 /** 提交按钮 */
 const submitForm = () => {
@@ -222,42 +208,46 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateRankReversed(form.value).finally(() =>  buttonLoading.value = false);
+        await updateRankReversed(form.value).finally(() => (buttonLoading.value = false));
       } else {
-        await addRankReversed(form.value).finally(() =>  buttonLoading.value = false);
+        await addRankReversed(form.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess("操作成功");
+      proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();
     }
   });
-}
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: RankReversedVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除山寨币排行(反向)编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认删除山寨币排行(反向)编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
   await delRankReversed(_ids);
-  proxy?.$modal.msgSuccess("删除成功");
+  proxy?.$modal.msgSuccess('删除成功');
   await getList();
-}
+};
 
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/rankReversed/export', {
-    ...queryParams.value
-  }, `rankReversed_${new Date().getTime()}.xlsx`)
-}
+  proxy?.download(
+    'system/rankReversed/export',
+    {
+      ...queryParams.value
+    },
+    `rankReversed_${new Date().getTime()}.xlsx`
+  );
+};
 
 onMounted(() => {
   getList();
 });
 </script>
 <style scoped>
-.up{
-  color:green;
+.up {
+  color: green;
 }
-.down{
-  color:red;
+.down {
+  color: red;
 }
 </style>

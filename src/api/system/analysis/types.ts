@@ -58,3 +58,15 @@ export interface ArbitrageQuery {
   symbol?: string;
   exchange?: string;
 }
+export interface ExchangeItemForm extends ExchangeItem {
+  size?: number;
+}
+export interface ArbitrageTaskForm {
+  buy?: ExchangeItemForm;
+  sell?: ExchangeItemForm;
+}
+
+export interface ExchangeItem {
+  name?: string;
+  logo?: string;
+}

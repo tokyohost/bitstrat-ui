@@ -1,33 +1,93 @@
 <script setup lang="ts">
-import { ArbitrageItem, ArbitrageQuery, CoinFundingInfo } from '@/api/system/analysis/types';
-import { getInterestArbitrageV2 } from '@/api/system/analysis/analysis';
+import { ArbitrageItem, ArbitrageQuery, CoinFundingInfo, ExchangeItem } from '@/api/system/analysis/types';
+import { getInterestArbitrageV2, querySupportSymbol } from '@/api/system/analysis/analysis';
 import CountdownTimer from '@/views/system/analysis/components/CountdownTimer.vue';
 import PrettyNumber from '@/views/system/analysis/components/PrettyNumber.vue';
 import TradePairTag from '@/views/system/analysis/components/TradePairTag.vue';
 import CoinTag from '@/views/system/analysis/components/CoinTag.vue';
 import { SymbolVO } from '@/api/system/task/types';
+import { getSupportExchange } from '@/api/system/common/common';
+import { ExchangeVo } from '@/api/system/common/types';
+import DialogWrapper from '@/views/system/analysis/components/DialogWrapper.vue';
+import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelector.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const datalist = ref<CoinFundingInfo[]>();
 
+const loading = ref(true);
+const inited = ref(false);
 const symbolList = ref<SymbolVO[]>([]);
+const supportExchangeList = ref<ExchangeVo[]>([]);
 const tableData = ref<CoinFundingInfo[]>();
+const uniqueExchanges = ref<ExchangeItem[]>();
 const queryParams = ref<ArbitrageQuery>({
-  name: undefined,
-  symbol: undefined
+  exchange: undefined
 });
 
 const currentPage = ref(1);
 const pageSize = ref(10);
 const showSearch = ref(true);
+const arbitragePage = ref(false);
+const arbitrageData = ref<CoinFundingInfo>();
 
 const loadDataList = async () => {
-  const data = await getInterestArbitrageV2('');
-  console.log(data);
-  if (data.code == 200) {
-    datalist.value = data.data || [];
-    updateTableData();
+  loading.value = true;
+  try {
+    const data = await getInterestArbitrageV2(queryParams.value.exchange);
+    console.log(data);
+    if (data.code == 200) {
+      datalist.value = data.data || [];
+      initExchangeList();
+      updateTableData();
+    }
+  } finally {
+    loading.value = false;
   }
 };
+const initExchangeList = () => {
+  if (inited.value == true) {
+    return;
+  }
+  const exchanges = datalist.value.flatMap((item) => [
+    {
+      name: item.buy.exchangeName,
+      logo: item.buy.exchangeLogo
+    },
+    {
+      name: item.sell.exchangeName,
+      logo: item.sell.exchangeLogo
+    }
+  ]);
+  uniqueExchanges.value = Array.from(new Map(exchanges.map((item) => [item.name, item])).values());
+  inited.value = true;
+};
+
+const loadSymbolData = async () => {
+  loading.value = true;
+  try {
+    const data = await querySupportSymbol();
+    console.log(data);
+    if (data.code == 200) {
+      console.log(data.data);
+      // datalist.value = data.data || [];
+    }
+  } finally {
+    loading.value = false;
+  }
+};
+
+const loadExchange = async () => {
+  loading.value = true;
+  const res = await getSupportExchange();
+  console.log(res);
+  if (res.code == 200) {
+    supportExchangeList.value = res.data;
+  } else {
+    const msg = res.msg;
+    ElMessage.error(msg);
+  }
+  loading.value = false;
+};
+
 // 更新 tableData
 const updateTableData = () => {
   const start = (currentPage.value - 1) * pageSize.value;
@@ -35,14 +95,35 @@ const updateTableData = () => {
   tableData.value = datalist.value.slice(start, end);
 };
 
-const handle = (row) => {};
-const handleQuery = (row) => {};
+const handle = (row: CoinFundingInfo) => {
+  console.log({ ...row });
+  //检查两个交易所是否都支持
+  const filter = supportExchangeList.value.filter((item) => {
+    return (
+      item.name.toLowerCase().indexOf(row.buy.exchangeName.toLowerCase()) > -1 ||
+      item.name.toLowerCase().indexOf(row.sell.exchangeName.toLowerCase()) > -1
+    );
+  });
+  console.log(filter);
+  if (filter.length == 2) {
+    //支持
+    arbitrageData.value = row;
+    arbitragePage.value = true;
+  } else {
+    ElMessage.warning(`暂不支持交易所 ${row.buy.exchangeName} 与 ${row.sell.exchangeName} 套利！敬请期待`);
+  }
+};
+const handleQuery = (row) => {
+  loadDataList();
+};
 const resetQuery = (row) => {};
 
 // 监听分页变化
 watch([currentPage, pageSize], updateTableData);
 onMounted(() => {
   loadDataList();
+  loadExchange();
+  // loadSymbolData();
 });
 </script>
 
@@ -52,11 +133,12 @@ onMounted(() => {
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item :label="proxy.$t('bybit.task.form.symbol')" prop="symbol" :label-width="120">
-              <el-input v-model="queryParams.symbol" :placeholder="'请输入币对'" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item :label="'交易所'" prop="symbol" :label-width="120">
-              <el-input v-model="queryParams.exchange" :placeholder="'请输入交易所'" clearable @keyup.enter="handleQuery" />
+            <!--            <el-form-item :label="proxy.$t('bybit.task.form.symbol')" prop="symbol" :label-width="120">-->
+            <!--              <el-input v-model="queryParams.symbol" :placeholder="'请输入币对'" clearable @keyup.enter="handleQuery" />-->
+            <!--            </el-form-item>-->
+            <el-form-item :label="''" prop="symbol" :label-width="120">
+              <!--              <el-input v-model="queryParams.exchange" :placeholder="'请输入交易所'" clearable @keyup.enter="handleQuery" />-->
+              <ExchangeSelector :exchanges="uniqueExchanges" v-model="queryParams.exchange" @change="handleQuery"></ExchangeSelector>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">{{ proxy.$t('common.opt.search') }}</el-button>
@@ -67,7 +149,7 @@ onMounted(() => {
       </div>
     </transition>
     <el-card shadow="never">
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <!--        <el-table-column prop="symbol" label="排名" />-->
         <el-table-column prop="symbol" label="币种">
           <template #default="scope">
@@ -140,6 +222,7 @@ onMounted(() => {
         />
       </div>
     </el-card>
+    <DialogWrapper v-model:visible="arbitragePage" :data="arbitrageData" :title="'创建套利任务'"></DialogWrapper>
   </div>
 </template>
 

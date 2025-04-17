@@ -13,3 +13,9 @@ export const getInterestArbitrageV2 = (ex: string): AxiosPromise<CoinFundingInfo
     }
   });
 };
+export const querySupportSymbol = (): AxiosPromise<CoinFundingInfo[]> => {
+  return request({
+    url: '/analysis/querySupportSymbol',
+    method: 'get'
+  });
+};

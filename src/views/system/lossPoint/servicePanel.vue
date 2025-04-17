@@ -2,26 +2,26 @@
   <div class="dashboard">
     <div class="grid">
       <div v-for="(item, index) in nodeList" :key="index" class="card">
-<!--        <img-->
-<!--          class="logo"-->
-<!--          :src="getLogoUrl(item.exchangeName)"-->
-<!--          :alt="item.nodeName"-->
-<!--          @error="setDefaultLogo($event)"-->
-<!--        />-->
+        <!--        <img-->
+        <!--          class="logo"-->
+        <!--          :src="getLogoUrl(item.exchangeName)"-->
+        <!--          :alt="item.nodeName"-->
+        <!--          @error="setDefaultLogo($event)"-->
+        <!--        />-->
         <div class="name">{{ item.clientId }}</div>
         <div class="info">支持交易所: {{ item.exchangeName }}</div>
-        <div class="info">ip: {{ item.ip }}</div>
-        <div class="info" >状态: <span :class="getStausColor(item.status)" >{{ item.status }}</span></div>
-        <div class="delay" :class="getDelayColor(item.delay)">
-          {{ item.delay }}ms
+        <div class="info">规则容量: {{ item.currRoleSize / item.maxRoleSize }}</div>
+        <div class="info">
+          状态: <span :class="getStausColor(item.status)">{{ item.status }}</span>
         </div>
+        <div class="delay" :class="getDelayColor(item.delay)">{{ item.delay }}ms</div>
       </div>
     </div>
   </div>
 </template>
 
 <script name="servicePanel" setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 import { queryExchangeStatus } from '@/api/system/common/common';
 import { ExchangeData } from '@/api/system/common/types';
 const nodeList = ref<ExchangeData[]>([]);
@@ -31,11 +31,11 @@ const services = ref([
   { exchangeName: 'binance', clientId: 'japan-node1', nodeName: 'japan-node1', delay: 105 },
   { exchangeName: 'coinbase', clientId: 'us-node1', nodeName: 'us-node1', delay: 220 },
   { exchangeName: 'huobi', clientId: 'asia-node3', nodeName: 'asia-node3', delay: 300 }
-])
-let intervalId: number | undefined
+]);
+let intervalId: number | undefined;
 function getLogoUrl(exchangeName) {
   // 示例用图标 CDN，可根据你实际项目替换
-  return `https://cryptoicons.org/api/icon/${exchangeName.toLowerCase()}/64`
+  return `https://cryptoicons.org/api/icon/${exchangeName.toLowerCase()}/64`;
 }
 const loadNode = async () => {
   const res = await queryExchangeStatus();
@@ -48,29 +48,28 @@ const loadNode = async () => {
   }
 };
 function setDefaultLogo(e) {
-  e.target.src = 'https://via.placeholder.com/64?text=?'
+  e.target.src = 'https://via.placeholder.com/64?text=?';
 }
 
 function getDelayColor(delay) {
-  if (delay <= 50) return 'fast'
-  if (delay <= 150) return 'medium'
-  return 'slow'
+  if (delay <= 50) return 'fast';
+  if (delay <= 150) return 'medium';
+  return 'slow';
 }
 function getStausColor(status) {
-  if (status == "ONLINE") return 'fast'
-  return 'slow'
+  if (status == 'ONLINE') return 'fast';
+  return 'slow';
 }
 onMounted(() => {
   intervalId = window.setInterval(() => {
     loadNode();
-  }, 2000)
-
+  }, 2000);
 });
 onBeforeUnmount(() => {
   if (intervalId) {
-    clearInterval(intervalId)
+    clearInterval(intervalId);
   }
-})
+});
 </script>
 
 <style scoped>

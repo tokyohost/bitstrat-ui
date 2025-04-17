@@ -39,10 +39,41 @@ export interface ExchangeData {
   exchangeName?: string | number;
   status?: string | number;
   ip?: string | number;
+  currRoleSize?: string | number;
+  maxRoleSize?: string | number;
 }
 export interface SetLeverageBody {
   category?: string | number;
   symbol?: string | number;
   buyLeverage?: string | number;
   sellLeverage?: string | number;
+}
+export interface QueryBalanceBody {
+  exchange?: string | number;
+  symbol?: string | number;
+  coin?: string | number;
+}
+export interface QueryFeeBody {
+  exchange?: string | number;
+  symbol?: string | number;
+}
+export interface AccountBalance {
+  balance?: string | number;
+  symbol?: string | number;
+}
+
+export interface SymbolFee {
+  symbol: string;
+
+  // 合约吃单手续费
+  linerTakerFeeRate: string; // 或者 BigNumber 类型
+
+  // 合约挂单手续费
+  linerMakerFeeRate: string;
+
+  // 现货吃单手续费
+  sportTakerFeeRate: string;
+
+  // 现货挂单手续费
+  sportMakerFeeRate: string;
 }
