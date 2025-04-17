@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { TaskQuery, TaskVO } from '@/api/system/task/types';
 import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
-import { ArbitrageItem, CoinFundingInfo } from '@/api/system/analysis/types';
+import { ArbitrageItem, CoinFundingInfo, SportFundingRateItem } from '@/api/system/analysis/types';
 
 export const getInterestArbitrageV2 = (ex: string): AxiosPromise<CoinFundingInfo[]> => {
   return request({
@@ -16,6 +16,12 @@ export const getInterestArbitrageV2 = (ex: string): AxiosPromise<CoinFundingInfo
 export const querySupportSymbol = (): AxiosPromise<CoinFundingInfo[]> => {
   return request({
     url: '/analysis/querySupportSymbol',
+    method: 'get'
+  });
+};
+export const fundingRateSpot = (): AxiosPromise<SportFundingRateItem[]> => {
+  return request({
+    url: '/analysis/fundingRateSpot',
     method: 'get'
   });
 };

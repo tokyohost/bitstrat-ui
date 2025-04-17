@@ -70,3 +70,18 @@ export interface ExchangeItem {
   name?: string;
   logo?: string;
 }
+
+export interface SportFundingRateItem {
+  quoteCurrency: string;
+  symbol: string;
+  futuresType: string;
+  threeDayFundingRate: number | null; // 对应 Java Double，允许 null
+  yearFundingRate: number | null;
+  currencyLog: string;
+  spotType: string;
+  currency: string;
+  exchangeName: string;
+  fundingRatePositive: number | null; // Java Long → number（建议使用 bigint 若超出 JS 安全范围）
+  updateTime: number | null;
+  fundingRate: number | null;
+}

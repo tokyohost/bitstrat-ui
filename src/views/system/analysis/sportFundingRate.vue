@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ArbitrageItem, ArbitrageQuery, CoinFundingInfo, ExchangeItem } from '@/api/system/analysis/types';
-import { getInterestArbitrageV2, querySupportSymbol } from '@/api/system/analysis/analysis';
+import { ArbitrageItem, ArbitrageQuery, CoinFundingInfo, ExchangeItem, SportFundingRateItem } from '@/api/system/analysis/types';
+import { fundingRateSpot, getInterestArbitrageV2, querySupportSymbol } from '@/api/system/analysis/analysis';
 import CountdownTimer from '@/views/system/analysis/components/CountdownTimer.vue';
 import PrettyNumber from '@/views/system/analysis/components/PrettyNumber.vue';
 import TradePairTag from '@/views/system/analysis/components/TradePairTag.vue';
@@ -10,15 +10,22 @@ import { getSupportExchange } from '@/api/system/common/common';
 import { ExchangeVo } from '@/api/system/common/types';
 import DialogWrapper from '@/views/system/analysis/components/DialogWrapper.vue';
 import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelector.vue';
+import SportTradeInfoTag from '@/views/system/analysis/components/SportTradeInfoTag.vue';
+import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 import FixedNumber from '@/views/system/analysis/components/FixedNumber.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const datalist = ref<CoinFundingInfo[]>();
+const datalist = ref<SportFundingRateItem[]>([]);
+const filterExchange = ref('');
+
+const exchangeList = ref<string[]>({
+  name: ''
+});
 
 const loading = ref(true);
 const inited = ref(false);
 const symbolList = ref<SymbolVO[]>([]);
 const supportExchangeList = ref<ExchangeVo[]>([]);
-const tableData = ref<CoinFundingInfo[]>();
+const tableData = ref<SportFundingRateItem[]>();
 const uniqueExchanges = ref<ExchangeItem[]>();
 const queryParams = ref<ArbitrageQuery>({
   exchange: undefined
@@ -28,74 +35,22 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const showSearch = ref(true);
 const arbitragePage = ref(false);
-const arbitrageData = ref<CoinFundingInfo>();
+const arbitrageData = ref<SportFundingRateItem>();
 
 const loadDataList = async () => {
   loading.value = true;
   try {
-    const data = await getInterestArbitrageV2(queryParams.value.exchange);
+    const data = await fundingRateSpot();
     console.log(data);
     if (data.code == 200) {
       datalist.value = data.data || [];
-      initExchangeList();
-      updateTableData();
+      // initExchangeList();
+      // updateTableData();
     }
   } finally {
     loading.value = false;
   }
 };
-const initExchangeList = () => {
-  if (inited.value == true) {
-    return;
-  }
-  const exchanges = datalist.value.flatMap((item) => [
-    {
-      name: item.buy.exchangeName,
-      logo: item.buy.exchangeLogo
-    },
-    {
-      name: item.sell.exchangeName,
-      logo: item.sell.exchangeLogo
-    }
-  ]);
-  uniqueExchanges.value = Array.from(new Map(exchanges.map((item) => [item.name, item])).values());
-  inited.value = true;
-};
-
-const loadSymbolData = async () => {
-  loading.value = true;
-  try {
-    const data = await querySupportSymbol();
-    console.log(data);
-    if (data.code == 200) {
-      console.log(data.data);
-      // datalist.value = data.data || [];
-    }
-  } finally {
-    loading.value = false;
-  }
-};
-
-const loadExchange = async () => {
-  loading.value = true;
-  const res = await getSupportExchange();
-  console.log(res);
-  if (res.code == 200) {
-    supportExchangeList.value = res.data;
-  } else {
-    const msg = res.msg;
-    ElMessage.error(msg);
-  }
-  loading.value = false;
-};
-
-// 更新 tableData
-const updateTableData = () => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  tableData.value = datalist.value.slice(start, end);
-};
-
 const handle = (row: CoinFundingInfo) => {
   console.log({ ...row });
   //检查两个交易所是否都支持
@@ -114,16 +69,35 @@ const handle = (row: CoinFundingInfo) => {
     ElMessage.warning(`暂不支持交易所 ${row.buy.exchangeName} 与 ${row.sell.exchangeName} 套利！敬请期待`);
   }
 };
+// 筛选后的数据
+const filteredList = computed(() => {
+  console.log(datalist.value);
+  return datalist.value.filter((item) => {
+    // const matchSymbol = item.symbol.toLowerCase().includes(filterSymbol.value.toLowerCase());
+    const matchExchange = item.exchangeName.toLowerCase().includes(filterExchange.value.toLowerCase());
+    return matchExchange;
+  });
+});
+
+// 当前页数据
+const paginatedList = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return filteredList.value.slice(start, start + pageSize.value);
+});
+
+const total = computed(() => filteredList.value.length);
+
 const handleQuery = (row) => {
   loadDataList();
 };
 const resetQuery = (row) => {};
 
 // 监听分页变化
-watch([currentPage, pageSize], updateTableData);
+watch([currentPage, pageSize], paginatedList);
 onMounted(() => {
+  datalist.value = [];
   loadDataList();
-  loadExchange();
+  exchangeList.value = [{ name: 'Bybit' }, { name: 'Bitget' }, { name: 'OKX' }, { name: 'Binance' }];
   // loadSymbolData();
 });
 </script>
@@ -137,75 +111,54 @@ onMounted(() => {
             <!--            <el-form-item :label="proxy.$t('bybit.task.form.symbol')" prop="symbol" :label-width="120">-->
             <!--              <el-input v-model="queryParams.symbol" :placeholder="'请输入币对'" clearable @keyup.enter="handleQuery" />-->
             <!--            </el-form-item>-->
-            <el-form-item :label="''" prop="symbol" :label-width="120">
-              <!--              <el-input v-model="queryParams.exchange" :placeholder="'请输入交易所'" clearable @keyup.enter="handleQuery" />-->
-              <ExchangeSelector :exchanges="uniqueExchanges" v-model="queryParams.exchange" @change="handleQuery"></ExchangeSelector>
+            <el-form-item :label="'交易所'" prop="symbol" :label-width="120">
+              <el-select v-model="filterExchange" placeholder="选择交易所" style="width: 240px" clearable>
+                <el-option v-for="item in exchangeList" :key="item.name" :label="item.name" :value="item.name" />
+              </el-select>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">{{ proxy.$t('common.opt.search') }}</el-button>
-              <el-button icon="Refresh" @click="resetQuery">{{ proxy.$t('common.opt.reset') }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
       </div>
     </transition>
     <el-card shadow="never">
-      <el-table :data="tableData" style="width: 100%" v-loading="loading">
+      <el-table :data="paginatedList" style="width: 100%" v-loading="loading">
         <!--        <el-table-column prop="symbol" label="排名" />-->
         <el-table-column prop="symbol" label="币种">
           <template #default="scope">
-            <CoinTag :icon="scope.row.symbolLogo" :symbol="scope.row.symbol" />
+            <CoinTag :icon="scope.row.currencyLog" :symbol="scope.row.symbol" />
           </template>
         </el-table-column>
-        <el-table-column prop="feeGroup" label="费率组合" width="280">
+        <el-table-column prop="feeGroup" label="套利组合">
           <template #default="scope">
-            <TradePairTag
-              direction="long"
-              :symbol="scope.row.buy?.symbol"
-              :exchange="scope.row.buy?.exchangeName"
-              :exchangeLogo="scope.row.buy?.exchangeLogo"
-            />
-            <TradePairTag
-              direction="short"
-              :symbol="scope.row.sell?.symbol"
-              :exchange="scope.row.sell?.exchangeName"
-              :exchangeLogo="scope.row.sell?.exchangeLogo"
-            />
+            <SportTradeInfoTag :side="'现货'" :spot-type="scope.row.spotType" :symbol="scope.row.symbol" :logo="scope.row.currencyLog" />
+            <SportTradeInfoTag :side="'永续合约'" :futuresType="scope.row.futuresType" :symbol="scope.row.symbol" :logo="scope.row.currencyLog" />
           </template>
         </el-table-column>
-        <el-table-column prop="apr" label="当前年化" width="180">
+        <el-table-column prop="apr" label="交易所" width="180">
           <template #default="scope">
-            <FixedNumber :value="scope.row.apr" :suffix="'%'" :decimals="2" :show-color="false"></FixedNumber>
+            <ExchangeLogo :exchange="scope.row.exchangeName" :key="new Date()"></ExchangeLogo>
           </template>
         </el-table-column>
-        <el-table-column prop="funding" label="净费率">
+        <el-table-column prop="apr" label="资金费率">
           <template #default="scope">
-            <FixedNumber :value="scope.row.funding" :suffix="'%'" :decimals="4" :show-color="false"></FixedNumber>
+            <FixedNumber :value="scope.row.fundingRate" :suffix="'%'"></FixedNumber>
+            <!--            {{ scope.row.fundingRate ? scope.row.fundingRate + '%' : '-' }}-->
           </template>
         </el-table-column>
-        <el-table-column prop="fee" label="手续费">
+        <el-table-column prop="apr" label="三日累计费率">
           <template #default="scope">
-            {{ scope.row.fee ? scope.row.fee + '%' : '-' }}
+            <FixedNumber :value="scope.row.threeDayFundingRate" :suffix="'%'"></FixedNumber>
           </template>
         </el-table-column>
-        <el-table-column prop="spread" label="差价率">
+        <el-table-column prop="apr" label="年化费率">
           <template #default="scope">
-            {{ scope.row.spread ? scope.row.spread + '%' : '-' }}
+            <FixedNumber :value="scope.row.yearFundingRate" :suffix="'%'"></FixedNumber>
           </template>
         </el-table-column>
-        <el-table-column prop="openInterest" label="持仓">
-          <template #default="scope">
-            <div class="interestLine">
-              <PrettyNumber :value="scope.row.buy?.openInterest"></PrettyNumber>
-              <PrettyNumber :value="scope.row.sell?.openInterest"></PrettyNumber>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="nextFundingTime" label="距离结算">
-          <template #default="scope">
-            <CountdownTimer :timestamp="scope.row.nextFundingTime" />
-          </template>
-        </el-table-column>
+
         <el-table-column :label="proxy.$t('common.opt.opt')" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" icon="Promotion" @click="handle(scope.row)">立即套利</el-button>
@@ -217,13 +170,12 @@ onMounted(() => {
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
           :page-sizes="[10, 20, 50]"
-          :total="datalist?.length || 0"
+          :total="total"
           layout="total, sizes, prev, pager, next, jumper"
           class="mt-4 text-right"
         />
       </div>
     </el-card>
-    <DialogWrapper v-model:visible="arbitragePage" :data="arbitrageData" :title="'创建套利任务'"></DialogWrapper>
   </div>
 </template>
 
