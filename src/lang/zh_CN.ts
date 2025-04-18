@@ -8,6 +8,7 @@ export default {
   login: {
     selectPlaceholder: '请选择/输入公司名称',
     username: '用户名',
+    email: '邮箱',
     password: '密码',
     login: '登 录',
     logging: '登 录 中...',

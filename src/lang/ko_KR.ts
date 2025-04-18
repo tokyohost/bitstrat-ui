@@ -8,6 +8,7 @@ export default {
     selectPlaceholder: '회사 이름을 선택/입력하세요',
     username: '사용자 이름',
     password: '비밀번호',
+    email: '이메일',
     login: '로그인',
     logging: '로그인 중...',
     code: '인증 코드',

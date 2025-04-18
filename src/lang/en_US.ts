@@ -9,6 +9,7 @@ export default {
     selectPlaceholder: 'Please select/enter a company name',
     username: 'Username',
     password: 'Password',
+    email: 'Email',
     login: 'Login',
     logging: 'Logging...',
     code: 'Verification Code',
