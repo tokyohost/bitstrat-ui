@@ -1,4 +1,4 @@
-import {DeptTreeVO, DeptVO} from './../dept/types';
+import { DeptTreeVO, DeptVO } from './../dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
@@ -162,6 +162,16 @@ export const uploadAvatar = (data: FormData) => {
     url: '/system/user/profile/avatar',
     method: 'post',
     data: data
+  });
+};
+/**
+ * 更新邀请码
+ * @param data 头像文件
+ */
+export const uploadInviteCodeInput = () => {
+  return request({
+    url: '/system/user/profile/uploadInviteCodeInput',
+    method: 'post'
   });
 };
 

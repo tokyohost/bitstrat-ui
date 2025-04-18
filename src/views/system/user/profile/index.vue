@@ -17,22 +17,22 @@
                 <svg-icon icon-class="user" />用户名称
                 <div class="pull-right">{{ state.user.userName }}</div>
               </li>
-              <li class="list-group-item">
-                <svg-icon icon-class="phone" />手机号码
-                <div class="pull-right">{{ state.user.phonenumber }}</div>
-              </li>
+              <!--              <li class="list-group-item">-->
+              <!--                <svg-icon icon-class="phone" />手机号码-->
+              <!--                <div class="pull-right">{{ state.user.phonenumber }}</div>-->
+              <!--              </li>-->
               <li class="list-group-item">
                 <svg-icon icon-class="email" />用户邮箱
                 <div class="pull-right">{{ state.user.email }}</div>
               </li>
-              <li class="list-group-item">
-                <svg-icon icon-class="tree" />所属部门
-                <div v-if="state.user.deptName" class="pull-right">{{ state.user.deptName }} / {{ state.postGroup }}</div>
-              </li>
-              <li class="list-group-item">
-                <svg-icon icon-class="peoples" />所属角色
-                <div class="pull-right">{{ state.roleGroup }}</div>
-              </li>
+              <!--              <li class="list-group-item">-->
+              <!--                <svg-icon icon-class="tree" />所属部门-->
+              <!--                <div v-if="state.user.deptName" class="pull-right">{{ state.user.deptName }} / {{ state.postGroup }}</div>-->
+              <!--              </li>-->
+              <!--              <li class="list-group-item">-->
+              <!--                <svg-icon icon-class="peoples" />所属角色-->
+              <!--                <div class="pull-right">{{ state.roleGroup }}</div>-->
+              <!--              </li>-->
               <li class="list-group-item">
                 <svg-icon icon-class="date" />创建日期
                 <div class="pull-right">{{ state.user.createTime }}</div>
@@ -49,17 +49,20 @@
             </div>
           </template>
           <el-tabs v-model="activeTab">
-            <el-tab-pane label="基本资料" name="userinfo">
-              <userInfo :user="userForm" />
-            </el-tab-pane>
+            <!--            <el-tab-pane label="基本资料" name="userinfo">-->
+            <!--              <userInfo :user="userForm" />-->
+            <!--            </el-tab-pane>-->
             <el-tab-pane label="修改密码" name="resetPwd">
               <resetPwd />
             </el-tab-pane>
-            <el-tab-pane label="第三方应用" name="thirdParty">
-              <thirdParty :auths="state.auths" />
-            </el-tab-pane>
+            <!--            <el-tab-pane label="第三方应用" name="thirdParty">-->
+            <!--              <thirdParty :auths="state.auths" />-->
+            <!--            </el-tab-pane>-->
             <el-tab-pane label="在线设备" name="onlineDevice">
               <onlineDevice :devices="state.devices" />
+            </el-tab-pane>
+            <el-tab-pane label="邀请码" name="invitationCode">
+              <InviteCodeInput :model-value="state.user?.invitationCode" />
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -78,8 +81,9 @@ import { getAuthList } from '@/api/system/social/auth';
 import { getUserProfile } from '@/api/system/user';
 import { getOnline } from '@/api/monitor/online';
 import { UserVO } from '@/api/system/user/types';
+import InviteCodeInput from '@/views/system/user/profile/InviteCodeInput.vue';
 
-const activeTab = ref('userinfo');
+const activeTab = ref('resetPwd');
 interface State {
   user: Partial<UserVO>;
   roleGroup: string;

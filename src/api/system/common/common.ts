@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { TaskQuery, TaskVO } from '@/api/system/task/types';
 import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
-import { AccountBalance, ArbitrageItem, DeviceInfo, ExchangeData, QueryBalanceBody, SetLeverageBody } from '@/api/system/common/types';
+import { AccountBalance, DeviceInfo, ExchangeData, QueryBalanceBody, SetLeverageBody } from '@/api/system/common/types';
 
 export const listTask = (query?: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({

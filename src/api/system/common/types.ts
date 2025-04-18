@@ -66,14 +66,14 @@ export interface SymbolFee {
   symbol: string;
 
   // 合约吃单手续费
-  linerTakerFeeRate: string; // 或者 BigNumber 类型
+  linerTakerFeeRate: number; // 或者 BigNumber 类型
 
   // 合约挂单手续费
-  linerMakerFeeRate: string;
+  linerMakerFeeRate: number;
 
   // 现货吃单手续费
-  sportTakerFeeRate: string;
+  sportTakerFeeRate: number;
 
   // 现货挂单手续费
-  sportMakerFeeRate: string;
+  sportMakerFeeRate: number;
 }

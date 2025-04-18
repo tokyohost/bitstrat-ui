@@ -8,7 +8,7 @@ import CoinTag from '@/views/system/analysis/components/CoinTag.vue';
 import { SymbolVO } from '@/api/system/task/types';
 import { getSupportExchange } from '@/api/system/common/common';
 import { ExchangeVo } from '@/api/system/common/types';
-import DialogWrapper from '@/views/system/analysis/components/DialogWrapper.vue';
+import CrossExchangeArgitrage from '@/views/system/analysis/components/CrossExchangeArgitrage.vue';
 import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelector.vue';
 import FixedNumber from '@/views/system/analysis/components/FixedNumber.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -77,7 +77,7 @@ const loadSymbolData = async () => {
 };
 
 const loadExchange = async () => {
-  loading.value = true;
+  // loading.value = true;
   const res = await getSupportExchange();
   console.log(res);
   if (res.code == 200) {
@@ -86,7 +86,7 @@ const loadExchange = async () => {
     const msg = res.msg;
     ElMessage.error(msg);
   }
-  loading.value = false;
+  // loading.value = false;
 };
 
 // 更新 tableData
@@ -223,7 +223,7 @@ onMounted(() => {
         />
       </div>
     </el-card>
-    <DialogWrapper v-model:visible="arbitragePage" :data="arbitrageData" :title="'创建套利任务'"></DialogWrapper>
+    <CrossExchangeArgitrage v-model:visible="arbitragePage" :data="arbitrageData" :title="'创建套利任务'"></CrossExchangeArgitrage>
   </div>
 </template>
 

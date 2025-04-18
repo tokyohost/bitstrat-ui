@@ -40,8 +40,10 @@ export default {
   register: {
     selectPlaceholder: '请选择/输入公司名称',
     username: '用户名',
+    email: '邮箱',
     password: '密码',
     confirmPassword: '确认密码',
+    invitationCode: '邀请码',
     register: '注 册',
     registering: '注 册 中...',
     registerSuccess: '恭喜你，您的账号 {username} 注册成功！',
@@ -66,6 +68,13 @@ export default {
       confirmPassword: {
         required: '请再次输入您的密码',
         equalToPassword: '两次输入的密码不一致'
+      },
+      invitationCode: {
+        required: '请输入邀请码'
+      },
+      email: {
+        required: '请输入邮箱',
+        invalid: '请输入正确的邮箱'
       }
     }
   },
@@ -80,7 +89,22 @@ export default {
     selectTenant: '选择租户',
     layoutSetting: '布局设置',
     personalCenter: '个人中心',
+    apiSetting: 'API设置',
     logout: '退出登录'
+  },
+  setting: {
+    api: {
+      未设置: '未设置',
+      已配置: '已配置'
+    },
+    apiSettingForm: {
+      apiKey: 'ApiKey',
+      secret: 'ApiSecuret',
+      passphrase: '密码',
+      title: '设置',
+      succ: '配置成功',
+      checkFail: '校验失败,请检查API配置是否正确'
+    }
   },
   //menu 国际化
   menu: {

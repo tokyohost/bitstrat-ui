@@ -11,9 +11,16 @@
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
       </el-form-item>
-      <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" size="large" auto-complete="off" :placeholder="proxy.$t('register.username')">
-          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
+      <!--      <el-form-item prop="username">-->
+      <!--        <el-input v-model="registerForm.username" type="text" size="large" auto-complete="off" :placeholder="proxy.$t('register.username')">-->
+      <!--          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>-->
+      <!--        </el-input>-->
+      <!--      </el-form-item>-->
+      <el-form-item prop="email">
+        <el-input v-model="registerForm.email" type="text" size="large" auto-complete="off" :placeholder="proxy.$t('register.email')">
+          <template #prefix
+            ><el-icon><Message /></el-icon
+          ></template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -38,6 +45,20 @@
           @keyup.enter="handleRegister"
         >
           <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="invitationCode">
+        <el-input
+          v-model="registerForm.invitationCode"
+          type="text"
+          size="large"
+          auto-complete="off"
+          :placeholder="proxy.$t('register.invitationCode')"
+          @keyup.enter="handleRegister"
+        >
+          <template #prefix
+            ><el-icon><StarFilled /></el-icon
+          ></template>
         </el-input>
       </el-form-item>
       <el-form-item v-if="captchaEnabled" prop="code">
@@ -66,9 +87,9 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-<!--    <div class="el-register-footer">-->
-<!--      <span>Copyright © 2018-2025 疯狂的狮子Li All Rights Reserved.</span>-->
-<!--    </div>-->
+    <!--    <div class="el-register-footer">-->
+    <!--      <span>Copyright © 2018-2025 疯狂的狮子Li All Rights Reserved.</span>-->
+    <!--    </div>-->
   </div>
 </template>
 
@@ -88,11 +109,13 @@ const { t } = useI18n();
 const registerForm = ref<RegisterForm>({
   tenantId: '',
   username: '',
+  email: '',
   password: '',
   confirmPassword: '',
   code: '',
   uuid: '',
-  userType: 'sys_user'
+  userType: 'sys_user',
+  invitationCode: ''
 });
 
 // 租户开关
@@ -101,6 +124,17 @@ const tenantEnabled = ref(true);
 const equalToPassword = (rule: any, value: string, callback: any) => {
   if (registerForm.value.password !== value) {
     callback(new Error(t('register.rule.confirmPassword.equalToPassword')));
+  } else {
+    callback();
+  }
+};
+
+const validateEmail = (rule: any, value: string, callback: any) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!value) {
+    callback(new Error(t('register.rule.email.required')));
+  } else if (!emailRegex.test(value)) {
+    callback(new Error(t('register.rule.email.invalid')));
   } else {
     callback();
   }
@@ -120,6 +154,11 @@ const registerRules: ElFormRules = {
   confirmPassword: [
     { required: true, trigger: 'blur', message: t('register.rule.confirmPassword.required') },
     { required: true, validator: equalToPassword, trigger: 'blur' }
+  ],
+  invitationCode: [{ required: true, trigger: 'blur', message: t('register.rule.invitationCode.required') }],
+  email: [
+    { required: true, trigger: 'blur', message: t('register.rule.email.required') },
+    { required: true, validator: validateEmail, trigger: 'blur' }
   ],
   code: [{ required: true, trigger: 'change', message: t('register.rule.code.required') }]
 };
@@ -203,7 +242,6 @@ onMounted(() => {
     line-height: 0;
     color: #7483a3;
   }
-
 }
 
 .register-form {

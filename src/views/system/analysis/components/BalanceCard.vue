@@ -1,5 +1,5 @@
 <template>
-  <el-card class="w-full" :shadow="false">
+  <el-card class="w-full card-balance" :shadow="false">
     <template #header>
       <div class="flex justify-between items-center">
         <span>{{ exchange }} - {{ coin }} 余额</span>
@@ -19,9 +19,16 @@
       <!--      <el-empty description="暂无数据" />-->
       <p>加载失败</p>
     </div>
-    <div v-if="fee">
-      <p style="margin: 0"><strong>合约开单手续费：</strong>{{ fee.linerMakerFeeRate == null ? '加载失败' : fee.linerMakerFeeRate * 100 }}%</p>
-      <p style="margin: 0"><strong>合约吃单手续费：</strong>{{ fee.linerTakerFeeRate == null ? '加载失败' : fee.linerTakerFeeRate * 100 }}%</p>
+    <div v-if="fee" class="fee-list">
+      <div>
+        <p style="margin: 0"><strong>合约开单手续费：</strong>{{ fee.linerMakerFeeRate == null ? '加载失败' : fee.linerMakerFeeRate * 100 }}%</p>
+        <p style="margin: 0"><strong>合约吃单手续费：</strong>{{ fee.linerTakerFeeRate == null ? '加载失败' : fee.linerTakerFeeRate * 100 }}%</p>
+      </div>
+      <div>
+        <p style="margin: 0"><strong>现货开单手续费：</strong>{{ fee.sportMakerFeeRate == null ? '加载失败' : fee.sportMakerFeeRate * 100 + '%' }}</p>
+        <p style="margin: 0"><strong>现货吃单手续费：</strong>{{ fee.sportTakerFeeRate == null ? '加载失败' : fee.sportTakerFeeRate * 100 + '%' }}</p>
+      </div>
+
       <!--      <p><strong>冻结余额：</strong>{{ balance.frozen }}</p>-->
     </div>
 
@@ -52,8 +59,12 @@ const balance = ref<AccountBalance | null>(null);
 const fee = ref<SymbolFee | null>(null);
 
 const flushed = async () => {
+  loading.value = true;
+  balance.value = null;
+  fee.value = null;
   await fetchBalance();
   await fetchFee();
+  loading.value = false;
 };
 const fetchBalance = async () => {
   if (!props.symbol || !props.exchange) return;
@@ -103,5 +114,14 @@ watch(() => [props.symbol, props.exchange], fetchBalance);
 <style scoped>
 .el-card {
   border-radius: 10px;
+}
+.fee-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-balance {
+  min-height: 100%;
 }
 </style>

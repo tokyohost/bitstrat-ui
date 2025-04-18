@@ -60,6 +60,8 @@ export interface ArbitrageQuery {
 }
 export interface ExchangeItemForm extends ExchangeItem {
   size?: number;
+  leverage?: number;
+  actualSize?: number;
 }
 export interface ArbitrageTaskForm {
   buy?: ExchangeItemForm;

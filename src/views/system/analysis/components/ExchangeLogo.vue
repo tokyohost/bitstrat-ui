@@ -1,6 +1,8 @@
 <template>
-  <img v-if="logoUrl" :src="logoUrl" :alt="exchange" class="exchange-logo" @error="onError" />
-  {{ exchange }}
+  <div>
+    <img v-if="logoUrl" :src="logoUrl" :alt="exchange" class="exchange-logo" @error="onError" />
+    {{ exchange }}
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -19,12 +21,16 @@ const props = defineProps<{
 const defaultLogo = logoMap['/src/assets/exchanges/default.png'];
 const logoUrl = ref(defaultLogo);
 
-const normalizedKey = computed(() =>
-  props.exchange
-    .trim()
-    .toLowerCase()
-    .replace(/[\s\.]/g, '')
-);
+const normalizedKey = computed(() => {
+  if (props.exchange) {
+    return props.exchange
+      .trim()
+      .toLowerCase()
+      .replace(/[\s\.]/g, '');
+  } else {
+    return '';
+  }
+});
 
 for (const path in logoMap) {
   const key = path.match(/\/([a-zA-Z0-9]+)\.png$/)?.[1];

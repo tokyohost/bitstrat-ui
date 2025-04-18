@@ -40,8 +40,10 @@ export default {
   register: {
     selectPlaceholder: 'Please select/enter a company name',
     username: 'Username',
+    email: 'Email',
     password: 'Password',
     confirmPassword: 'Confirm Password',
+    invitationCode: 'Invitation Code',
     register: 'Register',
     registering: 'Registering...',
     registerSuccess: 'Congratulations, your {username} account has been registered!',
@@ -66,6 +68,13 @@ export default {
       confirmPassword: {
         required: 'Please enter your password again',
         equalToPassword: 'The password entered twice is inconsistent'
+      },
+      invitationCode: {
+        required: 'Please enter the invitation code'
+      },
+      email: {
+        required: 'Please enter your email',
+        invalid: 'Please enter a valid email address'
       }
     }
   },
@@ -80,7 +89,22 @@ export default {
     selectTenant: 'Select Tenant',
     layoutSetting: 'Layout Setting',
     personalCenter: 'Personal Center',
+    apiSetting: 'API Setting',
     logout: 'Logout'
+  },
+  setting: {
+    api: {
+      未设置: 'Not Set',
+      已设置: 'Configured'
+    },
+    apiSettingForm: {
+      apiKey: 'API Key',
+      secret: 'API Secret',
+      passphrase: 'Passphrase',
+      title: 'Settings',
+      succ: 'Configuration successful',
+      checkFail: 'Validation failed, please check if API settings are correct'
+    }
   },
   //menu 国际化
   menu: {

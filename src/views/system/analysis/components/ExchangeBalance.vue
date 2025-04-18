@@ -10,8 +10,8 @@
   </div>
 
   <div v-else-if="exchange.toLowerCase() == 'okx'">
-    <p><strong>总余额：</strong>{{ balance.total }} {{ coin }}</p>
-    <p><strong>可交易：</strong>{{ balance.available }}</p>
+    <p><strong>总余额：</strong>{{ balance.cashBalance }} {{ coin }}</p>
+    <p><strong>可交易：</strong>{{ balance.balance }} {{ coin }}</p>
   </div>
   <div v-else>
     <el-empty :image-size="50" description="暂不支持的交易所类型" />

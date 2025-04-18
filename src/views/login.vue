@@ -12,8 +12,10 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" size="large" auto-complete="off" :placeholder="proxy.$t('login.username')">
-          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
+        <el-input v-model="loginForm.username" type="text" size="large" auto-complete="off" :placeholder="proxy.$t('login.email')">
+          <template #prefix
+            ><el-icon><Message /></el-icon
+          ></template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -118,7 +120,7 @@ const captchaEnabled = ref(true);
 const tenantEnabled = ref(true);
 
 // 注册开关
-const register = ref(false);
+const register = ref(true);
 const redirect = ref('/');
 const loginRef = ref<ElFormInstance>();
 // 租户列表

@@ -42,13 +42,13 @@
             </el-popover>
           </div>
         </el-tooltip>
-<!--        <el-tooltip content="Github" effect="dark" placement="bottom">-->
-<!--          <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />-->
-<!--        </el-tooltip>-->
+        <!--        <el-tooltip content="Github" effect="dark" placement="bottom">-->
+        <!--          <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />-->
+        <!--        </el-tooltip>-->
 
-<!--        <el-tooltip :content="proxy.$t('navbar.document')" effect="dark" placement="bottom">-->
-<!--          <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />-->
-<!--        </el-tooltip>-->
+        <!--        <el-tooltip :content="proxy.$t('navbar.document')" effect="dark" placement="bottom">-->
+        <!--          <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />-->
+        <!--        </el-tooltip>-->
 
         <el-tooltip :content="proxy.$t('navbar.full')" effect="dark" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
@@ -60,6 +60,9 @@
 
         <el-tooltip :content="proxy.$t('navbar.layoutSize')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
+        </el-tooltip>
+        <el-tooltip :content="proxy.$t('navbar.apiSetting')" effect="dark" placement="bottom">
+          <ApiSettingsPopup></ApiSettingsPopup>
         </el-tooltip>
       </template>
       <div class="avatar-container">
@@ -98,7 +101,8 @@ import { dynamicClear, dynamicTenant } from '@/api/system/tenant';
 import { TenantVO } from '@/api/types';
 import notice from './notice/index.vue';
 import router from '@/router';
-import {ElMessageBoxOptions} from "element-plus/es/components/message-box/src/message-box.type";
+import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
+import ApiSettingsPopup from '@/layout/components/ApiSetting/ApiSettingsPopup.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -289,7 +293,7 @@ watch(
           cursor: pointer;
           width: 40px;
           height: 40px;
-          border-radius: 10px;
+          border-radius: 20px;
           margin-top: 10px;
         }
 
