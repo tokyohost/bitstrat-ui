@@ -69,7 +69,7 @@ const configDialogVisible = ref(false);
 
 const loadApiSetting = async () => {
   const axiosResponse = await getApiSettingStatus();
-  console.log(axiosResponse);
+  // console.log(axiosResponse);
   if (axiosResponse.code == 200) {
     exchangeList.value = axiosResponse.data;
   }

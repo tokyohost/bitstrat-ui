@@ -21,19 +21,19 @@
     </div>
     <div v-if="fee" class="fee-list">
       <div>
-        <p style="margin: 0"><strong>合约开单手续费：</strong>{{ fee.linerMakerFeeRate == null ? '加载失败' : fee.linerMakerFeeRate * 100 }}%</p>
-        <p style="margin: 0"><strong>合约吃单手续费：</strong>{{ fee.linerTakerFeeRate == null ? '加载失败' : fee.linerTakerFeeRate * 100 }}%</p>
+        <p style="margin: 0"><strong>合约挂单手续费：</strong>{{ fee.linerMakerFeeRate == null ? '-' : fee.linerMakerFeeRate * 100 }}%</p>
+        <p style="margin: 0"><strong>合约吃单手续费：</strong>{{ fee.linerTakerFeeRate == null ? '-' : fee.linerTakerFeeRate * 100 }}%</p>
       </div>
       <div>
-        <p style="margin: 0"><strong>现货开单手续费：</strong>{{ fee.sportMakerFeeRate == null ? '加载失败' : fee.sportMakerFeeRate * 100 + '%' }}</p>
-        <p style="margin: 0"><strong>现货吃单手续费：</strong>{{ fee.sportTakerFeeRate == null ? '加载失败' : fee.sportTakerFeeRate * 100 + '%' }}</p>
+        <p style="margin: 0"><strong>现货挂单手续费：</strong>{{ fee.sportMakerFeeRate == null ? '-' : fee.sportMakerFeeRate * 100 + '%' }}</p>
+        <p style="margin: 0"><strong>现货吃单手续费：</strong>{{ fee.sportTakerFeeRate == null ? '-' : fee.sportTakerFeeRate * 100 + '%' }}</p>
       </div>
 
       <!--      <p><strong>冻结余额：</strong>{{ balance.frozen }}</p>-->
     </div>
 
     <div v-else-if="loading">
-      <el-skeleton rows="1" animated />
+      <el-skeleton :rows="1" animated />
     </div>
     <div v-else>
       <!--      <el-empty description="暂无数据" />-->
@@ -57,6 +57,9 @@ const props = defineProps<{
 const loading = ref(false);
 const balance = ref<AccountBalance | null>(null);
 const fee = ref<SymbolFee | null>(null);
+const emit = defineEmits<{
+  (e: 'changeFee', val: SymbolFee): void;
+}>()
 
 const flushed = async () => {
   loading.value = true;
@@ -93,6 +96,7 @@ const fetchFee = async () => {
       exchange: props.exchange
     } as QueryFeeBody);
     fee.value = data;
+    emit("changeFee",fee.value)
   } catch (err) {
     console.error('获取手续费失败', err);
     fee.value = null;

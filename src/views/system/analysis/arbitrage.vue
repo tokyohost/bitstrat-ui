@@ -34,7 +34,7 @@ const loadDataList = async () => {
   loading.value = true;
   try {
     const data = await getInterestArbitrageV2(queryParams.value.exchange);
-    console.log(data);
+    // console.log(data);
     if (data.code == 200) {
       datalist.value = data.data || [];
       initExchangeList();
@@ -58,7 +58,14 @@ const initExchangeList = () => {
       logo: item.sell.exchangeLogo
     }
   ]);
-  uniqueExchanges.value = Array.from(new Map(exchanges.map((item) => [item.name, item])).values());
+  // uniqueExchanges.value = Array.from(new Map(exchanges.map((item) => [item.name, item])).values());
+  const uniqueExchangesMap = new Map(
+    exchanges.map((item) => [item.name, item])
+  );
+  // 转为数组并按 name 排序
+  uniqueExchanges.value = Array.from(uniqueExchangesMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
   inited.value = true;
 };
 
@@ -79,7 +86,7 @@ const loadSymbolData = async () => {
 const loadExchange = async () => {
   // loading.value = true;
   const res = await getSupportExchange();
-  console.log(res);
+  // console.log(res);
   if (res.code == 200) {
     supportExchangeList.value = res.data;
   } else {

@@ -1,45 +1,88 @@
 <template>
-  <el-dialog v-model="visibleRef" :title="title" width="1200px" style="min-height: 700px" :close-on-click-modal="false" @close="$emit('close')">
+  <el-dialog v-model="visibleRef" :title="title" width="1200px" style="min-height: 700px" :close-on-click-modal="false"
+             @close="$emit('close')">
     <!-- 显示传入对象内容 -->
-    <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'">
+    <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'" :key="new Date()">
       <div class="ab-card">
         <el-card :shadow="'never'" style="flex: 1">
           <div class="form-item-algin">
             <div>
               <el-form-item :label="''">
-                <TradePairTag
-                  direction="long"
-                  :symbol="props.data.buy?.symbol"
-                  :exchange="props.data.buy?.exchangeName"
-                  :exchangeLogo="props.data.buy?.exchangeLogo"
-                />
+                <div class="tradePairHeader">
+                  <TradePairTag
+                    direction="long"
+                    :symbol="props.data.buy?.symbol"
+                    :exchange="props.data.buy?.exchangeName"
+                    :exchangeLogo="props.data.buy?.exchangeLogo"
+                  />
+                  <FundingRate :exchange="props.data.buy?.exchangeName" :symbol="props.data.symbol" :key="new Date()"
+                               @change="(f) =>{arbitrageForm.buy.fundingRate = f}"></FundingRate>
+                </div>
               </el-form-item>
               <el-form-item :label="''">
-                <BalanceCard coin="USDT" :symbol="props.data.symbol" :exchange="props.data.buy?.exchangeName"></BalanceCard>
+                <BalanceCard coin="USDT" :symbol="props.data.symbol"
+                             :exchange="props.data.buy?.exchangeName" @change-fee="(val)=>{buyFee = val}"></BalanceCard>
               </el-form-item>
             </div>
             <div class="info-block">
-              <el-form-item :label="'杠杆倍数'" prop="buy.leverage">
-                <el-input v-model.number="arbitrageForm.buy.leverage" min="1" max="200" step="1" placeholder="请输入杠杆倍数">
-                  <template #suffix>倍</template>
-                </el-input>
-              </el-form-item>
-              <el-form-item :label="'套利金额'" prop="buy.size">
-                <el-input
-                  v-model.number="arbitrageForm.buy.size"
-                  placeholder="Please input"
-                  :formatter="(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
-                />
-              </el-form-item>
-              <el-form-item :label="'持仓金额'" prop="buy.actualSize">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item :label="'杠杆倍数'" prop="buy.leverage">
+                    <el-input-number v-model.number="arbitrageForm.buy.leverage" :min="1"
+                                     :max="buyCoinInfoData.maxLeverage" step="1" placeholder="请输入杠杆倍数">
+                      <template #suffix>倍</template>
+                    </el-input-number>
+                    <span class="font-200 size--small m1" v-if="buyCoinInfoData.maxLeverage"> 最大{{buyCoinInfoData.maxLeverage}} 倍</span>
+                    <span class="font-200 size--small m1" v-else><el-skeleton :rows="1"  :count="1" animated /></span>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                  <el-form-item :label="'套利数量'" prop="buy.size">
+                    <el-input-number
+                      v-model.number="arbitrageForm.buy.size"
+                      placeholder="" :step="minStep" :max="maxSize"
+                      type="number"
+                      :style="{width:'100%'}"
+                      :min="minStep"
+                    >
+                      <template #suffix>{{ props.data.symbol }}</template>
+                    </el-input-number>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+
+
+              <el-form-item :label="'预计持仓金额'" prop="buy.actualSize">
                 <el-input
                   v-model="arbitrageForm.buy.actualSize"
                   placeholder="0"
                   disabled
-                  :formatter="(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
-                />
+                  :formatter="(value) => `$ ${value}`"
+                >
+                  <template #suffix>
+                    <AutoFetcherMarketPrice :exchange="props.data.buy?.exchangeName" :symbol="props.data.symbol"
+                                            v-model:value="buyPrice"
+                                            @change="(e)=>{sellPrice = e}"></AutoFetcherMarketPrice>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item :label="'预计收益'">
+                <el-input
+                  v-model="arbitrageForm.buy.fundingIncome"
+                  placeholder="0"
+                  readonly
+                  :formatter="(value) => `≈$ ${value}`"
+                  :input-style="{
+                      color: arbitrageForm.buy.fundingIncome > 0
+                        ? 'green'
+                        : arbitrageForm.buy.fundingIncome < 0
+                          ? 'red'
+                          : '#606266'
+                    }"
+                >
+                  <template #suffix>
+                  </template>
+                </el-input>
               </el-form-item>
             </div>
           </div>
@@ -48,44 +91,112 @@
           <div class="form-item-algin">
             <div>
               <el-form-item :label="''">
-                <TradePairTag
-                  direction="short"
-                  :symbol="props.data.sell?.symbol"
-                  :exchange="props.data.sell?.exchangeName"
-                  :exchangeLogo="props.data.sell?.exchangeLogo"
-                />
+                <div class="tradePairHeader">
+                  <TradePairTag
+                    direction="short"
+                    :symbol="props.data.sell?.symbol"
+                    :exchange="props.data.sell?.exchangeName"
+                    :exchangeLogo="props.data.sell?.exchangeLogo"
+                  />
+                  <FundingRate :exchange="props.data.sell?.exchangeName" :symbol="props.data.symbol" :key="new Date()"
+                               @change="(f) =>{arbitrageForm.sell.fundingRate = f}"></FundingRate>
+                </div>
+
               </el-form-item>
               <el-form-item :label="''">
-                <BalanceCard coin="USDT" :symbol="props.data.symbol" :exchange="props.data.sell?.exchangeName"></BalanceCard>
+                <BalanceCard coin="USDT" :symbol="props.data.symbol"
+                             :exchange="props.data.sell?.exchangeName" @change-fee="(val)=>{sellFee = val}"></BalanceCard>
               </el-form-item>
             </div>
 
             <div class="info-block">
-              <el-form-item :label="'杠杆倍数'" prop="sell.leverage">
-                <el-input v-model.number="arbitrageForm.sell.leverage" min="1" max="200" step="1" placeholder="请输入杠杆倍数">
-                  <template #suffix>倍</template>
-                </el-input>
-              </el-form-item>
-              <el-form-item :label="'套利金额'" prop="sell.size">
-                <el-input
-                  v-model.number="arbitrageForm.sell.size"
-                  placeholder=""
-                  :formatter="(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
-                />
-              </el-form-item>
-              <el-form-item :label="'持仓金额'" prop="sell.actualSize">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item :label="'杠杆倍数'" prop="sell.leverage">
+                    <el-input-number v-model.number="arbitrageForm.sell.leverage" :min="1"
+                                     :max="sellCoinInfoData.maxLeverage" :step="1" placeholder="请输入杠杆倍数">
+                      <template #suffix>倍</template>
+
+                    </el-input-number>
+                    <span class="font-200 size--small m1" v-if="sellCoinInfoData.maxLeverage"> 最大{{sellCoinInfoData.maxLeverage}} 倍</span>
+                    <span class="font-200 size--small m1" v-else><el-skeleton :rows="1"  :count="1" animated /></span>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                  <el-form-item :label="'套利数量'" prop="sell.size">
+                    <el-input-number
+                      v-model.number="arbitrageForm.sell.size"
+                      type="number"
+                      :style="{width:'100%'}"
+                      placeholder="" :step="minStep"
+                      :min="minStep"
+                    >
+                      <template #suffix>{{ props.data.symbol }}</template>
+                    </el-input-number>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+
+
+              <el-form-item :label="'预计持仓金额'" prop="sell.actualSize">
                 <el-input
                   v-model="arbitrageForm.sell.actualSize"
                   placeholder="0"
                   disabled
-                  :formatter="(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
-                />
+                  :formatter="(value) => `$ ${value}`">
+                  <template #suffix>
+                    <AutoFetcherMarketPrice :exchange="props.data.sell?.exchangeName" :symbol="props.data.symbol"
+                                            v-model:value="sellPrice"
+                                            @change="(e)=>{sellPrice = e}"></AutoFetcherMarketPrice>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item :label="'预计收益'">
+                <el-input
+                  v-model="arbitrageForm.sell.fundingIncome"
+                  placeholder="0"
+                  readonly
+                  :formatter="(value) => `≈$ ${value}`"
+                  :input-style="{
+                      color: arbitrageForm.sell.fundingIncome > 0
+                        ? 'green'
+                        : arbitrageForm.sell.fundingIncome < 0
+                          ? 'red'
+                          : '#606266'
+                    }"
+                >
+                  <template #suffix>
+                  </template>
+                </el-input>
               </el-form-item>
             </div>
           </div>
         </el-card>
+      </div>
+      <div class="ab-foot">
+        <el-card :shadow="'never'">
+          <el-row :gutter="5">
+            <el-col :span="12">
+              <el-form-item :label="'最终收益(手续费未计入)'">
+                <el-input v-model.number="finalPrice" readonly :formatter="(value) => `$ ${value}`">
+                  <template #prepend>
+<!--                      年化{{calcAnnualizedReturnSimple(arbitrageForm.sell.actualSize + arbitrageForm.buy.actualSize,finalPrice,props.data.buy.fundingIntervalHours)}}%-->
+                  </template>
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="'手续费(开仓)'">
+                <el-input v-model.number="finalFee" readonly :formatter="(value) => `$ ${value}`">
+                  <template #suffix>
+                    {{feeCalc}}
+                  </template>
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-card>
+
       </div>
     </el-form>
     <!-- 插槽：用于自定义内容 -->
@@ -101,10 +212,21 @@
 <script setup lang="ts">
 import { computed, ref, toRaw, watch } from 'vue';
 import TradePairTag from '@/views/system/analysis/components/TradePairTag.vue';
-import { ArbitrageTaskForm } from '@/api/system/analysis/types';
+import { ArbitrageTaskForm, CoinContractInformation } from '@/api/system/analysis/types';
 import BalanceCard from '@/views/system/analysis/components/BalanceCard.vue';
 import { ElForm, FormItemRule } from 'element-plus';
 import { Arrayable } from 'element-plus/es/utils';
+import FundingRate from '@/views/system/analysis/components/FundingRate.vue';
+import { querySymbolContractInfo, querySymbolMarketPrice } from '@/api/system/common/common';
+import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetcherMarketPrice.vue';
+import {
+  calcAnnualizedReturnSimple,
+  calculateFundingIncome,
+  formatToDecimal
+} from '@/api/system/analysis/fundingCalculator';
+import { SymbolFee } from '@/api/system/common/types';
+import { createTask } from '@/api/system/crossExchangeArbitrageTask';
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -136,20 +258,20 @@ const roles = reactive<ElFormRules>({
         trigger: 'blur'
       }
     ],
-    leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }],
-    actualSize: [
-      {
-        validator: (rule, value, callback) => {
-          console.log('value = ', value);
-          if (value !== arbitrageForm.sell.actualSize) {
-            callback(new Error('做多做空实际金额必须对等'));
-          } else {
-            callback();
-          }
-        },
-        trigger: 'blur'
-      }
-    ]
+    leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }]
+    // actualSize: [
+    //   {
+    //     validator: (rule, value, callback) => {
+    //       console.log('value = ', value);
+    //       if (value !== arbitrageForm.sell.actualSize) {
+    //         callback(new Error('做多做空实际金额必须对等'));
+    //       } else {
+    //         callback();
+    //       }
+    //     },
+    //     trigger: 'blur'
+    //   }
+    // ]
   },
   sell: {
     size: [
@@ -166,40 +288,98 @@ const roles = reactive<ElFormRules>({
         trigger: 'blur'
       }
     ],
-    leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }],
-    actualSize: [
-      {
-        validator: (rule, value, callback) => {
-          console.log('value = ', value);
-          if (value !== arbitrageForm.buy.actualSize) {
-            callback(new Error('做多做空实际金额必须对等'));
-          } else {
-            callback();
-          }
-        },
-        trigger: 'blur'
-      }
-    ]
+    leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }]
+    // actualSize: [
+    //   {
+    //     validator: (rule, value, callback) => {
+    //       console.log('value = ', value);
+    //       if (value !== arbitrageForm.buy.actualSize) {
+    //         callback(new Error('做多做空实际金额必须对等'));
+    //       } else {
+    //         callback();
+    //       }
+    //     },
+    //     trigger: 'blur'
+    //   }
+    // ]
   }
 });
 const arbitrageForm = reactive<ArbitrageTaskForm>({
   buy: {
     size: 0,
     leverage: 1,
-    actualSize: 0
+    actualSize: 0,
+    fundingIncome: 0,
+    fundingRate: 0,
+    symbol:props.data?.symbol,
+    exchangeName:props.data?.buy?.exchangeName,
   },
   sell: {
     size: 0,
     leverage: 1,
-    actualSize: 0
+    actualSize: 0,
+    fundingIncome: 0,
+    fundingRate: 0,
+    symbol:props.data?.symbol,
+    exchangeName:props.data?.sell?.exchangeName,
   }
 });
-// 封装一个自动同步 actualSize 的方法
+const sellCoinInfoData = ref<CoinContractInformation>({
+  maxLeverage: undefined
+});
+const buyCoinInfoData = ref<CoinContractInformation>({
+  maxLeverage: undefined
+});
+const minStep = ref<number>(0);
+const maxSize = ref<number>(0);
+const buyPrice = ref<number>(0);
+const sellPrice = ref<number>(0);
+const finalPrice = ref<number>(0);
+const finalFee = ref<number>(0);
+const buyFee = ref<SymbolFee>();
+const sellFee = ref<SymbolFee>();
+const feeCalc = ref<String>("");
+
+const load2SideCoinContract = async () => {
+  let sellCoinInfo = await querySymbolContractInfo(props.data.sell?.exchangeName, props.data.symbol);
+  let sellCoin = {};
+  if (sellCoinInfo.code == 200) {
+    sellCoinInfoData.value = sellCoinInfo.data;
+  }
+  let buyCoin = {};
+  let buyCoinInfo = await querySymbolContractInfo(props.data.buy?.exchangeName, props.data.symbol);
+  if (buyCoinInfo.code == 200) {
+    buyCoinInfoData.value = buyCoinInfo.data;
+  }
+  let sellMinStep = sellCoinInfoData.value.contractValue * sellCoinInfoData.value.ctMult;
+  let buyMinStep = buyCoinInfoData.value.contractValue * buyCoinInfoData.value.ctMult;
+  minStep.value = Math.max(sellMinStep, buyMinStep);
+  maxSize.value = Math.min(sellCoinInfoData.value.maxLmtSz, sellCoinInfoData.value.maxLmtSz);
+  console.log('minStep', minStep.value);
+  console.log('sellMinStep', sellMinStep);
+  console.log('buyMinStep', buyMinStep);
+  let buyPriceResult = await querySymbolMarketPrice(props.data.buy?.exchangeName, props.data.symbol);
+  let sellPriceResult = await querySymbolMarketPrice(props.data.sell?.exchangeName, props.data.symbol);
+  buyPrice.value = buyPriceResult.data;
+  sellPrice.value = sellPriceResult.data;
+
+};
+watch(() => props.data, (item) => {
+  load2SideCoinContract();
+});
+
 function setupActualSizeSync(side: 'buy' | 'sell') {
   watch(
-    () => [arbitrageForm[side].size, arbitrageForm[side].leverage],
-    ([size, leverage]) => {
-      arbitrageForm[side].actualSize = size * leverage;
+    () => [arbitrageForm[side].size, arbitrageForm[side].leverage, arbitrageForm[side].fundingRate, buyPrice.value, sellPrice.value,buyFee.value,sellFee.value],
+    ([size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue]) => {
+      // console.log(size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue);
+      arbitrageForm[side].actualSize = size * leverage * (side == 'buy' ? buyPrice : sellPrice);
+      arbitrageForm[side].fundingIncome = calculateFundingIncome(arbitrageForm[side].actualSize, fundingRate, side == 'buy' ? 'long' : 'short');
+      finalPrice.value = arbitrageForm.buy.fundingIncome + arbitrageForm.sell.fundingIncome
+
+      //手续费计算公式 = buy 开仓金额
+      finalFee.value = formatToDecimal((arbitrageForm.buy.actualSize * buyFeeValue?.linerMakerFeeRate) + (arbitrageForm.sell.actualSize * sellFeeValue?.linerMakerFeeRate),4)
+      feeCalc.value = `${formatToDecimal(arbitrageForm.buy.actualSize,4)} * ${formatToDecimal(buyFeeValue?.linerMakerFeeRate,4)} + ${formatToDecimal(arbitrageForm.sell.actualSize,4)} * ${formatToDecimal(sellFeeValue?.linerMakerFeeRate,4)}`
     },
     { immediate: true } // 初始化时就执行一次
   );
@@ -216,7 +396,7 @@ const visibleRef = ref(props.visible);
 watch(
   () => props.visible,
   (val) => {
-    console.log('watch visible', val);
+    // console.log('watch visible', val);
     visibleRef.value = val;
   }
 );
@@ -239,11 +419,24 @@ const handleConfirm = () => {
   emit('confirm', props.data);
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
-      console.log({ ...arbitrageForm });
+      const data = {
+        argitrageData:{... props.data },
+        from:{...arbitrageForm}
+      }
+      console.log(JSON.stringify(toRaw(data), null, 2));
+      let response = await createTask(data);
+      ElMessage.success("创建成功!")
+      proxy.$router.push({
+        path: '/arbitrage/crossExchangeArbitrageTask',
+        query: { id: null }
+      })
     }
   });
   // visibleRef.value = false;
 };
+onMounted(() => {
+
+});
 </script>
 
 <style scoped>
@@ -253,10 +446,12 @@ pre {
   border-radius: 6px;
   overflow: auto;
 }
+
 .ab-card {
   display: flex;
   gap: 16px;
 }
+
 .form-item-algin {
   display: flex;
   flex-direction: column;
@@ -264,7 +459,17 @@ pre {
   flex-wrap: nowrap;
   height: 100%;
 }
+
 >>> .el-card__body {
   height: 100%;
+}
+
+.tradePairHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.ab-foot{
+  margin-top: 5px;
 }
 </style>

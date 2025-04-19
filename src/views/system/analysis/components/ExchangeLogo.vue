@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="exchange-info">
     <img v-if="logoUrl" :src="logoUrl" :alt="exchange" class="exchange-logo" @error="onError" />
     {{ exchange }}
   </div>
@@ -53,5 +53,8 @@ function onError() {
   width: 20px;
   height: 20px;
   vertical-align: middle;
+}
+.exchange-info{
+  display: flex;
 }
 </style>

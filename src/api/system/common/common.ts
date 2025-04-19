@@ -3,6 +3,7 @@ import { AxiosPromise } from 'axios';
 import { TaskQuery, TaskVO } from '@/api/system/task/types';
 import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
 import { AccountBalance, DeviceInfo, ExchangeData, QueryBalanceBody, SetLeverageBody } from '@/api/system/common/types';
+import { CoinContractInformation, FundingRate } from '@/api/system/analysis/types';
 
 export const listTask = (query?: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
@@ -85,3 +86,47 @@ export const queryFeeByExSymbol = (data: QueryBalanceBody): AxiosPromise<Account
     data
   });
 };
+
+export const querySymbolFundingRate = (exchange:string,symbol:string): AxiosPromise<FundingRate> => {
+  return request({
+    url: '/common/querySymbolFundingRate',
+    method: 'get',
+    params:{
+      exchange,
+      symbol
+    }
+  });
+};
+
+/**
+ * 查指定交易所指定币种合约的详情
+ * @param exchange
+ * @param symbol
+ */
+export const querySymbolContractInfo = (exchange:string,symbol:string): AxiosPromise<CoinContractInformation> => {
+  return request({
+    url: '/common/querySymbolContractInfo',
+    method: 'get',
+    params:{
+      exchange,
+      symbol
+    }
+  });
+};
+
+/**
+ * 查指定交易所指定币种合约的详情
+ * @param exchange
+ * @param symbol
+ */
+export const querySymbolMarketPrice = (exchange:string,symbol:string): AxiosPromise<number> => {
+  return request({
+    url: '/common/querySymbolMarketPrice',
+    method: 'get',
+    params:{
+      exchange,
+      symbol
+    }
+  });
+};
+
