@@ -49,6 +49,13 @@ export const createTask = (data: any) => {
     data: data
   });
 };
+export const startTask = (data: any) => {
+  return request({
+    url: '/system/crossExchangeArbitrageTask/startTask',
+    method: 'post',
+    data: data
+  });
+};
 
 /**
  * 修改跨交易所套利任务

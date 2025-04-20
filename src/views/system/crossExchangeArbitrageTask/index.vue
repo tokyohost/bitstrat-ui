@@ -1,16 +1,26 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-
+      <div v-show="showSearch" class="mb-[10px]">
+        <el-card shadow="hover">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </div>
     </transition>
 
     <el-card shadow="never">
       <div class="strategy-list">
-        <StrategyCard
+        <StrategyCard @delete="getList"
           v-for="(item, index) in crossExchangeArbitrageTaskList"
           :key="index"
           :data="item"
         />
+        <el-empty description="暂无任务" v-if="crossExchangeArbitrageTaskList.length === 0" />
       </div>
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />

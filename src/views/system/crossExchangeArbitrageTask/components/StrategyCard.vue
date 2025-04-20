@@ -61,6 +61,7 @@
 
     <div class="footer">
       <el-button type="danger" @click="onStop" v-if="data.status == 1">停止</el-button>
+      <el-button type="danger" @click="onDelete" >删除</el-button>
       <el-button type="success" @click="start" v-if="data.status == 3">启动</el-button>
       <el-button type="info" @click="showLog" >查看日志</el-button>
     </div>
@@ -74,6 +75,7 @@ import FundingRate from '@/views/system/analysis/components/FundingRate.vue';
 import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetcherMarketPrice.vue';
 import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 import CoinTag from '@/views/system/analysis/components/CoinTag.vue';
+import { delCrossExchangeArbitrageTask, startTask } from '@/api/system/crossExchangeArbitrageTask';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { cross_exchange_task_status } = toRefs<any>(proxy?.useDict('cross_exchange_task_status'));
 const props = defineProps<{
@@ -86,12 +88,21 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: 'edit'): void
   (e: 'stop'): void
+  (e: 'delete'): void
   (e: 'start'): void
 }>()
 
 const onEdit = () => emits('edit')
+const onDelete = async () =>{
+  await delCrossExchangeArbitrageTask(props.data.id);
+  emits('delete')
+}
 const onStop = () => emits('stop')
-const start = () => emits('start')
+const start =async () =>{
+  let id = props.data.id;
+  let response = await startTask({ taskId: id});
+  ElMessage.success(response.msg);
+}
 const showLog = () => emits('start')
 </script>
 

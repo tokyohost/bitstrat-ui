@@ -11,17 +11,17 @@
                 <div class="tradePairHeader">
                   <TradePairTag
                     direction="long"
-                    :symbol="props.data.buy?.symbol"
-                    :exchange="props.data.buy?.exchangeName"
-                    :exchangeLogo="props.data.buy?.exchangeLogo"
+                    :symbol="localData.buy?.symbol"
+                    :exchange="localData.buy?.exchangeName"
+                    :exchangeLogo="localData.buy?.exchangeLogo"
                   />
-                  <FundingRate :exchange="props.data.buy?.exchangeName" :symbol="props.data.symbol" :key="new Date()"
+                  <FundingRate :exchange="localData.buy?.exchangeName" :symbol="localData.symbol" :key="new Date()"
                                @change="(f) =>{arbitrageForm.buy.fundingRate = f}"></FundingRate>
                 </div>
               </el-form-item>
               <el-form-item :label="''">
-                <BalanceCard coin="USDT" :symbol="props.data.symbol"
-                             :exchange="props.data.buy?.exchangeName" @change-fee="(val)=>{buyFee = val}"></BalanceCard>
+                <BalanceCard coin="USDT" :symbol="localData.symbol"
+                             :exchange="localData.buy?.exchangeName" @change-fee="(val)=>{buyFee = val}"></BalanceCard>
               </el-form-item>
             </div>
             <div class="info-block">
@@ -45,7 +45,7 @@
                       :style="{width:'100%'}"
                       :min="minStep"
                     >
-                      <template #suffix>{{ props.data.symbol }}</template>
+                      <template #suffix>{{ localData.symbol }}</template>
                     </el-input-number>
                   </el-form-item>
                 </el-col>
@@ -60,7 +60,7 @@
                   :formatter="(value) => `$ ${value}`"
                 >
                   <template #suffix>
-                    <AutoFetcherMarketPrice :exchange="props.data.buy?.exchangeName" :symbol="props.data.symbol"
+                    <AutoFetcherMarketPrice :exchange="localData.buy?.exchangeName" :symbol="localData.symbol"
                                             v-model:value="buyPrice"
                                             @change="(e)=>{sellPrice = e}"></AutoFetcherMarketPrice>
                   </template>
@@ -94,18 +94,18 @@
                 <div class="tradePairHeader">
                   <TradePairTag
                     direction="short"
-                    :symbol="props.data.sell?.symbol"
-                    :exchange="props.data.sell?.exchangeName"
-                    :exchangeLogo="props.data.sell?.exchangeLogo"
+                    :symbol="localData.sell?.symbol"
+                    :exchange="localData.sell?.exchangeName"
+                    :exchangeLogo="localData.sell?.exchangeLogo"
                   />
-                  <FundingRate :exchange="props.data.sell?.exchangeName" :symbol="props.data.symbol" :key="new Date()"
+                  <FundingRate :exchange="localData.sell?.exchangeName" :symbol="localData.symbol" :key="new Date()"
                                @change="(f) =>{arbitrageForm.sell.fundingRate = f}"></FundingRate>
                 </div>
 
               </el-form-item>
               <el-form-item :label="''">
-                <BalanceCard coin="USDT" :symbol="props.data.symbol"
-                             :exchange="props.data.sell?.exchangeName" @change-fee="(val)=>{sellFee = val}"></BalanceCard>
+                <BalanceCard coin="USDT" :symbol="localData.symbol"
+                             :exchange="localData.sell?.exchangeName" @change-fee="(val)=>{sellFee = val}"></BalanceCard>
               </el-form-item>
             </div>
 
@@ -131,7 +131,7 @@
                       placeholder="" :step="minStep"
                       :min="minStep"
                     >
-                      <template #suffix>{{ props.data.symbol }}</template>
+                      <template #suffix>{{ localData.symbol }}</template>
                     </el-input-number>
                   </el-form-item>
                 </el-col>
@@ -145,7 +145,7 @@
                   disabled
                   :formatter="(value) => `$ ${value}`">
                   <template #suffix>
-                    <AutoFetcherMarketPrice :exchange="props.data.sell?.exchangeName" :symbol="props.data.symbol"
+                    <AutoFetcherMarketPrice :exchange="localData.sell?.exchangeName" :symbol="localData.symbol"
                                             v-model:value="sellPrice"
                                             @change="(e)=>{sellPrice = e}"></AutoFetcherMarketPrice>
                   </template>
@@ -198,11 +198,44 @@
         </el-card>
 
       </div>
+      <div class="ab-foot">
+        <el-card :shadow="'never'">
+          <el-row :gutter="5">
+            <el-col :span="12">
+              <el-form-item :label="'分批入场'">
+                <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px">
+                  <el-option
+                    v-for="item in batchIncomeSelectOptions"
+                    :key="item.value"
+                    :label="item.name"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">
+              <el-form-item :label="'每批入场数量比例'">
+                <el-input-number
+                  v-model.number="arbitrageForm.batchPrice"
+                  type="number"
+                  :style="{width:'100%'}"
+                  placeholder="" :step="0.1"
+                  :min="0.1" :max="100"
+                >
+                  <template #suffix>共{{batchCount}}批</template>
+                </el-input-number>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-card>
+
+      </div>
     </el-form>
     <!-- 插槽：用于自定义内容 -->
     <slot :data="data"></slot>
 
     <template #footer>
+      <el-button @click="handleSwitch">交换</el-button>
       <el-button @click="handleCancel">取消</el-button>
       <el-button type="primary" @click="handleConfirm">确定</el-button>
     </template>
@@ -241,6 +274,9 @@ const props = defineProps({
     default: () => ({})
   }
 });
+
+// 创建本地副本（深克隆）
+const localData = reactive({ ...toRaw(props.data) })
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
 const roles = reactive<ElFormRules>({
   buy: {
@@ -322,7 +358,9 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     fundingRate: 0,
     symbol:props.data?.symbol,
     exchangeName:props.data?.sell?.exchangeName,
-  }
+  },
+  batchIncome:0,
+  batchPrice:25
 });
 const sellCoinInfoData = ref<CoinContractInformation>({
   maxLeverage: undefined
@@ -339,15 +377,27 @@ const finalFee = ref<number>(0);
 const buyFee = ref<SymbolFee>();
 const sellFee = ref<SymbolFee>();
 const feeCalc = ref<String>("");
-
+const batchIncomeSelectOptions = [{
+  name:"不分批建仓",
+  value:0
+},{
+  name:"分批建仓",
+  value:1
+},
+]
+const batchCount = computed(() => {
+  if (!arbitrageForm.batchPrice || arbitrageForm.batchPrice <= 0) return 0
+  return Math.floor(
+    100/ arbitrageForm.batchPrice)
+})
 const load2SideCoinContract = async () => {
-  let sellCoinInfo = await querySymbolContractInfo(props.data.sell?.exchangeName, props.data.symbol);
+  let sellCoinInfo = await querySymbolContractInfo(localData.sell?.exchangeName, localData.symbol);
   let sellCoin = {};
   if (sellCoinInfo.code == 200) {
     sellCoinInfoData.value = sellCoinInfo.data;
   }
   let buyCoin = {};
-  let buyCoinInfo = await querySymbolContractInfo(props.data.buy?.exchangeName, props.data.symbol);
+  let buyCoinInfo = await querySymbolContractInfo(localData.buy?.exchangeName, localData.symbol);
   if (buyCoinInfo.code == 200) {
     buyCoinInfoData.value = buyCoinInfo.data;
   }
@@ -358,15 +408,12 @@ const load2SideCoinContract = async () => {
   console.log('minStep', minStep.value);
   console.log('sellMinStep', sellMinStep);
   console.log('buyMinStep', buyMinStep);
-  let buyPriceResult = await querySymbolMarketPrice(props.data.buy?.exchangeName, props.data.symbol);
-  let sellPriceResult = await querySymbolMarketPrice(props.data.sell?.exchangeName, props.data.symbol);
+  let buyPriceResult = await querySymbolMarketPrice(localData.buy?.exchangeName, localData.symbol);
+  let sellPriceResult = await querySymbolMarketPrice(localData.sell?.exchangeName, localData.symbol);
   buyPrice.value = buyPriceResult.data;
   sellPrice.value = sellPriceResult.data;
 
 };
-watch(() => props.data, (item) => {
-  load2SideCoinContract();
-});
 
 function setupActualSizeSync(side: 'buy' | 'sell') {
   watch(
@@ -389,6 +436,12 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
 setupActualSizeSync('buy');
 setupActualSizeSync('sell');
 
+
+// 如果 props.data 可能会变，保持同步（可选）
+watch(() => props.data, (newData) => {
+  Object.assign(localData, toRaw(newData))
+  load2SideCoinContract();
+})
 const emit = defineEmits(['update:visible', 'close', 'confirm']);
 
 // 双向绑定 visible
@@ -415,12 +468,24 @@ const handleCancel = () => {
   visibleRef.value = false;
 };
 
+const handleSwitch = () =>{
+  //交换
+  swapBuySell()
+}
+// 对调函数
+function swapBuySell() {
+  const tmp = localData.buy
+  localData.buy = localData.sell
+  localData.sell = tmp
+}
+
+
 const handleConfirm = () => {
-  emit('confirm', props.data);
+  emit('confirm', localData);
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       const data = {
-        argitrageData:{... props.data },
+        argitrageData:{... localData },
         from:{...arbitrageForm}
       }
       console.log(JSON.stringify(toRaw(data), null, 2));

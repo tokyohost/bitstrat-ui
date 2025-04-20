@@ -72,6 +72,8 @@ export interface ExchangeItemForm extends ExchangeItem {
 export interface ArbitrageTaskForm {
   buy?: ExchangeItemForm;
   sell?: ExchangeItemForm;
+  batchIncome?: number; // 分批入场
+  batchPrice?: number;//每批数量
 }
 
 export interface ExchangeItem {
