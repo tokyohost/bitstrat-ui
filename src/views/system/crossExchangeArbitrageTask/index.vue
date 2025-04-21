@@ -226,7 +226,7 @@
       </template>
     </el-dialog>
 
-    <CrossExchangeOrder :data="taskRole?.argitrageData" :task-id="cdata?.id" :title="'创建订单'" :visible="showOrder"></CrossExchangeOrder>
+    <CrossExchangeOrder :data="taskRole?.argitrageData" :task-id="cdata?.id" :title="'创建订单'" v-model:visible="showOrder"></CrossExchangeOrder>
   </div>
 </template>
 
