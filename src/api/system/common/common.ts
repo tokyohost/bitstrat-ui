@@ -87,11 +87,11 @@ export const queryFeeByExSymbol = (data: QueryBalanceBody): AxiosPromise<Account
   });
 };
 
-export const querySymbolFundingRate = (exchange:string,symbol:string): AxiosPromise<FundingRate> => {
+export const querySymbolFundingRate = (exchange: string, symbol: string): AxiosPromise<FundingRate> => {
   return request({
     url: '/common/querySymbolFundingRate',
     method: 'get',
-    params:{
+    params: {
       exchange,
       symbol
     }
@@ -103,11 +103,11 @@ export const querySymbolFundingRate = (exchange:string,symbol:string): AxiosProm
  * @param exchange
  * @param symbol
  */
-export const querySymbolContractInfo = (exchange:string,symbol:string): AxiosPromise<CoinContractInformation> => {
+export const querySymbolContractInfo = (exchange: string, symbol: string): AxiosPromise<CoinContractInformation> => {
   return request({
     url: '/common/querySymbolContractInfo',
     method: 'get',
-    params:{
+    params: {
       exchange,
       symbol
     }
@@ -119,14 +119,13 @@ export const querySymbolContractInfo = (exchange:string,symbol:string): AxiosPro
  * @param exchange
  * @param symbol
  */
-export const querySymbolMarketPrice = (exchange:string,symbol:string): AxiosPromise<number> => {
+export const querySymbolMarketPrice = (exchange: string, symbol: string): AxiosPromise<number> => {
   return request({
     url: '/common/querySymbolMarketPrice',
     method: 'get',
-    params:{
+    params: {
       exchange,
       symbol
     }
   });
 };
-

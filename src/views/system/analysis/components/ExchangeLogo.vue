@@ -2,6 +2,7 @@
   <div class="exchange-info">
     <img v-if="logoUrl" :src="logoUrl" :alt="exchange" class="exchange-logo" @error="onError" />
     {{ exchange }}
+    <slot name="default"></slot>
   </div>
 </template>
 
@@ -54,7 +55,7 @@ function onError() {
   height: 20px;
   vertical-align: middle;
 }
-.exchange-info{
+.exchange-info {
   display: flex;
 }
 </style>

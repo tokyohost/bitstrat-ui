@@ -14,14 +14,120 @@
     </transition>
 
     <el-card shadow="never">
-      <div class="strategy-list">
-        <StrategyCard @delete="getList"
-          v-for="(item, index) in crossExchangeArbitrageTaskList"
-          :key="index"
-          :data="item"
-        />
-        <el-empty description="暂无任务" v-if="crossExchangeArbitrageTaskList.length === 0" />
-      </div>
+      <el-table v-loading="loading" :data="crossExchangeArbitrageTaskList" @selection-change="handleSelectionChange">
+        <el-table-column label="套利币对" align="center" prop="symbol" />
+        <el-table-column label="做多交易所/做空交易所" align="center" prop="longEx" width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              <ExchangeLogo :exchange="scope.row.longEx"></ExchangeLogo><el-divider direction="vertical" />
+              <ExchangeLogo :exchange="scope.row.shortEx"></ExchangeLogo>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="实时资金费率" align="center" prop="longEx" width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              <FundingRate :exchange="scope.row.longEx" :symbol="scope.row.symbol" :key="new Date()" :show-refresh="false"></FundingRate>
+              <el-divider direction="vertical" />
+              <FundingRate :exchange="scope.row.shortEx" :symbol="scope.row.symbol" :key="new Date()" :show-refresh="false"></FundingRate>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="计划做多/计划做空" align="center" prop="longSize" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="flex justify-center items-start">
+              <span class="flex-1 whitespace-normal break-words text-right">
+                {{ trimTrailingZeros(scope.row.longSize) ?? '-' }}
+              </span>
+              <el-divider direction="vertical" />
+              <span class="flex-1 whitespace-normal break-words text-left">
+                {{ trimTrailingZeros(scope.row.shortSize) ?? '-' }}
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="做多持仓/做空持仓" align="center" prop="longSymbolSize" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              {{ scope.row.longSymbolSize ?? '-' }}<el-divider direction="vertical" /> {{ scope.row.shortSymbolSize ?? '-' }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="做多成本价/做空成本价" align="center" prop="longAvgPrice" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              {{ scope.row.longAvgPrice ?? '-' }}<el-divider direction="vertical" /> {{ scope.row.shortAvgPrice ?? '-' }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="做多出场价/做空出场价" align="center" prop="longOutPrice" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              {{ scope.row.longOutPrice ?? '-' }}<el-divider direction="vertical" /> {{ scope.row.shortOutPrice ?? '-' }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="做多盈亏/做空盈亏" align="center" prop="longProfit" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center w-100px">
+              {{ roundTo(scope.row.longProfit, 4) ?? '-' }}<el-divider direction="vertical" /> {{ roundTo(scope.row.shortProfit, 4) ?? '-' }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="做多资金费/做空资金费" align="center" prop="longProfit" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center w-100px">
+              {{ scope.row.longFundingFee ?? '-' }}<el-divider direction="vertical" /> {{ scope.row.shortFundingFee ?? '-' }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="做多杠杆/做空杠杆" align="center" prop="longLeverage" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              {{ scope.row.longLeverage ?? '-' }}倍<el-divider direction="vertical" /> {{ scope.row.shortLeverage ?? '-' }}倍
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="多仓手续费/空仓手续费" align="center" prop="longInFee" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              {{ scope.row.longInFee ?? '-' }}<el-divider direction="vertical" /> {{ scope.row.shortInFee ?? '-' }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="总盈亏" align="center" prop="totalProfit" :formatter="defaultFormatter" min-width="100">
+          <template #default="scope">
+            {{ roundTo(scope.row.totalProfit, 6) ?? '-' }}
+          </template>
+        </el-table-column>
+
+        <el-table-column label="状态" align="center" prop="status" min-width="100">
+          <template #default="scope">
+            <dict-tag :options="cross_exchange_task_status" :value="scope.row.status" :i18n-profilx="'bybit.task.status'" />
+          </template>
+        </el-table-column>
+        <el-table-column label="仓位管理" align="center" prop="status" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              <el-button round type="success" @click="handleCreateOrder(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:edit']"
+                >加仓</el-button
+              >
+              <el-button round type="danger" @click="handleUpdate(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:edit']">平仓</el-button>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="300">
+          <template #default="scope">
+            <el-button round type="info" @click="handleUpdate(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:edit']">修改</el-button>
+            <el-button round type="warning" @click="handleUpdate(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:edit']">监控</el-button>
+
+            <el-button round type="danger" @click="handleDelete(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:remove']">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
@@ -53,11 +159,7 @@
           <el-input v-model="form.longProfit" placeholder="请输入做多盈亏 USDT" />
         </el-form-item>
         <el-form-item label="做多入场时间" prop="longInTime">
-          <el-date-picker clearable
-            v-model="form.longInTime"
-            type="datetime"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            placeholder="请选择做多入场时间">
+          <el-date-picker clearable v-model="form.longInTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择做多入场时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="做多杠杆倍数" prop="longLeverage">
@@ -91,11 +193,7 @@
           <el-input v-model="form.shortProfit" placeholder="请输入做空盈亏 USDT" />
         </el-form-item>
         <el-form-item label="做空入场时间" prop="shortInTime">
-          <el-date-picker clearable
-            v-model="form.shortInTime"
-            type="datetime"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            placeholder="请选择做空入场时间">
+          <el-date-picker clearable v-model="form.shortInTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择做空入场时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="做空杠杆倍数" prop="shortLeverage">
@@ -127,14 +225,32 @@
         </div>
       </template>
     </el-dialog>
+
+    <CrossExchangeOrder :data="taskRole?.argitrageData" :task-id="cdata?.id" :title="'创建订单'" :visible="showOrder"></CrossExchangeOrder>
   </div>
 </template>
 
 <script setup name="CrossExchangeArbitrageTask" lang="ts">
-import { listCrossExchangeArbitrageTask, getCrossExchangeArbitrageTask, delCrossExchangeArbitrageTask, addCrossExchangeArbitrageTask, updateCrossExchangeArbitrageTask } from '@/api/system/crossExchangeArbitrageTask';
-import { CrossExchangeArbitrageTaskVO, CrossExchangeArbitrageTaskQuery, CrossExchangeArbitrageTaskForm } from '@/api/system/crossExchangeArbitrageTask/types';
+import {
+  listCrossExchangeArbitrageTask,
+  getCrossExchangeArbitrageTask,
+  delCrossExchangeArbitrageTask,
+  addCrossExchangeArbitrageTask,
+  updateCrossExchangeArbitrageTask
+} from '@/api/system/crossExchangeArbitrageTask';
+import {
+  CrossExchangeArbitrageTaskVO,
+  CrossExchangeArbitrageTaskQuery,
+  CrossExchangeArbitrageTaskForm
+} from '@/api/system/crossExchangeArbitrageTask/types';
 import StrategyCard from '@/views/system/crossExchangeArbitrageTask/components/StrategyCard.vue';
-
+import { parseTime } from '../../../utils/ruoyi';
+import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
+import { defaultFormatter, roundTo, trimTrailingZeros } from '@/api/tool/utils';
+import FundingRate from '@/views/system/analysis/components/FundingRate.vue';
+import { CreateArbitrageTaskVo } from '@/views/system/crossExchangeArbitrageTask/components/type';
+import CrossExchangeOrder from '@/views/system/crossExchangeArbitrageTask/components/CrossExchangeOrder.vue';
+const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const crossExchangeArbitrageTaskList = ref<CrossExchangeArbitrageTaskVO[]>([]);
@@ -144,9 +260,13 @@ const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
 const single = ref(true);
 const multiple = ref(true);
+const showOrder = ref(false);
 const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
+const { cross_exchange_task_status } = toRefs<any>(proxy?.useDict('cross_exchange_task_status'));
+const cdata = ref<CrossExchangeArbitrageTaskVO>();
+const taskRole = ref<CreateArbitrageTaskVo>();
 const crossExchangeArbitrageTaskFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
@@ -182,18 +302,16 @@ const initFormData: CrossExchangeArbitrageTaskForm = {
   totalProfit: undefined,
   status: undefined,
   userId: undefined,
-  startTime: undefined,
-}
+  startTime: undefined
+};
 const data = reactive<PageData<CrossExchangeArbitrageTaskForm, CrossExchangeArbitrageTaskQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    params: {
-    }
+    params: {}
   },
-  rules: {
-  }
+  rules: {}
 });
 
 const { queryParams, form, rules } = toRefs(data);
@@ -205,55 +323,65 @@ const getList = async () => {
   crossExchangeArbitrageTaskList.value = res.rows;
   total.value = res.total;
   loading.value = false;
-}
+};
 
 /** 取消按钮 */
 const cancel = () => {
   reset();
   dialog.visible = false;
-}
+};
 
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
+  form.value = { ...initFormData };
   crossExchangeArbitrageTaskFormRef.value?.resetFields();
-}
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: CrossExchangeArbitrageTaskVO[]) => {
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-}
+};
 
 /** 新增按钮操作 */
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = "添加跨交易所套利任务";
-}
+  dialog.title = '添加跨交易所套利任务';
+};
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: CrossExchangeArbitrageTaskVO) => {
   reset();
-  const _id = row?.id || ids.value[0]
+  const _id = row?.id || ids.value[0];
   const res = await getCrossExchangeArbitrageTask(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = "修改跨交易所套利任务";
-}
+  dialog.title = '修改跨交易所套利任务';
+};
+/** 加仓操作 */
+const handleCreateOrder = async (row?: CrossExchangeArbitrageTaskVO) => {
+  reset();
+  const _id = row?.id || ids.value[0];
+  const res = await getCrossExchangeArbitrageTask(_id);
+  cdata.value = res.data;
+  // const taskRole = JSON.parse(cdata.value.role);
+  taskRole.value = JSON.parse(cdata.value.role);
+  showOrder.value = true;
+};
 
 /** 提交按钮 */
 const submitForm = () => {
@@ -261,36 +389,48 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateCrossExchangeArbitrageTask(form.value).finally(() =>  buttonLoading.value = false);
+        await updateCrossExchangeArbitrageTask(form.value).finally(() => (buttonLoading.value = false));
       } else {
-        await addCrossExchangeArbitrageTask(form.value).finally(() =>  buttonLoading.value = false);
+        await addCrossExchangeArbitrageTask(form.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess("操作成功");
+      proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();
     }
   });
-}
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: CrossExchangeArbitrageTaskVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除跨交易所套利任务编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认删除跨交易所套利任务"' + row.symbol + '"？').finally(() => (loading.value = false));
   await delCrossExchangeArbitrageTask(_ids);
-  proxy?.$modal.msgSuccess("删除成功");
+  proxy?.$modal.msgSuccess('删除成功');
   await getList();
-}
+};
 
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/crossExchangeArbitrageTask/export', {
-    ...queryParams.value
-  }, `crossExchangeArbitrageTask_${new Date().getTime()}.xlsx`)
-}
+  proxy?.download(
+    'system/crossExchangeArbitrageTask/export',
+    {
+      ...queryParams.value
+    },
+    `crossExchangeArbitrageTask_${new Date().getTime()}.xlsx`
+  );
+};
 
 onMounted(() => {
   getList();
 });
+watch(
+  () => route.query.refersh,
+  (newVal, oldVal) => {
+    if (newVal === 'true') {
+      getList();
+    }
+  }
+);
 </script>
 <style scoped>
 .strategy-list {

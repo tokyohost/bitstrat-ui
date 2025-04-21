@@ -1,6 +1,10 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { CrossExchangeArbitrageTaskVO, CrossExchangeArbitrageTaskForm, CrossExchangeArbitrageTaskQuery } from '@/api/system/crossExchangeArbitrageTask/types';
+import {
+  CrossExchangeArbitrageTaskVO,
+  CrossExchangeArbitrageTaskForm,
+  CrossExchangeArbitrageTaskQuery
+} from '@/api/system/crossExchangeArbitrageTask/types';
 
 /**
  * 查询跨交易所套利任务列表
@@ -52,6 +56,13 @@ export const createTask = (data: any) => {
 export const startTask = (data: any) => {
   return request({
     url: '/system/crossExchangeArbitrageTask/startTask',
+    method: 'post',
+    data: data
+  });
+};
+export const createOrder = (data: any) => {
+  return request({
+    url: '/system/crossExchangeArbitrageTask/createOrder',
     method: 'post',
     data: data
   });

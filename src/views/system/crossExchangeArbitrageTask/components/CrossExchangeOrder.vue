@@ -44,6 +44,7 @@
                 <el-col :span="12">
                   <el-form-item :label="'杠杆倍数'" prop="buy.leverage">
                     <el-input-number
+                      disabled
                       v-model.number="arbitrageForm.buy.leverage"
                       :min="1"
                       :max="buyCoinInfoData.maxLeverage"
@@ -57,7 +58,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                  <el-form-item :label="'套利数量'" prop="buy.size">
+                  <el-form-item :label="'下单数量'" prop="buy.size">
                     <el-input-number
                       v-model.number="arbitrageForm.buy.size"
                       placeholder=""
@@ -147,6 +148,7 @@
                 <el-col :span="12">
                   <el-form-item :label="'杠杆倍数'" prop="sell.leverage">
                     <el-input-number
+                      disabled
                       v-model.number="arbitrageForm.sell.leverage"
                       :min="1"
                       :max="sellCoinInfoData.maxLeverage"
@@ -160,7 +162,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                  <el-form-item :label="'套利数量'" prop="sell.size">
+                  <el-form-item :label="'下单数量'" prop="sell.size">
                     <el-input-number
                       v-model.number="arbitrageForm.sell.size"
                       type="number"
@@ -212,15 +214,6 @@
         <el-card :shadow="'never'">
           <el-row :gutter="5">
             <el-col :span="12">
-              <el-form-item :label="'最终收益(手续费未计入)'">
-                <el-input v-model.number="finalPrice" readonly :formatter="(value) => `$ ${value}`">
-                  <template #suffix>
-                    <!--                      年化{{calcAnnualizedReturnSimple(arbitrageForm.sell.actualSize + arbitrageForm.buy.actualSize,finalPrice,props.data.buy.fundingIntervalHours)}}%-->
-                  </template>
-                </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
               <el-form-item :label="'手续费(开仓)'">
                 <el-input v-model.number="finalFee" readonly :formatter="(value) => `$ ${value}`">
                   <template #suffix>
@@ -268,9 +261,9 @@
     <slot :data="data"></slot>
 
     <template #footer>
-      <el-button @click="handleSwitch">交换</el-button>
+      <!--      <el-button @click="handleSwitch">交换</el-button>-->
       <el-button @click="handleCancel">取消</el-button>
-      <el-button type="primary" @click="handleConfirm">确定</el-button>
+      <el-button type="primary" @click="handleConfirm">下单</el-button>
     </template>
   </el-dialog>
 </template>
@@ -287,7 +280,7 @@ import { querySymbolContractInfo, querySymbolMarketPrice } from '@/api/system/co
 import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetcherMarketPrice.vue';
 import { calcAnnualizedReturnSimple, calculateFundingIncome, formatToDecimal } from '@/api/system/analysis/fundingCalculator';
 import { SymbolFee } from '@/api/system/common/types';
-import { createTask } from '@/api/system/crossExchangeArbitrageTask';
+import { createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const props = defineProps({
   visible: {
@@ -296,6 +289,10 @@ const props = defineProps({
   },
   title: {
     type: String,
+    default: '详情'
+  },
+  taskId: {
+    type: [String, Number],
     default: '详情'
   },
   data: {
@@ -421,6 +418,7 @@ const batchCount = computed(() => {
   return Math.floor(100 / arbitrageForm.batchPrice);
 });
 const load2SideCoinContract = async () => {
+  console.log('load2SideCoinContract');
   const sellCoinInfo = await querySymbolContractInfo(localData.sell?.exchangeName, localData.symbol);
   const sellCoin = {};
   if (sellCoinInfo.code == 200) {
@@ -462,9 +460,11 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
       finalPrice.value = arbitrageForm.buy.fundingIncome + arbitrageForm.sell.fundingIncome;
 
       //手续费计算公式 = buy 开仓金额
-      finalFee.value = formatToDecimal(
-        arbitrageForm.buy.actualSize * buyFeeValue?.linerMakerFeeRate + arbitrageForm.sell.actualSize * sellFeeValue?.linerMakerFeeRate,
-        4
+      finalFee.value = Number(
+        formatToDecimal(
+          arbitrageForm.buy.actualSize * buyFeeValue?.linerMakerFeeRate + arbitrageForm.sell.actualSize * sellFeeValue?.linerMakerFeeRate,
+          4
+        )
       );
       feeCalc.value = `${formatToDecimal(arbitrageForm.buy.actualSize, 4)} * ${formatToDecimal(buyFeeValue?.linerMakerFeeRate, 4)} + ${formatToDecimal(arbitrageForm.sell.actualSize, 4)} * ${formatToDecimal(sellFeeValue?.linerMakerFeeRate, 4)}`;
     },
@@ -525,16 +525,18 @@ const handleConfirm = () => {
   emit('confirm', localData);
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
+      arbitrageForm.taskId = props.taskId;
       const data = {
         argitrageData: { ...localData },
         from: { ...arbitrageForm }
       };
       console.log(JSON.stringify(toRaw(data), null, 2));
-      const response = await createTask(data);
-      ElMessage.success('创建成功!');
+      const response = await createOrder(data);
+
+      ElMessage.success('下单成功!');
       proxy.$router.push({
         path: '/arbitrage/crossExchangeArbitrageTask',
-        query: { id: null }
+        query: { refersh: true }
       });
     }
   });

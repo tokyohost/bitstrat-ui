@@ -1,4 +1,3 @@
-
 export type PositionSide = 'long' | 'short';
 
 /**
@@ -8,23 +7,19 @@ export type PositionSide = 'long' | 'short';
  * @param side 持仓方向：'long' 表示做多，'short' 表示做空
  * @returns 收益为正，亏损为负，单位：USDT
  */
-export function calculateFundingIncome(
-  positionValue: number,
-  fundingRate: number,
-  side: PositionSide
-): number {
+export function calculateFundingIncome(positionValue: number, fundingRate: number, side: PositionSide): number {
   // 百分比输入自动转小数
-  const rate = Math.abs(fundingRate /100);
+  const rate = Math.abs(fundingRate / 100);
 
   // 多仓收益 = 持仓金额 × 资金费率
   // 空仓收益 = 持仓金额 × -资金费率
   if (fundingRate < 0) {
     //负数是空头给多头
     let income = 0;
-    if(side === 'long'){
+    if (side === 'long') {
       income = positionValue * rate;
     }
-    if(side === 'short'){
+    if (side === 'short') {
       income = positionValue * -rate;
     }
     return Number(income.toFixed(6));
@@ -32,16 +27,15 @@ export function calculateFundingIncome(
   if (fundingRate > 0) {
     //正数是多头给空头
     let income = 0;
-    if(side === 'long'){
+    if (side === 'long') {
       income = positionValue * -rate;
     }
-    if(side === 'short'){
+    if (side === 'short') {
       income = positionValue * rate;
     }
 
     return Number(income.toFixed(6));
   }
-
 }
 
 /**
@@ -66,7 +60,7 @@ export function formatToDecimal(value: number | string, decimalPlaces = 4): stri
  */
 export function calcAnnualizedReturnSimple(principal: number, interest: number, interval: number): number {
   if (principal <= 0 || interval <= 0) {
-    throw new Error("本金和间隔时间必须大于 0");
+    throw new Error('本金和间隔时间必须大于 0');
   }
 
   const periodsPerYear = (365 * 24) / interval;
@@ -74,4 +68,12 @@ export function calcAnnualizedReturnSimple(principal: number, interest: number, 
 
   const annualized = totalInterestPerYear / principal;
   return annualized;
+}
+
+export function formatColumn(label: string, prop: string) {
+  return {
+    label,
+    prop,
+    formatter: (_row: any, _col: any, val: any) => (val === null || val === undefined || val === '' ? '--' : val)
+  };
 }

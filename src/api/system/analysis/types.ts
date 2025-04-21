@@ -67,13 +67,13 @@ export interface ExchangeItemForm extends ExchangeItem {
    */
   fundingIncome?: number;
   fundingRate?: number;
-
 }
 export interface ArbitrageTaskForm {
   buy?: ExchangeItemForm;
   sell?: ExchangeItemForm;
   batchIncome?: number; // 分批入场
-  batchPrice?: number;//每批数量
+  batchPrice?: number; //每批数量
+  taskId?: string | number;
 }
 
 export interface ExchangeItem {
@@ -111,7 +111,6 @@ export interface CoinContractInformation {
   /** 当前价格 */
   price?: number;
 }
-
 
 export interface SportFundingRateItem {
   quoteCurrency: string;

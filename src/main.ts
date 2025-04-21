@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 // global css
 import 'virtual:uno.css';
 import '@/assets/styles/index.scss';
+import './assets/tailwind.css'; //引入tailwindcss
 import 'element-plus/theme-chalk/dark/css-vars.css';
 
 // App、router、store

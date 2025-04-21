@@ -59,13 +59,9 @@ const initExchangeList = () => {
     }
   ]);
   // uniqueExchanges.value = Array.from(new Map(exchanges.map((item) => [item.name, item])).values());
-  const uniqueExchangesMap = new Map(
-    exchanges.map((item) => [item.name, item])
-  );
+  const uniqueExchangesMap = new Map(exchanges.map((item) => [item.name, item]));
   // 转为数组并按 name 排序
-  uniqueExchanges.value = Array.from(uniqueExchangesMap.values()).sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+  uniqueExchanges.value = Array.from(uniqueExchangesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
   inited.value = true;
 };
 
@@ -230,7 +226,7 @@ onMounted(() => {
         />
       </div>
     </el-card>
-    <CrossExchangeArgitrage v-model:visible="arbitragePage" :data="arbitrageData" :title="'创建套利任务'"></CrossExchangeArgitrage>
+    <CrossExchangeArgitrage v-model:visible="arbitragePage" :data="arbitrageData" :title="'套利下单'"></CrossExchangeArgitrage>
   </div>
 </template>
 

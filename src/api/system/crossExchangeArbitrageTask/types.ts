@@ -139,9 +139,10 @@ export interface CrossExchangeArbitrageTaskVO {
    */
   startTime: number;
 
-  createTime:string
-  symbol?:string
+  createTime: string;
+  symbol?: string;
 
+  role?: string;
 }
 
 export interface CrossExchangeArbitrageTaskForm extends BaseEntity {
@@ -284,16 +285,11 @@ export interface CrossExchangeArbitrageTaskForm extends BaseEntity {
    * 任务开始时间戳
    */
   startTime?: number;
-
 }
 
 export interface CrossExchangeArbitrageTaskQuery extends PageQuery {
-
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
-
-
-
