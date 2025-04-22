@@ -67,6 +67,7 @@ export interface ExchangeItemForm extends ExchangeItem {
    */
   fundingIncome?: number;
   fundingRate?: number;
+  orderType?: string | number; // 下单方式 limit / market
 }
 export interface ArbitrageTaskForm {
   buy?: ExchangeItemForm;

@@ -77,3 +77,8 @@ export interface SymbolFee {
   // 现货挂单手续费
   sportMakerFeeRate: number;
 }
+
+export interface OrderResult {
+  success?: boolean;
+  logs?: string[];
+}

@@ -292,4 +292,6 @@ export interface CrossExchangeArbitrageTaskQuery extends PageQuery {
    * 日期范围参数
    */
   params?: any;
+
+  status?: string | number;
 }

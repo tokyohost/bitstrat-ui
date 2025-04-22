@@ -50,6 +50,17 @@ export const updateOrder = (data: OrderForm) => {
     data: data
   });
 };
+/**
+ * 修改订单
+ * @param data
+ */
+export const updatePrice = (data: OrderForm) => {
+  return request({
+    url: '/system/order/updatePrice',
+    method: 'post',
+    data: data
+  });
+};
 
 /**
  * 删除订单列表

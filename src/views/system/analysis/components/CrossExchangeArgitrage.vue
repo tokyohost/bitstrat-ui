@@ -167,6 +167,7 @@
                       :style="{ width: '100%' }"
                       placeholder=""
                       :step="minStep"
+                      :max="maxSize"
                       :min="minStep"
                     >
                       <template #suffix>{{ localData.symbol }}</template>
@@ -282,6 +283,7 @@ import { ArbitrageTaskForm, CoinContractInformation } from '@/api/system/analysi
 import BalanceCard from '@/views/system/analysis/components/BalanceCard.vue';
 import { ElForm, FormItemRule } from 'element-plus';
 import { Arrayable } from 'element-plus/es/utils';
+import { orderTypeSelectOptions } from '@/constants/order-options';
 import FundingRate from '@/views/system/analysis/components/FundingRate.vue';
 import { querySymbolContractInfo, querySymbolMarketPrice } from '@/api/system/common/common';
 import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetcherMarketPrice.vue';

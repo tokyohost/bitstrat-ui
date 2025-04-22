@@ -31,6 +31,16 @@ export const getCrossExchangeArbitrageTask = (id: string | number): AxiosPromise
   });
 };
 
+export const syncTask = (id: string | number): AxiosPromise<any> => {
+  return request({
+    url: '/system/crossExchangeArbitrageTask/syncTask',
+    method: 'get',
+    params: {
+      taskId: id
+    }
+  });
+};
+
 /**
  * 新增跨交易所套利任务
  * @param data
@@ -63,6 +73,13 @@ export const startTask = (data: any) => {
 export const createOrder = (data: any) => {
   return request({
     url: '/system/crossExchangeArbitrageTask/createOrder',
+    method: 'post',
+    data: data
+  });
+};
+export const closePositionOrder = (data: any) => {
+  return request({
+    url: '/system/crossExchangeArbitrageTask/closePosition',
     method: 'post',
     data: data
   });

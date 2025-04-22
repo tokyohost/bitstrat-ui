@@ -4,6 +4,7 @@ import { TaskQuery, TaskVO } from '@/api/system/task/types';
 import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
 import { AccountBalance, DeviceInfo, ExchangeData, QueryBalanceBody, SetLeverageBody } from '@/api/system/common/types';
 import { CoinContractInformation, FundingRate } from '@/api/system/analysis/types';
+import { SymbolFundingRate } from '@/views/system/analysis/components/type';
 
 export const listTask = (query?: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
@@ -87,7 +88,7 @@ export const queryFeeByExSymbol = (data: QueryBalanceBody): AxiosPromise<Account
   });
 };
 
-export const querySymbolFundingRate = (exchange: string, symbol: string): AxiosPromise<FundingRate> => {
+export const querySymbolFundingRate = (exchange: string, symbol: string): AxiosPromise<SymbolFundingRate> => {
   return request({
     url: '/common/querySymbolFundingRate',
     method: 'get',

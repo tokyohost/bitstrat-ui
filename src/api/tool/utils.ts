@@ -1,3 +1,6 @@
+import { TaskVO } from '@/api/system/task/types';
+import { OrderVO } from '@/api/system/order/types';
+
 export function defaultFormatter(_row: any, _column: any, cellValue: any) {
   return cellValue === null || cellValue === undefined || cellValue === '' ? '-' : cellValue;
 }
@@ -8,6 +11,9 @@ export function defaultFormatter(_row: any, _column: any, cellValue: any) {
  * @returns 去除多余0后的字符串
  */
 export function trimTrailingZeros(input: number | string): string {
+  if (input == null || input === '' || input == undefined) {
+    return '-';
+  }
   // 统一转成字符串处理
   const str = String(input);
 
@@ -30,4 +36,15 @@ export function roundTo(value: number | string, decimals: number = 2): string {
 
   const factor = Math.pow(10, decimals);
   return (Math.round(num * factor) / factor).toFixed(decimals);
+}
+
+export function checkCanCancelOrder(row?: OrderVO) {
+  const bybitStatusList = ['Rejected', 'PartiallyFilledCanceled', 'Cancelled', 'Deactivated', 'Filled', 'Triggered'].map((s) => s.toLowerCase());
+  const okxStatusList = ['canceled', 'filled', 'mmp_canceled'].map((s) => s.toLowerCase());
+
+  const status = row.status;
+  //忽略大小写判断status 是否存在上面的状态列表里
+  if (!status) return false;
+
+  return bybitStatusList.includes(status) || okxStatusList.includes(status);
 }

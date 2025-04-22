@@ -41,33 +41,22 @@
                 </el-form-item>
               </div>
               <div class="info-block">
+                <el-form-item :label="'持仓数量'" prop="buy.actualSize">
+                  <el-input :model-value="props?.currData?.longSymbolSize" placeholder="0" disabled :formatter="(value) => `${value}`">
+                    <template #suffix>{{ localData.symbol }}</template>
+                  </el-input>
+                </el-form-item>
                 <el-row>
-                  <el-col :span="12">
-                    <el-form-item :label="'杠杆倍数'" prop="buy.leverage">
-                      <el-input-number
-                        disabled
-                        v-model.number="arbitrageForm.buy.leverage"
-                        :min="1"
-                        :max="buyCoinInfoData.maxLeverage"
-                        step="1"
-                        placeholder="请输入杠杆倍数"
-                      >
-                        <template #suffix>倍</template>
-                      </el-input-number>
-                      <span class="font-200 size--small m1" v-if="buyCoinInfoData.maxLeverage"> 最大{{ buyCoinInfoData.maxLeverage }} 倍</span>
-                      <span class="font-200 size--small m1" v-else><el-skeleton :rows="1" :count="1" animated /></span>
-                    </el-form-item>
-                  </el-col>
                   <el-col :span="24">
-                    <el-form-item :label="'下单数量'" prop="buy.size">
+                    <el-form-item :label="'平多数量'" prop="buy.size">
                       <el-input-number
                         v-model.number="arbitrageForm.buy.size"
                         placeholder=""
                         :step="minStep"
-                        :max="maxSize"
+                        :max="props?.currData?.longSymbolSize ?? 0"
                         type="number"
                         :style="{ width: '100%' }"
-                        :min="minStep"
+                        :min="0"
                       >
                         <template #suffix>{{ localData.symbol }}</template>
                       </el-input-number>
@@ -75,7 +64,7 @@
                   </el-col>
                 </el-row>
 
-                <el-form-item :label="'预计持仓金额'" prop="buy.actualSize">
+                <el-form-item :label="'预计卖出金额'" prop="buy.actualSize">
                   <el-input v-model="arbitrageForm.buy.actualSize" placeholder="0" disabled :formatter="(value) => `$ ${value}`">
                     <template #suffix>
                       <AutoFetcherMarketPrice
@@ -89,19 +78,6 @@
                         "
                       ></AutoFetcherMarketPrice>
                     </template>
-                  </el-input>
-                </el-form-item>
-                <el-form-item :label="'预计收益'">
-                  <el-input
-                    v-model="arbitrageForm.buy.fundingIncome"
-                    placeholder="0"
-                    readonly
-                    :formatter="(value) => `≈$ ${value}`"
-                    :input-style="{
-                      color: arbitrageForm.buy.fundingIncome > 0 ? 'green' : arbitrageForm.buy.fundingIncome < 0 ? 'red' : '#606266'
-                    }"
-                  >
-                    <template #suffix> </template>
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'下单方式'" prop="buy.orderType">
@@ -150,33 +126,22 @@
               </div>
 
               <div class="info-block">
+                <el-form-item :label="'持仓数量'" prop="buy.actualSize">
+                  <el-input :model-value="props?.currData?.shortSymbolSize" placeholder="0" disabled :formatter="(value) => `${value}`">
+                    <template #suffix>{{ localData.symbol }}</template>
+                  </el-input>
+                </el-form-item>
                 <el-row>
-                  <el-col :span="12">
-                    <el-form-item :label="'杠杆倍数'" prop="sell.leverage">
-                      <el-input-number
-                        disabled
-                        v-model.number="arbitrageForm.sell.leverage"
-                        :min="1"
-                        :max="sellCoinInfoData.maxLeverage"
-                        :step="1"
-                        placeholder="请输入杠杆倍数"
-                      >
-                        <template #suffix>倍</template>
-                      </el-input-number>
-                      <span class="font-200 size--small m1" v-if="sellCoinInfoData.maxLeverage"> 最大{{ sellCoinInfoData.maxLeverage }} 倍</span>
-                      <span class="font-200 size--small m1" v-else><el-skeleton :rows="1" :count="1" animated /></span>
-                    </el-form-item>
-                  </el-col>
                   <el-col :span="24">
-                    <el-form-item :label="'下单数量'" prop="sell.size">
+                    <el-form-item :label="'平空数量'" prop="sell.size">
                       <el-input-number
                         v-model.number="arbitrageForm.sell.size"
                         type="number"
                         :style="{ width: '100%' }"
                         placeholder=""
                         :step="minStep"
-                        :max="maxSize"
-                        :min="minStep"
+                        :max="props.currData?.shortSymbolSize ?? 0"
+                        :min="0"
                       >
                         <template #suffix>{{ localData.symbol }}</template>
                       </el-input-number>
@@ -184,7 +149,7 @@
                   </el-col>
                 </el-row>
 
-                <el-form-item :label="'预计持仓金额'" prop="sell.actualSize">
+                <el-form-item :label="'预计买入金额'" prop="sell.actualSize">
                   <el-input v-model="arbitrageForm.sell.actualSize" placeholder="0" disabled :formatter="(value) => `$ ${value}`">
                     <template #suffix>
                       <AutoFetcherMarketPrice
@@ -200,20 +165,7 @@
                     </template>
                   </el-input>
                 </el-form-item>
-                <el-form-item :label="'预计收益'">
-                  <el-input
-                    v-model="arbitrageForm.sell.fundingIncome"
-                    placeholder="0"
-                    readonly
-                    :formatter="(value) => `≈$ ${value}`"
-                    :input-style="{
-                      color: arbitrageForm.sell.fundingIncome > 0 ? 'green' : arbitrageForm.sell.fundingIncome < 0 ? 'red' : '#606266'
-                    }"
-                  >
-                    <template #suffix> </template>
-                  </el-input>
-                </el-form-item>
-                <el-form-item :label="'下单方式'" prop="buy.orderType">
+                <el-form-item :label="'下单方式'" prop="sell.orderType">
                   <el-select v-model="arbitrageForm.sell.orderType" placeholder="请选择下单方式">
                     <el-option v-for="item in orderTypeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
                   </el-select>
@@ -247,35 +199,32 @@
           </el-card>
         </div>
         <div class="ab-foot">
-          <!--        <el-card :shadow="'never'">-->
-          <!--          <el-row :gutter="5">-->
-          <!--            <el-col :span="12">-->
-          <!--              <el-form-item :label="'分批入场'">-->
-          <!--                <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px">-->
-          <!--                  <el-option-->
-          <!--                    v-for="item in batchIncomeSelectOptions"-->
-          <!--                    :key="item.value"-->
-          <!--                    :label="item.name"-->
-          <!--                    :value="item.value"-->
-          <!--                  />-->
-          <!--                </el-select>-->
-          <!--              </el-form-item>-->
-          <!--            </el-col>-->
-          <!--            <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">-->
-          <!--              <el-form-item :label="'每批入场数量比例'">-->
-          <!--                <el-input-number-->
-          <!--                  v-model.number="arbitrageForm.batchPrice"-->
-          <!--                  type="number"-->
-          <!--                  :style="{width:'100%'}"-->
-          <!--                  placeholder="" :step="0.1"-->
-          <!--                  :min="0.1" :max="100"-->
-          <!--                >-->
-          <!--                  <template #suffix>共{{batchCount}}批</template>-->
-          <!--                </el-input-number>-->
-          <!--              </el-form-item>-->
-          <!--            </el-col>-->
-          <!--          </el-row>-->
-          <!--        </el-card>-->
+          <el-card :shadow="'never'">
+            <el-row :gutter="5">
+              <el-col :span="12">
+                <el-form-item :label="'分批平仓'">
+                  <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px" disabled>
+                    <el-option v-for="item in batchIncomeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">
+                <el-form-item :label="'每批入场数量比例'">
+                  <el-input-number
+                    v-model.number="arbitrageForm.batchPrice"
+                    type="number"
+                    :style="{ width: '100%' }"
+                    placeholder=""
+                    :step="0.1"
+                    :min="0.1"
+                    :max="100"
+                  >
+                    <template #suffix>共{{ batchCount }}批</template>
+                  </el-input-number>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-card>
         </div>
       </el-form>
       <!-- 插槽：用于自定义内容 -->
@@ -284,7 +233,7 @@
       <template #footer>
         <!--      <el-button @click="handleSwitch">交换</el-button>-->
         <el-button @click="handleCancel">取消</el-button>
-        <el-button type="primary" @click="handleConfirm">下单</el-button>
+        <el-button type="primary" @click="handleConfirm">平 仓</el-button>
       </template>
     </el-dialog>
     <OrderResultDialog v-model.sync="showOrderResult" :success="orderResult?.success" :logs="orderResult?.logs"></OrderResultDialog>
@@ -297,34 +246,51 @@ import TradePairTag from '@/views/system/analysis/components/TradePairTag.vue';
 import { ArbitrageTaskForm, CoinContractInformation } from '@/api/system/analysis/types';
 import BalanceCard from '@/views/system/analysis/components/BalanceCard.vue';
 import { ElForm, FormItemRule } from 'element-plus';
+import { orderTypeSelectOptions } from '@/constants/order-options';
 import { Arrayable } from 'element-plus/es/utils';
 import FundingRate from '@/views/system/analysis/components/FundingRate.vue';
 import { querySymbolContractInfo, querySymbolMarketPrice } from '@/api/system/common/common';
 import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetcherMarketPrice.vue';
 import { calcAnnualizedReturnSimple, calculateFundingIncome, formatToDecimal } from '@/api/system/analysis/fundingCalculator';
 import { OrderResult, SymbolFee } from '@/api/system/common/types';
-import { createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask';
+import { closePositionOrder, createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask';
+import { CrossExchangeArbitrageTaskVO } from '@/api/system/crossExchangeArbitrageTask/types';
 import OrderResultDialog from '@/views/system/crossExchangeArbitrageTask/components/OrderResultDialog.vue';
-import { orderTypeSelectOptions } from '@/constants/order-options';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    required: true
-  },
-  title: {
-    type: String,
-    default: '详情'
-  },
-  taskId: {
-    type: [String, Number],
-    default: '详情'
-  },
-  data: {
-    type: Object,
-    default: () => ({})
-  }
+interface Props {
+  currData?: CrossExchangeArbitrageTaskVO | undefined;
+  title?: string | undefined;
+  taskId?: string | number | undefined;
+  data?: object | undefined;
+  visible?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+  currData: () => ({}) as CrossExchangeArbitrageTaskVO,
+  title: '',
+  taskId: '',
+  visible: false,
+  data: () => ({})
 });
+// const props = defineProps({
+//   currData: CrossExchangeArbitrageTaskVO,
+//   visible: {
+//     type: Boolean,
+//     required: true
+//   },
+//   title: {
+//     type: String,
+//     default: '详情'
+//   },
+//   taskId: {
+//     type: [String, Number],
+//     default: '详情'
+//   },
+//
+//   data: {
+//     type: Object,
+//     default: () => ({})
+//   }
+// });
 
 // 创建本地副本（深克隆）
 const localData = reactive({ ...toRaw(props.data) });
@@ -428,10 +394,10 @@ const sellPrice = ref<number>(0);
 const finalPrice = ref<number>(0);
 const finalFee = ref<number>(0);
 const finalFeeMarket = ref<number>(0);
+const orderResult = ref<OrderResult>();
+const showOrderResult = ref<boolean>(false);
 const buyFee = ref<SymbolFee>();
 const sellFee = ref<SymbolFee>();
-const orderResult = ref<OrderResult>({});
-const showOrderResult = ref<boolean>(false);
 const feeCalc = ref<string>('');
 const feeCalcMarket = ref<string>('');
 const batchIncomeSelectOptions = [
@@ -444,6 +410,7 @@ const batchIncomeSelectOptions = [
     value: 1
   }
 ];
+
 const batchCount = computed(() => {
   if (!arbitrageForm.batchPrice || arbitrageForm.batchPrice <= 0) return 0;
   return Math.floor(100 / arbitrageForm.batchPrice);
@@ -570,7 +537,7 @@ const handleConfirm = () => {
       };
       console.log(JSON.stringify(toRaw(data), null, 2));
       const globalLoading = ElLoading.service({ fullscreen: true });
-      const response = await createOrder(data);
+      const response = await closePositionOrder(data);
       visibleRef.value = false;
       const result = response.data;
       if (result?.success === true) {
