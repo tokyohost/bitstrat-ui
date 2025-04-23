@@ -96,7 +96,9 @@
         <el-table-column label="做多资金费/做空资金费" align="center" prop="longProfit" :formatter="defaultFormatter" min-width="200">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center w-100px">
-              {{ roundTo(scope.row.longFundingFee, 4) ?? '-' }}<el-divider direction="vertical" /> {{ roundTo(scope.row.shortFundingFee, 4) ?? '-' }}
+              <FundingFeeDisplay :value="scope.row.longFundingFee" :exchange-name="scope.row.longEx" :precision="4"> </FundingFeeDisplay
+              ><el-divider direction="vertical" />
+              <FundingFeeDisplay :value="scope.row.shortFundingFee" :exchange-name="scope.row.shortEx" :precision="4"></FundingFeeDisplay>
             </div>
           </template>
         </el-table-column>
@@ -143,11 +145,16 @@
           <template #default="scope">
             <!--            <el-button round type="info" @click="handleUpdate(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:edit']">修改</el-button>-->
             <el-button round type="warning" @click="handleMonitor(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:edit']">监控</el-button>
-            <el-button round type="success" @click="handleSyncTask(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:edit']"
+            <el-button
+              round
+              type="success"
+              @click="handleSyncTask(scope.row)"
+              v-if="scope.row.status != 30"
+              v-hasPermi="['system:crossExchangeArbitrageTask:edit']"
               >刷新</el-button
             >
 
-            <!--            <el-button round type="danger" @click="handleDelete(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:remove']">删除</el-button>-->
+            <el-button round type="danger" @click="handleDelete(scope.row)" v-hasPermi="['system:crossExchangeArbitrageTask:remove']">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -249,7 +256,13 @@
       </template>
     </el-dialog>
 
-    <CrossExchangeOrder :data="taskRole?.argitrageData" :task-id="cdata?.id" :title="'创建订单'" v-model:visible="showOrder"></CrossExchangeOrder>
+    <CrossExchangeOrder
+      :data="taskRole?.argitrageData"
+      :task="cdata"
+      :task-id="cdata?.id"
+      :title="'创建订单'"
+      v-model:visible="showOrder"
+    ></CrossExchangeOrder>
     <CrossExchangeSell
       :data="taskRole?.argitrageData"
       :curr-data="cdata"
@@ -283,6 +296,7 @@ import { CreateArbitrageTaskVo } from '@/views/system/crossExchangeArbitrageTask
 import CrossExchangeOrder from '@/views/system/crossExchangeArbitrageTask/components/CrossExchangeOrder.vue';
 import CrossExchangeSell from '@/views/system/crossExchangeArbitrageTask/components/CrossExchangeSell.vue';
 import { crossTaskOptions } from '@/constants/CrossTask-options';
+import FundingFeeDisplay from '@/views/system/crossExchangeArbitrageTask/components/FundingFeeDisplay.vue';
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 

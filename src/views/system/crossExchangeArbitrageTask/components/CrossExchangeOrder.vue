@@ -46,7 +46,7 @@
                     <el-form-item :label="'杠杆倍数'" prop="buy.leverage">
                       <el-input-number
                         disabled
-                        v-model.number="arbitrageForm.buy.leverage"
+                        :model-value="localTask?.longLeverage"
                         :min="1"
                         :max="buyCoinInfoData.maxLeverage"
                         step="1"
@@ -155,7 +155,7 @@
                     <el-form-item :label="'杠杆倍数'" prop="sell.leverage">
                       <el-input-number
                         disabled
-                        v-model.number="arbitrageForm.sell.leverage"
+                        :model-value="localTask?.shortLeverage"
                         :min="1"
                         :max="sellCoinInfoData.maxLeverage"
                         :step="1"
@@ -306,6 +306,7 @@ import { OrderResult, SymbolFee } from '@/api/system/common/types';
 import { createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask';
 import OrderResultDialog from '@/views/system/crossExchangeArbitrageTask/components/OrderResultDialog.vue';
 import { orderTypeSelectOptions } from '@/constants/order-options';
+import { CrossExchangeArbitrageTaskVO } from '@/api/system/crossExchangeArbitrageTask/types';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const props = defineProps({
   visible: {
@@ -320,6 +321,10 @@ const props = defineProps({
     type: [String, Number],
     default: '详情'
   },
+  task: {
+    type: Object,
+    default: () => ({})
+  },
   data: {
     type: Object,
     default: () => ({})
@@ -328,6 +333,7 @@ const props = defineProps({
 
 // 创建本地副本（深克隆）
 const localData = reactive({ ...toRaw(props.data) });
+const localTask = reactive({ ...toRaw(props.task) });
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
 const roles = reactive<ElFormRules>({
   buy: {
@@ -520,6 +526,13 @@ watch(
   (newData) => {
     Object.assign(localData, toRaw(newData));
     load2SideCoinContract();
+  }
+);
+watch(
+  () => props.task,
+  (newData) => {
+    Object.assign(localTask, toRaw(newData));
+    // load2SideCoinContract();
   }
 );
 const emit = defineEmits(['update:visible', 'close', 'confirm']);
