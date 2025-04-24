@@ -75,7 +75,7 @@
         <el-table-column label="做多成本价/做空成本价" align="center" prop="longAvgPrice" :formatter="defaultFormatter" min-width="200">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
-              {{ scope.row.longAvgPrice ?? '-' }}<el-divider direction="vertical" /> {{ scope.row.shortAvgPrice ?? '-' }}
+              {{ roundTo(scope.row.longAvgPrice, 4) ?? '-' }}<el-divider direction="vertical" /> {{ roundTo(scope.row.shortAvgPrice, 4) ?? '-' }}
             </div>
           </template>
         </el-table-column>
