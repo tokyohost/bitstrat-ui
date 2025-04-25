@@ -22,11 +22,11 @@
         </el-select>
 
         <search-menu ref="searchMenuRef" />
-        <el-tooltip content="搜索" effect="dark" placement="bottom">
-          <div class="right-menu-item hover-effect" @click="openSearchMenu">
-            <svg-icon class-name="search-icon" icon-class="search" />
-          </div>
-        </el-tooltip>
+        <!--        <el-tooltip content="搜索" effect="dark" placement="bottom">-->
+        <!--          <div class="right-menu-item hover-effect" @click="openSearchMenu">-->
+        <!--            <svg-icon class-name="search-icon" icon-class="search" />-->
+        <!--          </div>-->
+        <!--        </el-tooltip>-->
         <!-- 消息 -->
         <el-tooltip :content="proxy.$t('navbar.message')" effect="dark" placement="bottom">
           <div>
@@ -63,6 +63,9 @@
         </el-tooltip>
         <el-tooltip :content="proxy.$t('navbar.apiSetting')" effect="dark" placement="bottom">
           <ApiSettingsPopup></ApiSettingsPopup>
+        </el-tooltip>
+        <el-tooltip :content="proxy.$t('navbar.notifySetting')" effect="dark" placement="bottom">
+          <NotifySettingsPopup></NotifySettingsPopup>
         </el-tooltip>
       </template>
       <div class="avatar-container">
@@ -103,6 +106,7 @@ import notice from './notice/index.vue';
 import router from '@/router';
 import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
 import ApiSettingsPopup from '@/layout/components/ApiSetting/ApiSettingsPopup.vue';
+import NotifySettingsPopup from '@/layout/components/NotifySetting/NotifySettingsPopup.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();

@@ -91,7 +91,8 @@ export default {
     layoutSetting: '布局设置',
     personalCenter: '个人中心',
     apiSetting: 'API设置',
-    logout: '退出登录'
+    logout: '退出登录',
+    notifySetting: '通知配置'
   },
   setting: {
     api: {

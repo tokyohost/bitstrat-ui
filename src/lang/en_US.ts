@@ -91,7 +91,8 @@ export default {
     layoutSetting: 'Layout Setting',
     personalCenter: 'Personal Center',
     apiSetting: 'API Setting',
-    logout: 'Logout'
+    logout: 'Logout',
+    notifySetting: 'Notification Settings'
   },
   setting: {
     api: {

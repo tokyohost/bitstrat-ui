@@ -24,8 +24,8 @@
         <el-table-column label="做多交易所/做空交易所" align="center" prop="longEx" width="200">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
-              <ExchangeLogo :exchange="scope.row.longEx"></ExchangeLogo><el-divider direction="vertical" />
-              <ExchangeLogo :exchange="scope.row.shortEx"></ExchangeLogo>
+              <ExchangeLogo :exchange="scope.row.longEx" :key="new Date().getMilliseconds()"></ExchangeLogo><el-divider direction="vertical" />
+              <ExchangeLogo :exchange="scope.row.shortEx" :key="new Date().getMilliseconds()"></ExchangeLogo>
             </div>
           </template>
         </el-table-column>

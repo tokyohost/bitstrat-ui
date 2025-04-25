@@ -17,7 +17,7 @@ export const useSettingsStore = defineStore('setting', () => {
   });
   const title = ref<string>(defaultSettings.title);
   const theme = ref<string>(storageSetting.value.theme);
-  const sideTheme = ref<string>(storageSetting.value.sideTheme);
+  const sideTheme = ref<string>(defaultSettings.sideTheme);
   const showSettings = ref<boolean>(defaultSettings.showSettings);
   const topNav = ref<boolean>(storageSetting.value.topNav);
   const tagsView = ref<boolean>(storageSetting.value.tagsView);
