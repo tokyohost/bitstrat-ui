@@ -73,8 +73,19 @@ export interface ArbitrageTaskForm {
   buy?: ExchangeItemForm;
   sell?: ExchangeItemForm;
   batchIncome?: number; // 分批入场
-  batchPrice?: number; //每批数量
+  batchSize?: number; //每批数量
   taskId?: string | number;
+  side?: number; //操作类型，1-加仓，2-平仓'
+
+  /**
+   * 单腿下单，1-是 0-否
+   */
+  singleOrder?: number;
+
+  /**
+   *单腿下单方向 buy / sell
+   */
+ singleOrderSide?: string;
 }
 
 export interface ExchangeItem {

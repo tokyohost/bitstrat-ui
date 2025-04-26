@@ -247,35 +247,34 @@
           </el-card>
         </div>
         <div class="ab-foot">
-          <!--        <el-card :shadow="'never'">-->
-          <!--          <el-row :gutter="5">-->
-          <!--            <el-col :span="12">-->
-          <!--              <el-form-item :label="'分批入场'">-->
-          <!--                <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px">-->
-          <!--                  <el-option-->
-          <!--                    v-for="item in batchIncomeSelectOptions"-->
-          <!--                    :key="item.value"-->
-          <!--                    :label="item.name"-->
-          <!--                    :value="item.value"-->
-          <!--                  />-->
-          <!--                </el-select>-->
-          <!--              </el-form-item>-->
-          <!--            </el-col>-->
-          <!--            <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">-->
-          <!--              <el-form-item :label="'每批入场数量比例'">-->
-          <!--                <el-input-number-->
-          <!--                  v-model.number="arbitrageForm.batchPrice"-->
-          <!--                  type="number"-->
-          <!--                  :style="{width:'100%'}"-->
-          <!--                  placeholder="" :step="0.1"-->
-          <!--                  :min="0.1" :max="100"-->
-          <!--                >-->
-          <!--                  <template #suffix>共{{batchCount}}批</template>-->
-          <!--                </el-input-number>-->
-          <!--              </el-form-item>-->
-          <!--            </el-col>-->
-          <!--          </el-row>-->
-          <!--        </el-card>-->
+          <div class="ab-foot">
+            <el-card :shadow="'never'">
+              <el-row :gutter="5">
+                <el-col :span="12">
+                  <el-form-item :label="'分批下单'">
+                    <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px">
+                      <el-option v-for="item in batchIncomeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">
+                  <el-form-item :label="'每批入场数量比例(%)'" prop="batchSize">
+                    <el-input-number
+                      v-model.number="arbitrageForm.batchSize"
+                      type="number"
+                      :style="{ width: '100%' }"
+                      placeholder=""
+                      :step="0.1"
+                      :min="0.1"
+                      :max="100"
+                    >
+                      <template #suffix>共{{ batchCount }}批</template>
+                    </el-input-number>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-card>
+          </div>
         </div>
       </el-form>
       <!-- 插槽：用于自定义内容 -->
@@ -367,6 +366,27 @@ const roles = reactive<ElFormRules>({
     //   }
     // ]
   },
+  batchSize:[
+    { required: true, message: '请输入每次下单比例', trigger: 'blur' },
+    {
+    validator: (rule, value, callback) => {
+      console.log('value = ', value);
+      const buyBatchSize = arbitrageForm.buy.size * (value/100)
+      const sellBatchSize = arbitrageForm.sell.size * (value/100)
+
+      console.log('buyBatchSize = ', buyBatchSize);
+      console.log('sellBatchSize = ', sellBatchSize);
+      if (buyBatchSize < minStep.value) {
+        callback(new Error('买入金额不能低于最小下单限制'+minStep.value));
+      }else
+      if (sellBatchSize < minStep.value) {
+        callback(new Error('卖出金额不能低于最小下单限制'+minStep.value));
+      } else {
+        callback();
+      }
+    },
+    trigger: 'blur'
+  }],
   sell: {
     size: [
       { required: true, message: '请输入套利金额', trigger: 'blur' },
@@ -419,7 +439,8 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     exchangeName: props.data?.sell?.exchangeName
   },
   batchIncome: 0,
-  batchPrice: 25
+  batchSize: 50,
+  side: 1
 });
 const sellCoinInfoData = ref<CoinContractInformation>({
   maxLeverage: undefined
@@ -451,8 +472,8 @@ const batchIncomeSelectOptions = [
   }
 ];
 const batchCount = computed(() => {
-  if (!arbitrageForm.batchPrice || arbitrageForm.batchPrice <= 0) return 0;
-  return Math.floor(100 / arbitrageForm.batchPrice);
+  if (!arbitrageForm.batchSize || arbitrageForm.batchSize <= 0) return 0;
+  return Math.floor(100 / arbitrageForm.batchSize);
 });
 const load2SideCoinContract = async () => {
   console.log('load2SideCoinContract');
@@ -579,7 +600,9 @@ const handleConfirm = () => {
       arbitrageForm.taskId = props.taskId;
       const data = {
         argitrageData: { ...localData },
-        from: { ...arbitrageForm }
+        from: { ...arbitrageForm },
+        batchIncome:arbitrageForm.batchIncome,
+        batchSize: arbitrageForm.batchSize,
       };
       console.log(JSON.stringify(toRaw(data), null, 2));
       const globalLoading = ElLoading.service({ fullscreen: true });

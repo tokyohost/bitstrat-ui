@@ -64,9 +64,9 @@
         <el-tooltip :content="proxy.$t('navbar.apiSetting')" effect="dark" placement="bottom">
           <ApiSettingsPopup></ApiSettingsPopup>
         </el-tooltip>
-        <el-tooltip :content="proxy.$t('navbar.notifySetting')" effect="dark" placement="bottom">
-          <NotifySettingsPopup></NotifySettingsPopup>
-        </el-tooltip>
+<!--        <el-tooltip :content="proxy.$t('navbar.notifySetting')" effect="dark" placement="bottom">-->
+<!--          <NotifySettingsPopup></NotifySettingsPopup>-->
+<!--        </el-tooltip>-->
       </template>
       <div class="avatar-container">
         <el-dropdown class="right-menu-item hover-effect" trigger="click" @command="handleCommand">

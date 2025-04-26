@@ -3,11 +3,11 @@
     <div v-if="showCountDown">
       <el-popover placement="right" :width="180" trigger="click" :title="'下一次结算倒计时'">
         <template #reference>
-          <div class="funding-size hover:cursor-pointer">
-            <div v-if="loading">
-              <el-skeleton :rows="1" :count="1" animated />
-            </div>
-            <div :class="['text-base', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']" v-else>
+          <div class="funding-size hover:cursor-pointer" v-loading="loading">
+<!--            <div v-if="loading">-->
+<!--              <el-skeleton :rows="1" :count="1" animated />-->
+<!--            </div>-->
+            <div :class="['text-base', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']">
               {{ displayRate }}
             </div>
           </div>
@@ -19,11 +19,11 @@
         </template>
       </el-popover>
     </div>
-    <div class="funding-size" v-else>
-      <div v-if="loading">
-        <el-skeleton :rows="1" :count="1" animated />
-      </div>
-      <div :class="['text-base', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']" v-else>
+    <div class="funding-size" v-else v-loading="loading">
+<!--      <div v-if="loading">-->
+<!--        <el-skeleton :rows="1" :count="1" animated />-->
+<!--      </div>-->
+      <div :class="['text-base', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']">
         {{ displayRate }}
       </div>
     </div>
@@ -44,7 +44,7 @@ interface Props {
   showRefresh?: boolean;
   showCountDown?: boolean;
 }
-const rate = ref<number>(-99);
+const rate = ref<number>(0);
 const nextFundingTime = ref<number>(0);
 const rateData = ref<SymbolFundingRate>({});
 const loading = ref<boolean>(false);

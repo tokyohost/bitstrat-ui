@@ -2,7 +2,7 @@
   <div>
     <el-dialog v-model="visibleRef" :title="title" width="1200px" style="min-height: 700px" :close-on-click-modal="false" @close="$emit('close')">
       <!-- 显示传入对象内容 -->
-      <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'" :key="new Date()">
+      <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="buyEnable && sellEnable ? roles: (buyEnable? rolesLeft:rolesRight)" :label-position="'top'" :key="new Date()">
         <div class="ab-card">
           <el-card :shadow="'never'" style="flex: 1">
             <div class="form-item-algin">
@@ -50,6 +50,7 @@
                   <el-col :span="24">
                     <el-form-item :label="'平多数量'" prop="buy.size">
                       <el-input-number
+                        :disabled="!buyEnable"
                         v-model.number="arbitrageForm.buy.size"
                         placeholder=""
                         :step="minStep"
@@ -81,9 +82,12 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'下单方式'" prop="buy.orderType">
-                  <el-select v-model="arbitrageForm.buy.orderType" placeholder="请选择下单方式">
+                  <el-select v-model="arbitrageForm.buy.orderType" placeholder="请选择下单方式" :disabled="!buyEnable">
                     <el-option v-for="item in orderTypeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
                   </el-select>
+                </el-form-item>
+                <el-form-item :label="'启用做多'" :label-position="'left'">
+                  <el-switch v-model="buyEnable" />
                 </el-form-item>
               </div>
             </div>
@@ -134,7 +138,7 @@
                 <el-row>
                   <el-col :span="24">
                     <el-form-item :label="'平空数量'" prop="sell.size">
-                      <el-input-number
+                      <el-input-number :disabled="!sellEnable"
                         v-model.number="arbitrageForm.sell.size"
                         type="number"
                         :style="{ width: '100%' }"
@@ -166,9 +170,12 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'下单方式'" prop="sell.orderType">
-                  <el-select v-model="arbitrageForm.sell.orderType" placeholder="请选择下单方式">
+                  <el-select v-model="arbitrageForm.sell.orderType" placeholder="请选择下单方式" :disabled="!sellEnable">
                     <el-option v-for="item in orderTypeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
                   </el-select>
+                </el-form-item>
+                <el-form-item :label="'启用做空'" :label-position="'left'">
+                  <el-switch v-model="sellEnable" />
                 </el-form-item>
               </div>
             </div>
@@ -199,32 +206,34 @@
           </el-card>
         </div>
         <div class="ab-foot">
-          <el-card :shadow="'never'">
-            <el-row :gutter="5">
-              <el-col :span="12">
-                <el-form-item :label="'分批平仓'">
-                  <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px" disabled>
-                    <el-option v-for="item in batchIncomeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">
-                <el-form-item :label="'每批入场数量比例'">
-                  <el-input-number
-                    v-model.number="arbitrageForm.batchPrice"
-                    type="number"
-                    :style="{ width: '100%' }"
-                    placeholder=""
-                    :step="0.1"
-                    :min="0.1"
-                    :max="100"
-                  >
-                    <template #suffix>共{{ batchCount }}批</template>
-                  </el-input-number>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-card>
+          <div class="ab-foot">
+            <el-card :shadow="'never'">
+              <el-row :gutter="5">
+                <el-col :span="12">
+                  <el-form-item :label="'分批下单'">
+                    <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px">
+                      <el-option v-for="item in batchIncomeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">
+                  <el-form-item :label="'每批入场数量比例(%)'" prop="batchSize">
+                    <el-input-number
+                      v-model.number="arbitrageForm.batchSize"
+                      type="number"
+                      :style="{ width: '100%' }"
+                      placeholder=""
+                      :step="0.1"
+                      :min="0.1"
+                      :max="100"
+                    >
+                      <template #suffix>共{{ batchCount }}批</template>
+                    </el-input-number>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-card>
+          </div>
         </div>
       </el-form>
       <!-- 插槽：用于自定义内容 -->
@@ -256,6 +265,7 @@ import { OrderResult, SymbolFee } from '@/api/system/common/types';
 import { closePositionOrder, createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask';
 import { CrossExchangeArbitrageTaskVO } from '@/api/system/crossExchangeArbitrageTask/types';
 import OrderResultDialog from '@/views/system/crossExchangeArbitrageTask/components/OrderResultDialog.vue';
+import { b } from 'vitest/dist/chunks/suite.BJU7kdY9';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface Props {
   currData?: CrossExchangeArbitrageTaskVO | undefined;
@@ -342,6 +352,27 @@ const roles = reactive<ElFormRules>({
         trigger: 'blur'
       }
     ],
+    batchSize:[
+      { required: true, message: '请输入每次下单比例', trigger: 'blur' },
+      {
+        validator: (rule, value, callback) => {
+          console.log('value = ', value);
+          const buyBatchSize = arbitrageForm.buy.size * (value/100)
+          const sellBatchSize = arbitrageForm.sell.size * (value/100)
+
+          console.log('buyBatchSize = ', buyBatchSize);
+          console.log('sellBatchSize = ', sellBatchSize);
+          if (buyBatchSize < minStep.value) {
+            callback(new Error('买入金额不能低于最小下单限制'+minStep.value));
+          }else
+          if (sellBatchSize < minStep.value) {
+            callback(new Error('卖出金额不能低于最小下单限制'+minStep.value));
+          } else {
+            callback();
+          }
+        },
+        trigger: 'blur'
+      }],
     leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }],
     orderType: [{ required: true, message: '请选择下单方式', trigger: 'blur' }]
     // actualSize: [
@@ -359,6 +390,113 @@ const roles = reactive<ElFormRules>({
     // ]
   }
 });
+const rolesLeft = reactive<ElFormRules>({
+  buy: {
+    size: [
+      { required: true, message: '请输入套利金额', trigger: 'blur' },
+      {
+        validator: (rule, value, callback) => {
+          console.log('value = ', value);
+          if (value === 0) {
+            callback(new Error('金额不能为 0'));
+          } else {
+            callback();
+          }
+        },
+        trigger: 'blur'
+      }
+    ],
+    leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }],
+    orderType: [{ required: true, message: '请选择下单方式', trigger: 'blur' }]
+    // actualSize: [
+    //   {
+    //     validator: (rule, value, callback) => {
+    //       console.log('value = ', value);
+    //       if (value !== arbitrageForm.sell.actualSize) {
+    //         callback(new Error('做多做空实际金额必须对等'));
+    //       } else {
+    //         callback();
+    //       }
+    //     },
+    //     trigger: 'blur'
+    //   }
+    // ]
+  },
+});
+
+const rolesRight = reactive<ElFormRules>({
+  sell: {
+    size: [
+      { required: true, message: '请输入套利金额', trigger: 'blur' },
+      {
+        validator: (rule, value, callback) => {
+          console.log('value = ', value);
+          if (value === 0) {
+            callback(new Error('金额不能为 0'));
+          } else {
+            callback();
+          }
+        },
+        trigger: 'blur'
+      }
+    ],
+    batchSize:[
+      { required: true, message: '请输入每次下单比例', trigger: 'blur' },
+      {
+        validator: (rule, value, callback) => {
+          console.log('value = ', value);
+          const buyBatchSize = arbitrageForm.buy.size * (value/100)
+          const sellBatchSize = arbitrageForm.sell.size * (value/100)
+
+          console.log('buyBatchSize = ', buyBatchSize);
+          console.log('sellBatchSize = ', sellBatchSize);
+          if (buyBatchSize < minStep.value) {
+            callback(new Error('买入金额不能低于最小下单限制'+minStep.value));
+          }else
+          if (sellBatchSize < minStep.value) {
+            callback(new Error('卖出金额不能低于最小下单限制'+minStep.value));
+          } else {
+            callback();
+          }
+        },
+        trigger: 'blur'
+      }],
+    leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }],
+    orderType: [{ required: true, message: '请选择下单方式', trigger: 'blur' }]
+    // actualSize: [
+    //   {
+    //     validator: (rule, value, callback) => {
+    //       console.log('value = ', value);
+    //       if (value !== arbitrageForm.buy.actualSize) {
+    //         callback(new Error('做多做空实际金额必须对等'));
+    //       } else {
+    //         callback();
+    //       }
+    //     },
+    //     trigger: 'blur'
+    //   }
+    // ]
+  }
+});
+const buyEnable = ref<boolean>(true);
+const sellEnable = ref<boolean>(true);
+// 监听 buyEnable
+watch(buyEnable, (newVal) => {
+  if (!newVal && !sellEnable.value) {
+    // 如果 buy 关掉后，sell 也是关的，强制打开 sell
+    sellEnable.value = true;
+  }
+});
+
+// 监听 sellEnable
+watch(sellEnable, (newVal) => {
+  if (!newVal && !buyEnable.value) {
+    // 如果 sell 关掉后，buy 也是关的，强制打开 buy
+    buyEnable.value = true;
+  }
+});
+
+
 const arbitrageForm = reactive<ArbitrageTaskForm>({
   buy: {
     size: 0,
@@ -379,7 +517,9 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     exchangeName: props.data?.sell?.exchangeName
   },
   batchIncome: 0,
-  batchPrice: 25
+  batchSize: 50,
+  side: 2,
+
 });
 const sellCoinInfoData = ref<CoinContractInformation>({
   maxLeverage: undefined
@@ -412,8 +552,8 @@ const batchIncomeSelectOptions = [
 ];
 
 const batchCount = computed(() => {
-  if (!arbitrageForm.batchPrice || arbitrageForm.batchPrice <= 0) return 0;
-  return Math.floor(100 / arbitrageForm.batchPrice);
+  if (!arbitrageForm.batchSize || arbitrageForm.batchSize <= 0) return 0;
+  return Math.floor(100 / arbitrageForm.batchSize);
 });
 const load2SideCoinContract = async () => {
   console.log('load2SideCoinContract');
@@ -531,9 +671,16 @@ const handleConfirm = () => {
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       arbitrageForm.taskId = props.taskId;
+
+      arbitrageForm.singleOrder = buyEnable.value && sellEnable.value? 0:1;
+      arbitrageForm.singleOrderSide =  buyEnable.value ? "buy" : "sell";
       const data = {
         argitrageData: { ...localData },
-        from: { ...arbitrageForm }
+        from: { ...arbitrageForm },
+        batchIncome:arbitrageForm.batchIncome,
+        batchSize: arbitrageForm.batchSize,
+        singleOrder: arbitrageForm.singleOrder,
+        singleOrderSide: arbitrageForm.singleOrderSide,
       };
       console.log(JSON.stringify(toRaw(data), null, 2));
       const globalLoading = ElLoading.service({ fullscreen: true });
