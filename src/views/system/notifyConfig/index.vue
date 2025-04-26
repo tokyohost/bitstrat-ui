@@ -4,17 +4,11 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="钉钉 token" prop="dingToken">
-              <el-input v-model="queryParams.dingToken" placeholder="请输入钉钉 token" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="钉钉 secret" prop="dingSecret">
-              <el-input v-model="queryParams.dingSecret" placeholder="请输入钉钉 secret" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="tg chart id" prop="telegramChatId">
-              <el-input v-model="queryParams.telegramChatId" placeholder="请输入tg chart id" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="用户id" prop="userId">
-              <el-input v-model="queryParams.userId" placeholder="请输入用户id" clearable @keyup.enter="handleQuery" />
+            <el-form-item label="配置类型" prop="type">
+              <el-select v-model="queryParams.type" placeholder="请选择配置类型" clearable>
+                <el-option label="钉钉机器人通知" :value="1" />
+                <el-option label="TG通知" :value="2" />
+              </el-select>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -46,12 +40,14 @@
 
       <el-table v-loading="loading" :data="notifyConfigList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="id" align="center" prop="id" />
-        <el-table-column label="配置类型 1-钉钉机器人通知 2-TG通知" align="center" prop="type" />
-        <el-table-column label="钉钉 token" align="center" prop="dingToken" />
-        <el-table-column label="钉钉 secret" align="center" prop="dingSecret" />
-        <el-table-column label="tg chart id" align="center" prop="telegramChatId" />
-        <el-table-column label="用户id" align="center" prop="userId" />
+        <el-table-column label="配置类型" align="center" prop="type">
+          <template #default="scope">
+            {{ Number(scope.row.type) === 1 ? '钉钉机器人通知' : 'TG通知' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="钉钉 token" align="center" prop="dingToken" v-if="queryParams.type === 1" />
+        <el-table-column label="钉钉 secret" align="center" prop="dingSecret" v-if="queryParams.type === 1" />
+        <el-table-column label="tg chart id" align="center" prop="telegramChatId" v-if="queryParams.type === 2" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
@@ -68,21 +64,21 @@
     </el-card>
     <!-- 添加或修改用户通知设置对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="notifyConfigFormRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="id" prop="id">
-          <el-input v-model="form.id" placeholder="请输入id" />
+      <el-form ref="notifyConfigFormRef" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="配置类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择配置类型" @change="handleTypeChange">
+            <el-option label="钉钉机器人通知" :value="1" />
+            <el-option label="TG通知" :value="2" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="钉钉 token" prop="dingToken">
+        <el-form-item v-if="form.type === 1" label="钉钉 token" prop="dingToken">
           <el-input v-model="form.dingToken" placeholder="请输入钉钉 token" />
         </el-form-item>
-        <el-form-item label="钉钉 secret" prop="dingSecret">
+        <el-form-item v-if="form.type === 1" label="钉钉 secret" prop="dingSecret">
           <el-input v-model="form.dingSecret" placeholder="请输入钉钉 secret" />
         </el-form-item>
-        <el-form-item label="tg chart id" prop="telegramChatId">
+        <el-form-item v-if="form.type === 2" label="tg chart id" prop="telegramChatId">
           <el-input v-model="form.telegramChatId" placeholder="请输入tg chart id" />
-        </el-form-item>
-        <el-form-item label="用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户id" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -119,12 +115,10 @@ const dialog = reactive<DialogOption>({
 });
 
 const initFormData: NotifyConfigForm = {
-  id: undefined,
   type: undefined,
   dingToken: undefined,
   dingSecret: undefined,
   telegramChatId: undefined,
-  userId: undefined,
 }
 const data = reactive<PageData<NotifyConfigForm, NotifyConfigQuery>>({
   form: {...initFormData},
@@ -135,17 +129,18 @@ const data = reactive<PageData<NotifyConfigForm, NotifyConfigQuery>>({
     dingToken: undefined,
     dingSecret: undefined,
     telegramChatId: undefined,
-    userId: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {
     type: [
-      { required: true, message: "配置类型 1-钉钉机器人通知 2-TG通知不能为空", trigger: "change" }
+      { required: true, message: "配置类型不能为空", trigger: "change" }
     ],
     dingToken: [
       { required: true, message: "钉钉 token不能为空", trigger: "blur" }
     ],
+    telegramChatId: [
+      { required: true, message: "tg chart id不能为空", trigger: "blur" }
+    ]
   }
 });
 
@@ -204,6 +199,15 @@ const handleUpdate = async (row?: NotifyConfigVO) => {
   const _id = row?.id || ids.value[0]
   const res = await getNotifyConfig(_id);
   Object.assign(form.value, res.data);
+  // 将 type 转换为数字类型
+  form.value.type = Number(res.data.type);
+  // 根据配置类型动态设置对应的字段值
+  if (form.value.type === 1) {
+    form.value.dingToken = res.data.dingToken;
+    form.value.dingSecret = res.data.dingSecret;
+  } else if (form.value.type === 2) {
+    form.value.telegramChatId = res.data.telegramChatId;
+  }
   dialog.visible = true;
   dialog.title = "修改用户通知设置";
 }
@@ -228,7 +232,7 @@ const submitForm = () => {
 /** 删除按钮操作 */
 const handleDelete = async (row?: NotifyConfigVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除用户通知设置编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认删除选中的数据项？').finally(() => loading.value = false);
   await delNotifyConfig(_ids);
   proxy?.$modal.msgSuccess("删除成功");
   await getList();
@@ -239,6 +243,13 @@ const handleExport = () => {
   proxy?.download('system/notifyConfig/export', {
     ...queryParams.value
   }, `notifyConfig_${new Date().getTime()}.xlsx`)
+}
+
+/** 配置类型变化处理 */
+const handleTypeChange = (value: number) => {
+  form.value.dingToken = undefined;
+  form.value.dingSecret = undefined;
+  form.value.telegramChatId = undefined;
 }
 
 onMounted(() => {
