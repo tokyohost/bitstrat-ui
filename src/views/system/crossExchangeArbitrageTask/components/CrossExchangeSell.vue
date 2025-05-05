@@ -210,14 +210,14 @@
             <el-card :shadow="'never'">
               <el-row :gutter="5">
                 <el-col :span="12">
-                  <el-form-item :label="'分批下单'">
+                  <el-form-item :label="'分批平仓'">
                     <el-select v-model="arbitrageForm.batchIncome" placeholder="Select" style="width: 240px">
                       <el-option v-for="item in batchIncomeSelectOptions" :key="item.value" :label="item.name" :value="item.value" />
                     </el-select>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12" v-if="arbitrageForm.batchIncome == 1">
-                  <el-form-item :label="'每批入场数量比例(%)'" prop="batchSize">
+                  <el-form-item :label="'每批平仓数量比例(%)'" prop="batchSize">
                     <el-input-number
                       v-model.number="arbitrageForm.batchSize"
                       type="number"
@@ -542,11 +542,11 @@ const feeCalc = ref<string>('');
 const feeCalcMarket = ref<string>('');
 const batchIncomeSelectOptions = [
   {
-    name: '不分批建仓',
+    name: '不分批平仓',
     value: 0
   },
   {
-    name: '分批建仓',
+    name: '分批平仓',
     value: 1
   }
 ];
