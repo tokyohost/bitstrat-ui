@@ -463,11 +463,11 @@ const feeCalc = ref<string>('');
 const feeCalcMarket = ref<string>('');
 const batchIncomeSelectOptions = [
   {
-    name: '不分批建仓',
+    name: '不分批下单',
     value: 0
   },
   {
-    name: '分批建仓',
+    name: '分批下单',
     value: 1
   }
 ];
