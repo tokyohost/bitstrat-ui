@@ -5,7 +5,9 @@
         <el-col :span="12">
           <el-form-item label="警告阈值" prop="warningThreshold">
             <el-input-number v-model="form.warningThreshold" style="width: 100%"
-                             placeholder="请输入警告阈值（%）" :precision="4" :step="0.1" :max="10" />
+                             placeholder="请输入警告阈值（%）" :precision="4" :step="0.1" :max="10">
+              <template #suffix>%</template>
+            </el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
