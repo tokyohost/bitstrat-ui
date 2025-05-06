@@ -51,6 +51,17 @@ export const updateArbitrageWarningConfig = (data: ArbitrageWarningConfigForm) =
   });
 };
 
+
+/**
+ * 查询用户配置套利警告详细
+ */
+export const getByTaskId = (arbitrageType: string | number, taskId: string | number): AxiosPromise<ArbitrageWarningConfigVO> => {
+  return request({
+    url: '/system/arbitrageWarningConfig/getByTaskId/'+arbitrageType+'/'+taskId,
+    method: 'get'
+  });
+};
+
 /**
  * 删除用户配置套利警告
  * @param id

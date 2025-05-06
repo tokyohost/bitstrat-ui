@@ -273,10 +273,17 @@
       :title="'平仓下单'"
       v-model:visible="showSell"
     ></CrossExchangeSell>
+    <ArbitrageWarningDialog
+      ref="arbitrageWarningDialogRef"
+      v-model:visible="showMonitor"
+      :task-id="cdata?.id"
+      :arbitrage-type="0"
+    ></ArbitrageWarningDialog>
+<!--    <ArbitrageWarningDialog v-model:visible="showMonitor" @submit="handleSubmitWarning" />-->
   </div>
 </template>
 
-<script setup name="CrossExchangeArbitrageTask" lang="ts">
+<script setup lang="ts">
 import {
   listCrossExchangeArbitrageTask,
   getCrossExchangeArbitrageTask,
@@ -300,6 +307,8 @@ import CrossExchangeOrder from '@/views/system/crossExchangeArbitrageTask/compon
 import CrossExchangeSell from '@/views/system/crossExchangeArbitrageTask/components/CrossExchangeSell.vue';
 import { crossTaskOptions } from '@/constants/CrossTask-options';
 import FundingFeeDisplay from '@/views/system/crossExchangeArbitrageTask/components/FundingFeeDisplay.vue';
+import ArbitrageWarningDialog from '@/views/system/arbitrageWarningConfig/components/ArbitrageWarningDialog.vue';
+
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -319,6 +328,8 @@ const { cross_exchange_task_status } = toRefs<any>(proxy?.useDict('cross_exchang
 const cdata = ref<CrossExchangeArbitrageTaskVO>();
 const taskRole = ref<CreateArbitrageTaskVo>();
 const crossExchangeArbitrageTaskFormRef = ref<ElFormInstance>();
+const showMonitor = ref(false);
+const arbitrageWarningDialogRef = ref()
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -467,10 +478,12 @@ const submitForm = () => {
   });
 };
 
-/** 删除按钮操作 */
+/** 监控按钮操作 */
 const handleMonitor = async (row?: CrossExchangeArbitrageTaskVO) => {
-  ElMessage.info('正在开发中，敬请期待...');
+  showMonitor.value = true; // 打开窗口
+  arbitrageWarningDialogRef.value.fetchWarningConfig(1, row.id); // 调用 fetchWarningConfig 方法
 };
+
 const handleSyncTask = async (row?: CrossExchangeArbitrageTaskVO) => {
   // ElMessage.info('正在开发中，敬请期待...');
   const response = await syncTask(row.id);
@@ -512,6 +525,11 @@ onActivated(() => {
   getList();
   // 可以在这里重新请求数据或处理其他逻辑
 });
+
+const handleSubmitWarning = (form) => {
+  // 处理提交逻辑
+  console.log('Submitted form:', form);
+};
 </script>
 <style scoped>
 .strategy-list {
