@@ -119,9 +119,9 @@
 
         <el-table-column label="总盈亏/年化收益" align="center" prop="totalProfit" :formatter="defaultFormatter" min-width="200">
           <template #default="scope">
-<!--            {{ roundTo(scope.row.totalProfit, 6) ?? '-' }}-->
+            <!--            {{ roundTo(scope.row.totalProfit, 6) ?? '-' }}-->
             <div class="w-full mx-auto flex justify-center items-center">
-              {{ roundTo(scope.row.totalProfit, 6) ?? '-' }}<el-divider direction="vertical" /> {{ (roundTo(scope.row.apy,2) ?? '-' )+"%" }}
+              {{ roundTo(scope.row.totalProfit, 6) ?? '-' }}<el-divider direction="vertical" /> {{ (roundTo(scope.row.apy, 2) ?? '-') + '%' }}
             </div>
           </template>
         </el-table-column>
@@ -486,8 +486,10 @@ const handleMonitor = async (row?: CrossExchangeArbitrageTaskVO) => {
 
 const handleSyncTask = async (row?: CrossExchangeArbitrageTaskVO) => {
   // ElMessage.info('正在开发中，敬请期待...');
+  loading.value = true;
   const response = await syncTask(row.id);
   ElMessage.success('同步成功');
+  loading.value = false;
   await getList();
 };
 const handleDelete = async (row?: CrossExchangeArbitrageTaskVO) => {

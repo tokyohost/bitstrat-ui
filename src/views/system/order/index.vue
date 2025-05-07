@@ -99,6 +99,9 @@
         </el-table-column>
 
         <el-table-column label="手续费" align="center" prop="fee" min-width="120" />
+        <el-table-column label="批次" align="center" prop="batchCount">
+          <template #default="scope"> {{ scope.row.batchCount ?? '-' }}/{{ scope.row.batchTotal ?? '-' }} </template>
+        </el-table-column>
         <el-table-column label="下单时间" align="center" prop="createTime" min-width="220" />
 
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="200">

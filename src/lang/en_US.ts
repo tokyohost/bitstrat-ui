@@ -91,6 +91,7 @@ export default {
     layoutSetting: 'Layout Setting',
     personalCenter: 'Personal Center',
     apiSetting: 'API Setting',
+    socketStatus: 'WebSocket Connection Status',
     logout: 'Logout',
     notifySetting: 'Notification Settings'
   },

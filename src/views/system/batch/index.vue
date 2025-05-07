@@ -24,35 +24,36 @@
       </template>
 
       <el-table v-loading="loading" :data="batchList" @selection-change="handleSelectionChange">
-<!--        <el-table-column type="selection" width="55" align="center" />-->
+        <!--        <el-table-column type="selection" width="55" align="center" />-->
         <el-table-column label="币对" align="center" prop="symbol" />
-        <el-table-column label="卖出/买入" align="center" prop="buyEx" >
+        <el-table-column label="卖出/买入" align="center" prop="buyEx">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
-              {{ scope.row.sellEx ?? '-' }}<el-divider direction="vertical" />
+              {{ scope.row.sellEx ?? '-' }}
+              <el-divider direction="vertical" />
               {{ scope.row.buyEx ?? '-' }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="挂单类型" align="center" prop="sellOrderType" >
+        <el-table-column label="挂单类型" align="center" prop="sellOrderType">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
-              {{ scope.row.sellOrderType}}
+              {{ scope.row.sellOrderType }}
               <el-divider direction="vertical" />
-              {{ scope.row.buyOrderType}}
+              {{ scope.row.buyOrderType }}
             </div>
           </template>
         </el-table-column>
         <el-table-column label="杠杆倍数" align="center" prop="sellOrderType" min-width="130">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
-              {{ scope.row.sellLeverage}}
+              {{ scope.row.sellLeverage }}
               <el-divider direction="vertical" />
-              {{ scope.row.buyLeverage}}
+              {{ scope.row.buyLeverage }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="类型" align="center" prop="side" >
+        <el-table-column label="类型" align="center" prop="side">
           <template #default="scope">
             <dict-tag :options="batch_order_type" :value="scope.row.side" :i18n-profilx="'bybit.task.status'" />
           </template>
@@ -60,18 +61,18 @@
         <el-table-column label="买入总数量/已完成" align="center" prop="buyTotal" min-width="180">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
-            {{ trimTrailingZeros(roundTo(scope.row.buyTotal, 4)) ?? '-' }}
-            <el-divider direction="vertical" />
-            {{ trimTrailingZeros(roundTo(scope.row.doneBuySize, 4)) ?? '-' }}
+              {{ trimTrailingZeros(roundTo(scope.row.buyTotal, 4)) ?? '-' }}
+              <el-divider direction="vertical" />
+              {{ trimTrailingZeros(roundTo(scope.row.doneBuySize, 4)) ?? '-' }}
             </div>
           </template>
         </el-table-column>
         <el-table-column label="卖出总数量/已完成" align="center" prop="buyTotal" min-width="180">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
-            {{ trimTrailingZeros(roundTo(scope.row.sellTotal, 4)) ?? '-' }}
-            <el-divider direction="vertical" />
-            {{ trimTrailingZeros(roundTo(scope.row.doneSellSize, 4)) ?? '-' }}
+              {{ trimTrailingZeros(roundTo(scope.row.sellTotal, 4)) ?? '-' }}
+              <el-divider direction="vertical" />
+              {{ trimTrailingZeros(roundTo(scope.row.doneSellSize, 4)) ?? '-' }}
             </div>
           </template>
         </el-table-column>
@@ -85,24 +86,22 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="已完成数量" align="center" prop="doneSize" >
+        <el-table-column label="已完成数量" align="center" prop="doneSize">
           <template #default="scope">
             {{ trimTrailingZeros(roundTo(scope.row.doneSize, 4)) ?? '-' }}
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" align="center" prop="status" >
+        <el-table-column label="状态" align="center" prop="status">
           <template #default="scope">
             <dict-tag :options="batch_order_status" :value="scope.row.status" :i18n-profilx="'bybit.task.status'" />
           </template>
         </el-table-column>
 
-        <el-table-column label="异常信息" align="center" prop="msg" >
+        <el-table-column label="异常信息" align="center" prop="msg">
           <template #default="scope">
-            <ErrorMsgViewer :msg="scope.row.msg"  v-if="scope.row.status == 20"/>
-            <div v-else>
-              -
-            </div>
+            <ErrorMsgViewer :msg="scope.row.msg" v-if="scope.row.status == 20" />
+            <div v-else>-</div>
           </template>
         </el-table-column>
         <el-table-column label="开始时间/完成时间" align="center" prop="startTime" min-width="180">
@@ -117,14 +116,11 @@
 
         <el-table-column label="单笔比例" align="center" prop="batchSize" />
 
-
-
-
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
           <template #default="scope">
-<!--            <el-tooltip content="修改" placement="top">-->
-<!--              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:batch:edit']"></el-button>-->
-<!--            </el-tooltip>-->
+            <!--            <el-tooltip content="修改" placement="top">-->
+            <!--              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:batch:edit']"></el-button>-->
+            <!--            </el-tooltip>-->
             <el-tooltip content="停止" placement="top" v-if="scope.row.status == 10">
               <el-button link type="primary" icon="RemoveFilled" @click="handleStop(scope.row)" v-hasPermi="['system:batch:edit']"></el-button>
             </el-tooltip>
@@ -168,22 +164,14 @@
           <el-input v-model="form.doneSize" placeholder="请输入已完成数量" />
         </el-form-item>
         <el-form-item label="异常信息" prop="msg">
-            <el-input v-model="form.msg" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.msg" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="开始时间" prop="startTime">
-          <el-date-picker clearable
-            v-model="form.startTime"
-            type="datetime"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            placeholder="请选择开始时间">
+          <el-date-picker clearable v-model="form.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker clearable
-            v-model="form.endTime"
-            type="datetime"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            placeholder="请选择结束时间">
+          <el-date-picker clearable v-model="form.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="用户id" prop="userId">
@@ -272,9 +260,9 @@ const initFormData: BatchForm = {
   sellLeverage: undefined,
   buyLeverage: undefined,
   symbol: undefined
-}
+};
 const data = reactive<PageData<BatchForm, BatchQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -301,16 +289,11 @@ const data = reactive<PageData<BatchForm, BatchQuery>>({
     sellLeverage: undefined,
     buyLeverage: undefined,
     symbol: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {
-    id: [
-      { required: true, message: "id不能为空", trigger: "blur" }
-    ],
-    userId: [
-      { required: true, message: "用户id不能为空", trigger: "blur" }
-    ],
+    id: [{ required: true, message: 'id不能为空', trigger: 'blur' }],
+    userId: [{ required: true, message: '用户id不能为空', trigger: 'blur' }]
   }
 });
 
@@ -319,59 +302,61 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询分批订单任务列表 */
 const getList = async () => {
   loading.value = true;
+  queryParams.value.orderByColumn = 'create_time';
+  queryParams.value.isAsc = 'desc';
   const res = await listBatch(queryParams.value);
   batchList.value = res.rows;
   total.value = res.total;
   loading.value = false;
-}
+};
 
 /** 取消按钮 */
 const cancel = () => {
   reset();
   dialog.visible = false;
-}
+};
 
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
+  form.value = { ...initFormData };
   batchFormRef.value?.resetFields();
-}
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: BatchVO[]) => {
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-}
+};
 
 /** 新增按钮操作 */
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = "添加分批订单任务";
-}
+  dialog.title = '添加分批订单任务';
+};
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: BatchVO) => {
   reset();
-  const _id = row?.id || ids.value[0]
+  const _id = row?.id || ids.value[0];
   const res = await getBatch(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = "修改分批订单任务";
-}
+  dialog.title = '修改分批订单任务';
+};
 
 /** 提交按钮 */
 const submitForm = () => {
@@ -379,40 +364,44 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateBatch(form.value).finally(() =>  buttonLoading.value = false);
+        await updateBatch(form.value).finally(() => (buttonLoading.value = false));
       } else {
-        await addBatch(form.value).finally(() =>  buttonLoading.value = false);
+        await addBatch(form.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess("操作成功");
+      proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();
     }
   });
-}
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: BatchVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除分批订单任务编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认删除分批订单任务编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
   await delBatch(_ids);
-  proxy?.$modal.msgSuccess("删除成功");
+  proxy?.$modal.msgSuccess('删除成功');
   await getList();
-}
+};
 /** 删除按钮操作 */
 const handleStop = async (row?: BatchVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认停止任务？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认停止任务？').finally(() => (loading.value = false));
   await stopBatch(row.id);
-  proxy?.$modal.msgSuccess("删除成功");
+  proxy?.$modal.msgSuccess('删除成功');
   await getList();
-}
+};
 
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/batch/export', {
-    ...queryParams.value
-  }, `batch_${new Date().getTime()}.xlsx`)
-}
+  proxy?.download(
+    'system/batch/export',
+    {
+      ...queryParams.value
+    },
+    `batch_${new Date().getTime()}.xlsx`
+  );
+};
 
 onMounted(() => {
   getList();

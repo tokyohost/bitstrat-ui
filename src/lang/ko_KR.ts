@@ -89,6 +89,7 @@ export default {
     layoutSetting: '레이아웃 설정',
     personalCenter: '개인 센터',
     apiSetting: 'API 설정',
+    socketStatus: '웹소켓 연결 상태',
     logout: '로그아웃',
     notifySetting: '알림 설정'
   },

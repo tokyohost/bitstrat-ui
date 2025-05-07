@@ -16,3 +16,18 @@ export interface UpdateApiSettingVo {
   apiSecurity: string;
   passphrase: string;
 }
+/**
+ * @author xuehui_li
+ * @Version 1.0
+ * @date 2025/5/6 10:51
+ * @Content
+ */
+export interface WebsocketStatus {
+  exchange?: string;
+
+  wsType?: string;
+
+  status?: string;
+
+  dely?: number;
+}

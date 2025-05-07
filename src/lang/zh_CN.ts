@@ -91,6 +91,7 @@ export default {
     layoutSetting: '布局设置',
     personalCenter: '个人中心',
     apiSetting: 'API设置',
+    socketStatus: 'websocket 连接状态',
     logout: '退出登录',
     notifySetting: '通知配置'
   },

@@ -64,9 +64,12 @@
         <el-tooltip :content="proxy.$t('navbar.apiSetting')" effect="dark" placement="bottom">
           <ApiSettingsPopup></ApiSettingsPopup>
         </el-tooltip>
-<!--        <el-tooltip :content="proxy.$t('navbar.notifySetting')" effect="dark" placement="bottom">-->
-<!--          <NotifySettingsPopup></NotifySettingsPopup>-->
-<!--        </el-tooltip>-->
+        <el-tooltip :content="proxy.$t('navbar.socketStatus')" effect="dark" placement="bottom">
+          <SocketStatusPopup></SocketStatusPopup>
+        </el-tooltip>
+        <!--        <el-tooltip :content="proxy.$t('navbar.notifySetting')" effect="dark" placement="bottom">-->
+        <!--          <NotifySettingsPopup></NotifySettingsPopup>-->
+        <!--        </el-tooltip>-->
       </template>
       <div class="avatar-container">
         <el-dropdown class="right-menu-item hover-effect" trigger="click" @command="handleCommand">
@@ -107,6 +110,7 @@ import router from '@/router';
 import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
 import ApiSettingsPopup from '@/layout/components/ApiSetting/ApiSettingsPopup.vue';
 import NotifySettingsPopup from '@/layout/components/NotifySetting/NotifySettingsPopup.vue';
+import SocketStatusPopup from '@/layout/components/SocketStatus/SocketStatusPopup.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
