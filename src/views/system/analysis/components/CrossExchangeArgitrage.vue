@@ -436,7 +436,7 @@ const load2SideCoinContract = async () => {
   const sellMinStep = sellCoinInfoData.value.contractValue * sellCoinInfoData.value.ctMult;
   const buyMinStep = buyCoinInfoData.value.contractValue * buyCoinInfoData.value.ctMult;
   minStep.value = Math.max(sellMinStep, buyMinStep);
-  maxSize.value = Math.min(sellCoinInfoData.value.maxLmtSz, sellCoinInfoData.value.maxLmtSz);
+  maxSize.value = Math.min(sellCoinInfoData.value.maxLmtSz, buyCoinInfoData.value.maxLmtSz);
   console.log('minStep', minStep.value);
   console.log('sellMinStep', sellMinStep);
   console.log('buyMinStep', buyMinStep);

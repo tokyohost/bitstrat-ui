@@ -5,13 +5,17 @@
   </div>
 
   <div v-else-if="exchange.toLowerCase() == 'bybit'">
-<!--    <p><strong>资金账户余额：</strong>{{ balance.usdtBalance == null ? '查询失败' : balance.usdtBalance + coin }}</p>-->
+    <!--    <p><strong>资金账户余额：</strong>{{ balance.usdtBalance == null ? '查询失败' : balance.usdtBalance + coin }}</p>-->
     <p><strong>统一账户余额：</strong>{{ balance.balance == null ? '查询失败' : balance.balance + coin }}</p>
     <p><strong>统一账户可用余额：</strong>{{ balance.freeBalance == null ? '查询失败' : balance.freeBalance + coin }}</p>
   </div>
 
   <div v-else-if="exchange.toLowerCase() == 'okx'">
     <p><strong>总余额：</strong>{{ balance.cashBalance }} {{ coin }}</p>
+    <p><strong>可交易：</strong>{{ balance.freeBalance }} {{ coin }}</p>
+  </div>
+  <div v-else-if="exchange.toLowerCase() == 'bitget'">
+    <p><strong>账户余额：</strong>{{ balance.balance }} {{ coin }}</p>
     <p><strong>可交易：</strong>{{ balance.freeBalance }} {{ coin }}</p>
   </div>
   <div v-else>
