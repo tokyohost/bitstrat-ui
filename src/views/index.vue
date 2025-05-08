@@ -2,12 +2,17 @@
   <div class="app-container home">
     <!--    <el-calendar></el-calendar>-->
     <div class="flex items-center justify-center h-screen bg-gray-100">
-      <h1 class="text-4xl font-bold text-blue-600">Welcome 🎉</h1>
+      <div class="w-full">
+        <h1 class="text-4xl font-bold text-blue-600 text-center">Welcome 🎉</h1>
+        <ExchangeBalanceChart />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup name="Index" lang="ts">
+import ExchangeBalanceChart from '@/components/ExchangeBalanceChart/index.vue';
+
 const goTarget = (url: string) => {
   window.open(url, '__blank');
 };
