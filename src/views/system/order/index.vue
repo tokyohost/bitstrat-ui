@@ -67,7 +67,7 @@
         <el-table-column label="交易所" align="center" prop="ex">
           <template #default="scope">
             <div class="flex justify-center">
-              <ExchangeLogo :exchange="scope.row.ex"></ExchangeLogo>
+              <ExchangeLogo :exchange="scope.row.ex" :key="new Date().getMilliseconds()"></ExchangeLogo>
             </div>
           </template>
         </el-table-column>
