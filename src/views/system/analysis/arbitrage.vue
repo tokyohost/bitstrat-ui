@@ -209,6 +209,14 @@ onMounted(() => {
             <CountdownTimer :timestamp="scope.row.nextFundingTime" />
           </template>
         </el-table-column>
+        <el-table-column prop="nextFundingTime" label="结算时间(小时)">
+          <template #default="scope">
+            <div class="interestLine">
+              <p class="m-0">{{ scope.row.buy?.fundingIntervalHours ?? '-' }}</p>
+              <p class="m-0">{{ scope.row.sell?.fundingIntervalHours ?? '-' }}</p>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column :label="proxy.$t('common.opt.opt')" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" icon="Promotion" @click="handle(scope.row)">立即套利</el-button>
