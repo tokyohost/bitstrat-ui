@@ -598,7 +598,7 @@ const handleConfirm = async () => {
   //检查websocket 状态
   const exchanges = [localData.buy.exchangeName, localData.sell.exchangeName];
   await checkWebsocketStatus(exchanges);
-  return;
+  // return;
   emit('confirm', localData);
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
