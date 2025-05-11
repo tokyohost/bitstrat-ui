@@ -29,8 +29,8 @@ export const listAccountBalanceRecord = (query?: AccountBalanceRecordQuery): Axi
 export const queryRecordsInDays = async (query?: AccountBalanceRecordQuery): Promise<AccountBalanceRecordMap> => {
   const response = await request({
     url: '/system/accountBalanceRecord/queryRecordsInDays',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   });
 
   // 假设后端返回的数据是一个对象，键为字符串，值为 CoinsAccountBalanceRecordVo 数组
@@ -45,7 +45,31 @@ export const queryRecordsInDays = async (query?: AccountBalanceRecordQuery): Pro
   return resultMap;
 };
 
+/**
+ * 查询最近N天相较前日的总余额涨幅数组
+ * @param query
+ * @returns {*}
+ */
+export const queryDailyGrowthPercentageList = (query?: AccountBalanceRecordQuery): AxiosPromise<AccountBalanceRecordVO[]> => {
+  return request({
+    url: '/system/accountBalanceRecord/queryDailyGrowthPercentageList',
+    method: 'post',
+    data: query
+  });
+};
 
+/**
+ * 查询该用户3天、7天、30天的年化收益
+ * @param query
+ * @returns {*}
+ */
+export const queryAnnualizedReturn = (query?: AccountBalanceRecordQuery): AxiosPromise<{ [key: string]: number }> => {
+  return request({
+    url: '/system/accountBalanceRecord/queryAnnualizedReturn',
+    method: 'post',
+    data: query
+  });
+};
 
 /**
  * 查询账户余额记录详细

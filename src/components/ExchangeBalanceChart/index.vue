@@ -10,7 +10,7 @@ import { queryRecordsInDays } from '@/api/system/accountBalanceRecord';
 const chart = ref<HTMLElement | null>(null);
 
 const fetchData = async () => {
-  const dataMap = await queryRecordsInDays();
+  const dataMap = await queryRecordsInDays({days: 30});
   const series = [];
   const xAxisData = new Set<string>();
 
@@ -38,8 +38,13 @@ const fetchData = async () => {
       }
     });
   }
-  console.log(series)
-  console.log(xAxisData)
+
+  // 对 series 数据进行排序，将 sum 排在最前面
+  series.sort((a, b) => {
+    if (a.name === 'sum') return -1;
+    if (b.name === 'sum') return 1;
+    return 0;
+  });
 
   // 将 xAxisData 转换为数组并排序
   const sortedXAxisData = Array.from(xAxisData).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
