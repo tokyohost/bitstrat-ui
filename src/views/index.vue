@@ -3,12 +3,8 @@
     <!-- 新增：年化收益展示区域 -->
     <div class="annualized-return-container">
       <div class="card">
-        <div
-          class="annualized-return-item"
-          v-for="(item, index) in sortedAnnualizedReturn"
-          :key="index"
-        >
-          <span class="label">{{ item.key === '3d' ? '3天' : item.key === '7d' ? '7天' : '30天' }}年化收益:</span>
+        <div class="annualized-return-item" v-for="(item, index) in sortedAnnualizedReturn" :key="index">
+          <span class="label">{{ item.key === '3d' ? '3天' : item.key === '7d' ? '7天' : '30天' }}回测年化收益率:</span>
           <span class="value">{{ item.value }}%</span>
         </div>
       </div>
@@ -137,7 +133,7 @@ const goTarget = (url: string) => {
     gap: 15px;
     font-size: 18px;
     font-weight: bold;
-    color: #409EFF;
+    color: #409eff;
   }
 
   .card {
@@ -157,7 +153,8 @@ const goTarget = (url: string) => {
     white-space: nowrap; // 防止换行
   }
 
-  .label, .value {
+  .label,
+  .value {
     padding: 5px;
     white-space: nowrap;
   }

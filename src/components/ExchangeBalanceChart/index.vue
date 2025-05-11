@@ -1,5 +1,5 @@
 <template>
-  <div ref="chart" style="width: 100%; height: 400px;"></div>
+  <div ref="chart" style="width: 100%; height: 400px"></div>
 </template>
 
 <script setup lang="ts">
@@ -10,12 +10,12 @@ import { queryRecordsInDays } from '@/api/system/accountBalanceRecord';
 const chart = ref<HTMLElement | null>(null);
 
 const fetchData = async () => {
-  const dataMap = await queryRecordsInDays({days: 30});
+  const dataMap = await queryRecordsInDays({ days: 30 });
   const series = [];
   const xAxisData = new Set<string>();
 
   for (const [exchange, records] of dataMap.entries()) {
-    const seriesData = records.map(record => {
+    const seriesData = records.map((record) => {
       // 确保 record.recordDate 是有效的日期字符串
       if (record.recordDate) {
         const date = new Date(record.recordDate);
@@ -62,10 +62,10 @@ onMounted(async () => {
 
     const option = {
       title: {
-        text: '账户余额历史趋势图'
+        text: '总资产趋势统计'
       },
       tooltip: {
-        trigger: 'axis',
+        trigger: 'axis'
         // 配置 tooltip 显示格式
         // formatter: (params: any) => {
         //   let res = `${params[0].axisValue}<br>`;
@@ -76,7 +76,7 @@ onMounted(async () => {
         // }
       },
       legend: {
-        data: series.map(s => s.name)
+        data: series.map((s) => s.name)
       },
       xAxis: {
         type: 'category',

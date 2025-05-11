@@ -1,5 +1,5 @@
 <template>
-  <div ref="chart" style="width: 100%; height: 400px;"></div>
+  <div ref="chart" style="width: 100%; height: 400px"></div>
 </template>
 
 <script setup lang="ts">
@@ -15,8 +15,8 @@ const fetchData = async () => {
   // 确保 response.data 是一个数组
   const data = Array.isArray(response.data) ? response.data : [];
 
-  const xAxisData = data.map(item => item.recordDate);
-  const seriesData = data.map(item => {
+  const xAxisData = data.map((item) => item.recordDate);
+  const seriesData = data.map((item) => {
     // 确保 growthPercentage 是数字类型
     const growthPercentage = parseFloat(item.growthPercentage);
     return isNaN(growthPercentage) ? 0 : growthPercentage; // 如果转换失败，设置为 0
@@ -43,7 +43,7 @@ onMounted(async () => {
 
     const option = {
       title: {
-        text: '每日涨幅百分比'
+        text: '每日涨跌统计'
       },
       tooltip: {
         trigger: 'axis',
