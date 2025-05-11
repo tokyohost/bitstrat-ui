@@ -44,6 +44,15 @@ export interface AccountBalanceRecordVO {
    */
   recordDate: string;
 
+  /**
+   * 涨幅
+   */
+  growth:  number;
+
+  /**
+   * 涨幅百分比
+   */
+  growthPercentage: number;
 }
 
 export interface AccountBalanceRecordForm extends BaseEntity {
@@ -140,6 +149,10 @@ export interface AccountBalanceRecordQuery extends PageQuery {
      * 日期范围参数
      */
     params?: any;
+    /**
+     * 查询最近N天
+     */
+    days?: number;
 }
 
 
