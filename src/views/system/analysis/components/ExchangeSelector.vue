@@ -11,7 +11,7 @@
           <div class="dropdown-title">交易所</div>
           <el-checkbox-group v-model="selected">
             <div class="exchange-item" v-for="ex in exchanges" :key="ex.name">
-              <el-checkbox :label="ex.name">
+              <el-checkbox :value="ex.name">
                 <img :src="ex.logo" alt="logo" class="logo" />
                 {{ ex.name }}
               </el-checkbox>

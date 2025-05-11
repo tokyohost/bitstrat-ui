@@ -50,7 +50,6 @@ const exchangeList = ref<WebsocketStatus[]>([
 ]);
 const loading = ref(false);
 
-const currentExchange = ref<ApiSettingVo | (typeof exchangeList)[0]>(null);
 const configDialogVisible = ref(false);
 
 const loadApiSetting = async () => {
@@ -74,54 +73,6 @@ const configForm = ref({
   secret: '',
   passphrase: ''
 });
-// 每个交易所对应的字段配置
-const fieldConfigs = {
-  binance: [
-    { label: 'API Key', prop: 'apiKey' },
-    { label: 'Secret', prop: 'secret', type: 'password', showPassword: true }
-  ],
-  okx: [
-    { label: 'API Key', prop: 'apiKey' },
-    { label: 'Secret', prop: 'secret', type: 'password', showPassword: true },
-    { label: 'Passphrase', prop: 'passphrase', type: 'password', showPassword: true }
-  ],
-  bybit: [
-    { label: 'API Key', prop: 'apiKey' },
-    { label: 'Secret', prop: 'secret', type: 'password', showPassword: true }
-  ]
-};
-
-// 计算当前配置的字段
-const currentFields = computed(() => {
-  return fieldConfigs[currentExchange.value?.exchangeName.toLowerCase() as keyof typeof fieldConfigs] || [];
-});
-// 保存配置
-const handleSave = async () => {
-  const data = {
-    exchange: currentExchange.value?.exchangeName,
-    apiKey: configForm.value.apiKey,
-    apiSecurity: configForm.value.secret,
-    passphrase: configForm.value.passphrase
-  };
-  const checkResult = await checkApi(data);
-  // if (checkResult.code == 200) {
-  if (checkResult.data?.checkStatus == 'false') {
-    ElMessage.error(proxy.$t('setting.apiSettingForm.checkFail'));
-    return;
-  }
-
-  // }
-
-  const resp = await setApi(data);
-  if (resp.code == 200) {
-    //update success
-    loadApiSetting();
-    ElMessage.success(proxy.$t('setting.apiSettingForm.succ'));
-    configDialogVisible.value = false;
-  } else {
-    ElMessage.error(resp.msg);
-  }
-};
 
 onMounted(() => {
   loadApiSetting();

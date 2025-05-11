@@ -11,11 +11,13 @@ import { ExchangeVo } from '@/api/system/common/types';
 import CrossExchangeArgitrage from '@/views/system/analysis/components/CrossExchangeArgitrage.vue';
 import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelector.vue';
 import FixedNumber from '@/views/system/analysis/components/FixedNumber.vue';
+import CrossExchangeArgitrageDiy from '@/views/system/analysis/components/CrossExchangeArgitrageDiy.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const datalist = ref<CoinFundingInfo[]>();
 
 const loading = ref(true);
 const inited = ref(false);
+
 const symbolList = ref<SymbolVO[]>([]);
 const supportExchangeList = ref<ExchangeVo[]>([]);
 const tableData = ref<CoinFundingInfo[]>();
@@ -29,6 +31,9 @@ const pageSize = ref(10);
 const showSearch = ref(true);
 const arbitragePage = ref(false);
 const arbitrageData = ref<CoinFundingInfo>();
+
+const arbitrageDataDiy = ref<CoinFundingInfo>();
+const showDiy = ref(false);
 
 const loadDataList = async () => {
   loading.value = true;
@@ -122,6 +127,10 @@ const handleQuery = (row) => {
 };
 const resetQuery = (row) => {};
 
+const diy = () => {
+  showDiy.value = true;
+};
+
 // 监听分页变化
 watch([currentPage, pageSize], updateTableData);
 onMounted(() => {
@@ -147,6 +156,7 @@ onMounted(() => {
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">{{ proxy.$t('common.opt.search') }}</el-button>
               <el-button icon="Refresh" @click="resetQuery">{{ proxy.$t('common.opt.reset') }}</el-button>
+              <el-button icon="Refresh" @click="diy">{{ '自定义套利币对' }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -235,6 +245,7 @@ onMounted(() => {
       </div>
     </el-card>
     <CrossExchangeArgitrage v-model:visible="arbitragePage" :data="arbitrageData" :title="'套利下单'"></CrossExchangeArgitrage>
+    <CrossExchangeArgitrageDiy v-model:visible="showDiy" :data="arbitrageDataDiy" :title="'自定义套利'"></CrossExchangeArgitrageDiy>
   </div>
 </template>
 

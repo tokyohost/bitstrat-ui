@@ -2,7 +2,13 @@
   <div>
     <el-dialog v-model="visibleRef" :title="title" width="1200px" style="min-height: 700px" :close-on-click-modal="false" @close="$emit('close')">
       <!-- 显示传入对象内容 -->
-      <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="buyEnable && sellEnable ? roles: (buyEnable? rolesLeft:rolesRight)" :label-position="'top'" :key="new Date()">
+      <el-form
+        ref="arbitrageFormRef"
+        :model="arbitrageForm"
+        :rules="buyEnable && sellEnable ? roles : buyEnable ? rolesLeft : rolesRight"
+        :label-position="'top'"
+        :key="new Date()"
+      >
         <div class="ab-card">
           <el-card :shadow="'never'" style="flex: 1">
             <div class="form-item-algin">
@@ -138,7 +144,8 @@
                 <el-row>
                   <el-col :span="24">
                     <el-form-item :label="'平空数量'" prop="sell.size">
-                      <el-input-number :disabled="!sellEnable"
+                      <el-input-number
+                        :disabled="!sellEnable"
                         v-model.number="arbitrageForm.sell.size"
                         type="number"
                         :style="{ width: '100%' }"
@@ -266,6 +273,7 @@ import { closePositionOrder, createOrder, createTask } from '@/api/system/crossE
 import { CrossExchangeArbitrageTaskVO } from '@/api/system/crossExchangeArbitrageTask/types';
 import OrderResultDialog from '@/views/system/crossExchangeArbitrageTask/components/OrderResultDialog.vue';
 import { b } from 'vitest/dist/chunks/suite.BJU7kdY9';
+import { checkWebsocketStatus } from '@/views/system/crossExchangeArbitrageTask/components/index';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface Props {
   currData?: CrossExchangeArbitrageTaskVO | undefined;
@@ -352,27 +360,27 @@ const roles = reactive<ElFormRules>({
         trigger: 'blur'
       }
     ],
-    batchSize:[
+    batchSize: [
       { required: true, message: '请输入每次下单比例', trigger: 'blur' },
       {
         validator: (rule, value, callback) => {
           console.log('value = ', value);
-          const buyBatchSize = arbitrageForm.buy.size * (value/100)
-          const sellBatchSize = arbitrageForm.sell.size * (value/100)
+          const buyBatchSize = arbitrageForm.buy.size * (value / 100);
+          const sellBatchSize = arbitrageForm.sell.size * (value / 100);
 
           console.log('buyBatchSize = ', buyBatchSize);
           console.log('sellBatchSize = ', sellBatchSize);
           if (buyBatchSize < minStep.value) {
-            callback(new Error('买入金额不能低于最小下单限制'+minStep.value));
-          }else
-          if (sellBatchSize < minStep.value) {
-            callback(new Error('卖出金额不能低于最小下单限制'+minStep.value));
+            callback(new Error('买入金额不能低于最小下单限制' + minStep.value));
+          } else if (sellBatchSize < minStep.value) {
+            callback(new Error('卖出金额不能低于最小下单限制' + minStep.value));
           } else {
             callback();
           }
         },
         trigger: 'blur'
-      }],
+      }
+    ],
     leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }],
     orderType: [{ required: true, message: '请选择下单方式', trigger: 'blur' }]
     // actualSize: [
@@ -421,7 +429,7 @@ const rolesLeft = reactive<ElFormRules>({
     //     trigger: 'blur'
     //   }
     // ]
-  },
+  }
 });
 
 const rolesRight = reactive<ElFormRules>({
@@ -440,27 +448,27 @@ const rolesRight = reactive<ElFormRules>({
         trigger: 'blur'
       }
     ],
-    batchSize:[
+    batchSize: [
       { required: true, message: '请输入每次下单比例', trigger: 'blur' },
       {
         validator: (rule, value, callback) => {
           console.log('value = ', value);
-          const buyBatchSize = arbitrageForm.buy.size * (value/100)
-          const sellBatchSize = arbitrageForm.sell.size * (value/100)
+          const buyBatchSize = arbitrageForm.buy.size * (value / 100);
+          const sellBatchSize = arbitrageForm.sell.size * (value / 100);
 
           console.log('buyBatchSize = ', buyBatchSize);
           console.log('sellBatchSize = ', sellBatchSize);
           if (buyBatchSize < minStep.value) {
-            callback(new Error('买入金额不能低于最小下单限制'+minStep.value));
-          }else
-          if (sellBatchSize < minStep.value) {
-            callback(new Error('卖出金额不能低于最小下单限制'+minStep.value));
+            callback(new Error('买入金额不能低于最小下单限制' + minStep.value));
+          } else if (sellBatchSize < minStep.value) {
+            callback(new Error('卖出金额不能低于最小下单限制' + minStep.value));
           } else {
             callback();
           }
         },
         trigger: 'blur'
-      }],
+      }
+    ],
     leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }],
     orderType: [{ required: true, message: '请选择下单方式', trigger: 'blur' }]
     // actualSize: [
@@ -496,7 +504,6 @@ watch(sellEnable, (newVal) => {
   }
 });
 
-
 const arbitrageForm = reactive<ArbitrageTaskForm>({
   buy: {
     size: 0,
@@ -518,8 +525,7 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
   },
   batchIncome: 0,
   batchSize: 50,
-  side: 2,
-
+  side: 2
 });
 const sellCoinInfoData = ref<CoinContractInformation>({
   maxLeverage: undefined
@@ -666,21 +672,24 @@ function swapBuySell() {
   localData.sell = tmp;
 }
 
-const handleConfirm = () => {
+const handleConfirm = async () => {
+  //检查websocket 状态
+  const exchanges = [localData.buy.exchangeName, localData.sell.exchangeName];
+  await checkWebsocketStatus(exchanges);
   emit('confirm', localData);
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       arbitrageForm.taskId = props.taskId;
 
-      arbitrageForm.singleOrder = buyEnable.value && sellEnable.value? 0:1;
-      arbitrageForm.singleOrderSide =  buyEnable.value ? "buy" : "sell";
+      arbitrageForm.singleOrder = buyEnable.value && sellEnable.value ? 0 : 1;
+      arbitrageForm.singleOrderSide = buyEnable.value ? 'buy' : 'sell';
       const data = {
         argitrageData: { ...localData },
         from: { ...arbitrageForm },
-        batchIncome:arbitrageForm.batchIncome,
+        batchIncome: arbitrageForm.batchIncome,
         batchSize: arbitrageForm.batchSize,
         singleOrder: arbitrageForm.singleOrder,
-        singleOrderSide: arbitrageForm.singleOrderSide,
+        singleOrderSide: arbitrageForm.singleOrderSide
       };
       console.log(JSON.stringify(toRaw(data), null, 2));
       const globalLoading = ElLoading.service({ fullscreen: true });

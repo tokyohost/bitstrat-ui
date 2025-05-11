@@ -13,7 +13,7 @@
       <ExchangeBalance :exchange="exchange" :balance="balance" :coin="props.coin"></ExchangeBalance>
     </div>
     <div v-else-if="loading">
-      <el-skeleton rows="1" animated />
+      <el-skeleton :rows="1" animated />
     </div>
     <div v-else>
       <!--      <el-empty description="暂无数据" />-->
@@ -59,7 +59,7 @@ const balance = ref<AccountBalance | null>(null);
 const fee = ref<SymbolFee | null>(null);
 const emit = defineEmits<{
   (e: 'changeFee', val: SymbolFee): void;
-}>()
+}>();
 
 const flushed = async () => {
   loading.value = true;
@@ -96,7 +96,7 @@ const fetchFee = async () => {
       exchange: props.exchange
     } as QueryFeeBody);
     fee.value = data;
-    emit("changeFee",fee.value)
+    emit('changeFee', fee.value);
   } catch (err) {
     console.error('获取手续费失败', err);
     fee.value = null;

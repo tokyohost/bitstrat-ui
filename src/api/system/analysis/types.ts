@@ -68,12 +68,14 @@ export interface ExchangeItemForm extends ExchangeItem {
   fundingIncome?: number;
   fundingRate?: number;
   orderType?: string | number; // 下单方式 limit / market
+  fundingIntervalHours?: number;
 }
 export interface ArbitrageTaskForm {
   buy?: ExchangeItemForm;
   sell?: ExchangeItemForm;
   batchIncome?: number; // 分批入场
   batchSize?: number; //每批数量
+  batchPrice?: number; //每批数量
   taskId?: string | number;
   side?: number; //操作类型，1-加仓，2-平仓'
 
@@ -85,7 +87,7 @@ export interface ArbitrageTaskForm {
   /**
    *单腿下单方向 buy / sell
    */
- singleOrderSide?: string;
+  singleOrderSide?: string;
 }
 
 export interface ExchangeItem {
