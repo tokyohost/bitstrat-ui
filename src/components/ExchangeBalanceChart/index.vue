@@ -8,7 +8,7 @@
 import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 import { queryRecordsInDays } from '@/api/system/accountBalanceRecord';
-
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const chart = ref<HTMLElement | null>(null);
 
 const fetchData = async () => {
@@ -65,7 +65,7 @@ onMounted(async () => {
 
     const option = {
       title: {
-        text: '总资产趋势统计'
+        text: proxy.$t('home.totalAmount.title')
       },
       tooltip: {
         trigger: 'axis'

@@ -13,6 +13,12 @@
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
               <el-button icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
+            <el-form-item
+              ><span
+                ><img src="../../../assets/icons/png/warning.png" height="20" width="20" /> 由于不同交易所盈亏规则、平仓收益、资金费结算 API
+                数据不同，平仓后的盈亏可能会不准，仅供参考</span
+              >
+            </el-form-item>
           </el-form>
         </el-card>
       </div>
@@ -279,7 +285,7 @@
       :task-id="cdata?.id"
       :arbitrage-type="0"
     ></ArbitrageWarningDialog>
-<!--    <ArbitrageWarningDialog v-model:visible="showMonitor" @submit="handleSubmitWarning" />-->
+    <!--    <ArbitrageWarningDialog v-model:visible="showMonitor" @submit="handleSubmitWarning" />-->
   </div>
 </template>
 
@@ -329,7 +335,7 @@ const cdata = ref<CrossExchangeArbitrageTaskVO>();
 const taskRole = ref<CreateArbitrageTaskVo>();
 const crossExchangeArbitrageTaskFormRef = ref<ElFormInstance>();
 const showMonitor = ref(false);
-const arbitrageWarningDialogRef = ref()
+const arbitrageWarningDialogRef = ref();
 
 const dialog = reactive<DialogOption>({
   visible: false,

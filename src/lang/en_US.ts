@@ -111,14 +111,22 @@ export default {
   },
   //menu 国际化
   menu: {
-    首页: 'home',
+    首页: 'Home',
     用户管理: 'Users',
     系统管理: 'System',
-    租户管理: 'Tenant',
-    系统监控: 'Monitor',
-    系统工具: 'Tools',
-    AI策略: 'AI',
-    任务管理: 'Task'
+    资金费套利: 'Funding Fee Arbitrage',
+    跨交易所套利: 'Cross-Exchange Arbitrage',
+    现货套利: 'Spot Arbitrage',
+    跨交易所套利任务: 'Cross-Exchange Arbitrage Task',
+    跨交易所套利警告: 'Cross-Exchange Arbitrage Alert',
+    跨交易所订单: 'Cross-Exchange Orders',
+    通知配置: 'Notification Settings',
+    分批出入场: 'Batch Entry/Exit',
+    租户管理: 'Tenant Management',
+    系统监控: 'System Monitoring',
+    系统工具: 'System Tools',
+    AI策略: 'AI Strategies',
+    任务管理: 'Task Management'
   },
   //通用
   common: {
@@ -192,6 +200,19 @@ export default {
         name: 'task name cannot be empty',
         symbol: 'symbol cannot be empty'
       }
+    }
+  },
+  home: {
+    totalAmount: {
+      title: 'Total Asset Trend Statistics'
+    },
+    dailyGrowthChart: {
+      title: 'Daily Growth Statistics',
+      item: 'Growth Percentage'
+    },
+    predictedRateOfReturn: {
+      title: 'Predicted Rate of Return',
+      item: '-Day Return (Annualized)'
     }
   }
 };

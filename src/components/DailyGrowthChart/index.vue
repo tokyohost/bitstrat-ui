@@ -8,7 +8,7 @@
 import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 import { queryDailyGrowthPercentageList } from '@/api/system/accountBalanceRecord';
-
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const chart = ref<HTMLElement | null>(null);
 
 const fetchData = async () => {
@@ -45,7 +45,7 @@ onMounted(async () => {
 
     const option = {
       title: {
-        text: '每日涨跌统计'
+        text: proxy.$t('home.dailyGrowthChart.title')
       },
       tooltip: {
         trigger: 'axis',
@@ -53,7 +53,7 @@ onMounted(async () => {
           // 优化 tooltip 显示内容
           const date = formatterDate(params[0].name); // 获取日期
           const growthPercentage = parseFloat(params[0].value); // 确保 value 是数字类型
-          return `${date}<br/>涨幅百分比: ${isNaN(growthPercentage) ? '0' : growthPercentage.toFixed(2)}%`;
+          return `${date}<br/>${proxy.$t('home.dailyGrowthChart.item')}: ${isNaN(growthPercentage) ? '0' : growthPercentage.toFixed(2)}%`;
         }
       },
       xAxis: {
@@ -75,7 +75,7 @@ onMounted(async () => {
       },
       series: [
         {
-          name: '涨幅百分比',
+          name: proxy.$t('home.dailyGrowthChart.item'),
           type: 'bar',
           data: seriesData,
           itemStyle: {

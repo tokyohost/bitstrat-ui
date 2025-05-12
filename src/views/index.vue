@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container home">
+  <div class="app-container home" :key="refershKey">
     <div class="flex h-screen gap-4">
       <div class="flex-1">
         <div class="grid grid-cols-auto-fit gap-4">
@@ -9,29 +9,7 @@
         </div>
       </div>
       <div class="flex-1">
-        <div class="grid grid-cols-auto-fit gap-4">
-          <!-- 新增：年化收益展示区域 -->
-          <div class="w-150 h-35 m-1">
-            <el-card class="w-full h-full" :shadow="'never'">
-              <template #header><span class="text-4.5 font-bold">预测收益率</span></template>
-              <el-row class="w-full h-full">
-                <el-col :span="8" v-for="(item, index) in sortedAnnualizedReturn" :key="index" class="flex items-center justify-between">
-                  <el-statistic
-                    :precision="4"
-                    :suffix="'%'"
-                    :title="(item.key === '3d' ? '3天' : item.key === '7d' ? '7天' : '30天') + '回测年化收益率'"
-                    :value="item.value"
-                    :value-style="{ color: item.value >= 0 ? '#67C23A' : '#F56C6C' }"
-                  >
-                    <template #suffix>
-                      <span class="font-medium" :style="{ color: item.value >= 0 ? '#67C23A' : '#F56C6C' }">%</span>
-                    </template>
-                  </el-statistic>
-                </el-col>
-              </el-row>
-            </el-card>
-          </div>
-        </div>
+        <PredictedRateOfReturn></PredictedRateOfReturn>
       </div>
     </div>
   </div>
@@ -40,36 +18,22 @@
 <script setup name="Index" lang="ts">
 import ExchangeBalanceChart from '@/components/ExchangeBalanceChart/index.vue';
 import DailyGrowthChart from '@/components/DailyGrowthChart/index.vue';
+const { locale } = useI18n();
 import { ref, onMounted } from 'vue';
 import { queryAnnualizedReturn } from '@/api/system/accountBalanceRecord';
+import { useI18n } from 'vue-i18n';
+import PredictedRateOfReturn from '@/components/PredictedRateOfReturn/PredictedRateOfReturn.vue';
 
-// 新增：存储年化收益数据的响应式变量
-const annualizedReturn = ref<{ [key: string]: number }>({});
+const refershKey = ref(0);
 
-// 新增：获取年化收益数据的方法
-const fetchAnnualizedReturn = async () => {
-  try {
-    const response = await queryAnnualizedReturn({ days: 30 });
-    annualizedReturn.value = response.data;
-  } catch (error) {
-    console.error('获取年化收益数据失败:', error);
-  }
-};
-
-// 新增：将年化收益数据转换为有序数组
-const sortedAnnualizedReturn = ref<{ key: string; value: number }[]>([]);
-
-onMounted(() => {
-  fetchAnnualizedReturn().then(() => {
-    // 按照 3d、7d、30d 的顺序排序
-    sortedAnnualizedReturn.value = Object.entries(annualizedReturn.value)
-      .map(([key, value]) => ({ key, value }))
-      .sort((a, b) => {
-        const order = { '3d': 1, '7d': 2, '30d': 3 };
-        return order[a.key] - order[b.key];
-      });
-  });
+// 监听语言变化
+watch(locale, (newLang, oldLang) => {
+  console.log(`语言已切换，从 ${oldLang} 到 ${newLang}`);
+  // 在此执行其他相关操作，如保存语言设置、更新界面等
+  refershKey.value += 1;
 });
+
+onMounted(() => {});
 
 const goTarget = (url: string) => {
   window.open(url, '__blank');
