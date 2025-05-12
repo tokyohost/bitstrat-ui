@@ -76,6 +76,11 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/preIndex',
+    component: () => import('@/views/preIndex.vue'),
+    hidden: true
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

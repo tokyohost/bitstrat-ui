@@ -1,9 +1,9 @@
 <template>
   <div class="login">
-    <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
+    <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form glass-container">
       <div class="title-box">
-        <h3 class="title">{{ title }}</h3>
-        <lang-select />
+        <h3 class="title color-white">{{ title }}</h3>
+        <lang-select class="color-white" />
       </div>
       <el-form-item v-if="tenantEnabled" prop="tenantId">
         <el-select v-model="loginForm.tenantId" filterable :placeholder="proxy.$t('login.selectPlaceholder')" style="width: 100%">
@@ -45,7 +45,7 @@
           <img :src="codeUrl" class="login-code-img" @click="getCode" />
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0">{{ proxy.$t('login.rememberPassword') }}</el-checkbox>
+      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0; color: white">{{ proxy.$t('login.rememberPassword') }}</el-checkbox>
       <!--      <el-form-item style="float: right">-->
       <!--        <el-button circle :title="proxy.$t('login.social.wechat')" @click="doSocialLogin('wechat')">-->
       <!--          <svg-icon icon-class="wechat" />-->
@@ -74,9 +74,9 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <!--    <div class="el-login-footer">-->
-    <!--      <span>Copyright © 2018-2025 疯狂的狮子Li All Rights Reserved.</span>-->
-    <!--    </div>-->
+    <div class="el-login-footer">
+      <span>Copyright © 2018-2025 Bitstrat.org All Rights Reserved.</span>
+    </div>
   </div>
 </template>
 
@@ -174,6 +174,7 @@ const handleLogin = () => {
  * 获取验证码
  */
 const getCode = async () => {
+  loginForm.value.code = '';
   const res = await getCodeImg();
   const { data } = res;
   captchaEnabled.value = data.captchaEnabled === undefined ? true : data.captchaEnabled;
@@ -235,10 +236,11 @@ onMounted(() => {
 <style lang="scss" scoped>
 .login {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
+
   height: 100%;
-  background-image: url('../assets/images/login-background.jpg');
+  background-image: url('../assets/images/mesh-497.png');
   background-size: cover;
 }
 
@@ -248,7 +250,7 @@ onMounted(() => {
   .title {
     margin: 0px auto 30px auto;
     text-align: center;
-    color: #707070;
+    //color: #707070;
   }
 
   :deep(.lang-select--style) {
@@ -311,5 +313,56 @@ onMounted(() => {
 .login-code-img {
   height: 40px;
   padding-left: 12px;
+}
+.glass-container {
+  color: white;
+
+  //display: flex;
+  //justify-content: center;
+  //align-items: center;
+  //gap: 20px;
+  //border-radius: 10px;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 191, 255, 0.075);
+  box-shadow: rgba(0, 0, 0, 0.3) 2px 8px 8px;
+  border: 2px rgba(255, 255, 255, 0.4) solid;
+  border-bottom: 2px rgba(40, 40, 40, 0.35) solid;
+  border-right: 2px rgba(40, 40, 40, 0.35) solid;
+  margin-right: 20rem;
+}
+::v-deep .el-input__wrapper {
+  background-color: rgba(0, 191, 255, 0.075) !important;
+  border: 1px rgba(255, 255, 255, 0.4) solid;
+}
+::v-deep .el-input__inner {
+  color: var(--el-bg-color, var(--el-bg-color));
+}
+::v-deep .el-input__prefix {
+  color: var(--el-bg-color, var(--el-bg-color));
+}
+::v-deep .el-form-item__error {
+  color: var(--el-bg-color, var(--el-bg-color));
+}
+::v-deep .el-input__inner::placeholder {
+  color: var(--el-bg-color, var(--el-bg-color));
+}
+::v-deep .lang-select--style {
+  color: var(--el-bg-color, var(--el-bg-color)) !important;
+  fill: var(--el-bg-color, var(--el-bg-color));
+}
+::v-deep .el-button--primary {
+  color: var(--el-color-primary, var(--el-color-primary)) !important;
+  --el-button-bg-color: var(--el-bg-color, var(--el-bg-color)) !important;
+  fill: var(--el-bg-color, var(--el-bg-color));
+  --el-button-border-color: var(--el-bg-color, var(--el-bg-color));
+}
+::v-deep .el-button--primary:hover {
+  color: var(--el-bg-color, var(--el-bg-color)) !important;
+  --el-button-bg-color: var(--el-bg-color, var(--el-bg-color)) !important;
+  fill: var(--el-bg-color, var(--el-bg-color));
+  --el-button-border-color: var(--el-bg-color, var(--el-bg-color));
+}
+::v-deep .link-type {
+  color: var(--el-bg-color, var(--el-bg-color)) !important;
 }
 </style>
