@@ -156,7 +156,9 @@ onMounted(() => {
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">{{ proxy.$t('common.opt.search') }}</el-button>
               <el-button icon="Refresh" @click="resetQuery">{{ proxy.$t('common.opt.reset') }}</el-button>
-              <el-button icon="Refresh" @click="diy">{{ '自定义套利币对' }}</el-button>
+              <el-badge :value="'测试'" type="primary" class="ml-3">
+                <el-button icon="Operation" @click="diy">{{ '自定义套利币对' }}</el-button>
+              </el-badge>
             </el-form-item>
           </el-form>
         </el-card>

@@ -14,16 +14,20 @@
                     :exchange="localData.buy?.exchangeName"
                     :exchangeLogo="localData.buy?.exchangeLogo"
                   />
-                  <FundingRate
-                    :exchange="localData.buy?.exchangeName"
-                    :symbol="localData.symbol"
-                    :key="new Date()"
-                    @change="
-                      (f) => {
-                        arbitrageForm.buy.fundingRate = f;
-                      }
-                    "
-                  ></FundingRate>
+                  <div class="flex justify-center items-center">
+                    <FundingRate
+                      :exchange="localData.buy?.exchangeName"
+                      :symbol="localData.symbol"
+                      :key="new Date()"
+                      @change="
+                        (f) => {
+                          arbitrageForm.buy.fundingRate = f;
+                        }
+                      "
+                    ></FundingRate>
+                    <span v-if="localData.buy.fundingIntervalHours">每{{ localData.buy.fundingIntervalHours }}小时</span>
+                    <span v-else>-</span>
+                  </div>
                 </div>
               </el-form-item>
               <el-form-item :label="''">
@@ -116,16 +120,20 @@
                     :exchange="localData.sell?.exchangeName"
                     :exchangeLogo="localData.sell?.exchangeLogo"
                   />
-                  <FundingRate
-                    :exchange="localData.sell?.exchangeName"
-                    :symbol="localData.symbol"
-                    :key="new Date()"
-                    @change="
-                      (f) => {
-                        arbitrageForm.sell.fundingRate = f;
-                      }
-                    "
-                  ></FundingRate>
+                  <div class="flex justify-center items-center">
+                    <FundingRate
+                      :exchange="localData.sell?.exchangeName"
+                      :symbol="localData.symbol"
+                      :key="new Date()"
+                      @change="
+                        (f) => {
+                          arbitrageForm.sell.fundingRate = f;
+                        }
+                      "
+                    ></FundingRate>
+                    <span v-if="localData.sell.fundingIntervalHours">每{{ localData.sell.fundingIntervalHours }}小时</span>
+                    <span v-else>-</span>
+                  </div>
                 </div>
               </el-form-item>
               <el-form-item :label="''">
