@@ -46,7 +46,7 @@ export function calculateFundingIncome(positionValue: number, fundingRate: numbe
  */
 export function formatToDecimal(value: number | string, decimalPlaces = 4): string {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return Number(0).toFixed(decimalPlaces);
+  if (isNaN(num) || num == null) return Number(0).toFixed(decimalPlaces);
   return num.toFixed(decimalPlaces);
 }
 

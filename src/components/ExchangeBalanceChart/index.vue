@@ -1,5 +1,7 @@
 <template>
-  <div ref="chart" style="width: 100%; height: 400px"></div>
+  <el-card :shadow="'never'" class="w-full h-full">
+    <div ref="chart" style="width: 100%; height: 400px"></div>
+  </el-card>
 </template>
 
 <script setup lang="ts">
@@ -28,6 +30,7 @@ const fetchData = async () => {
     series.push({
       name: exchange,
       type: 'line',
+      smooth: true,
       data: seriesData,
       // 添加 tooltip 配置，显示具体数值
       tooltip: {

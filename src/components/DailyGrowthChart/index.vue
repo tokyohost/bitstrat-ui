@@ -1,5 +1,7 @@
 <template>
-  <div ref="chart" style="width: 100%; height: 400px"></div>
+  <el-card :shadow="'never'" class="w-full h-full">
+    <div ref="chart" style="width: 100%; height: 400px"></div>
+  </el-card>
 </template>
 
 <script setup lang="ts">
@@ -77,7 +79,10 @@ onMounted(async () => {
           type: 'bar',
           data: seriesData,
           itemStyle: {
-            color: '#409EFF' // 设置柱状图颜色
+            // 设置柱状图的颜色
+            color: function (params) {
+              return params.value > 0 ? '#28a745' : '#dc3545'; // 正数为绿色，负数为红色
+            }
           }
         }
       ]

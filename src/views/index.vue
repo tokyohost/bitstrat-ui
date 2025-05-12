@@ -1,20 +1,37 @@
 <template>
   <div class="app-container home">
-    <!-- 新增：年化收益展示区域 -->
-    <div class="annualized-return-container">
-      <div class="card">
-        <div class="annualized-return-item" v-for="(item, index) in sortedAnnualizedReturn" :key="index">
-          <span class="label">{{ item.key === '3d' ? '3天' : item.key === '7d' ? '7天' : '30天' }}回测年化收益率:</span>
-          <span class="value">{{ item.value }}%</span>
+    <div class="flex h-screen gap-4">
+      <div class="flex-1">
+        <div class="grid grid-cols-auto-fit gap-4">
+          <ExchangeBalanceChart class="w-50 h-25 m-1" />
+          <!-- 新增：每日涨幅百分比柱状图 -->
+          <DailyGrowthChart class="w-50 h-25 m-1" />
         </div>
       </div>
-    </div>
-    <div class="flex items-center justify-center h-screen bg-gray-100">
-      <div class="w-full">
-        <h1 class="text-4xl font-bold text-blue-600 text-center">Welcome 🎉</h1>
-        <ExchangeBalanceChart />
-        <!-- 新增：每日涨幅百分比柱状图 -->
-        <DailyGrowthChart />
+      <div class="flex-1">
+        <div class="grid grid-cols-auto-fit gap-4">
+          <!-- 新增：年化收益展示区域 -->
+          <div class="w-150 h-35 m-1">
+            <el-card class="w-full h-full" :shadow="'never'">
+              <template #header><span class="text-4.5 font-bold">预测收益率</span></template>
+              <el-row class="w-full h-full">
+                <el-col :span="8" v-for="(item, index) in sortedAnnualizedReturn" :key="index" class="flex items-center justify-between">
+                  <el-statistic
+                    :precision="4"
+                    :suffix="'%'"
+                    :title="(item.key === '3d' ? '3天' : item.key === '7d' ? '7天' : '30天') + '回测年化收益率'"
+                    :value="item.value"
+                    :value-style="{ color: item.value >= 0 ? '#67C23A' : '#F56C6C' }"
+                  >
+                    <template #suffix>
+                      <span class="font-medium" :style="{ color: item.value >= 0 ? '#67C23A' : '#F56C6C' }">%</span>
+                    </template>
+                  </el-statistic>
+                </el-col>
+              </el-row>
+            </el-card>
+          </div>
+        </div>
       </div>
     </div>
   </div>
