@@ -134,7 +134,11 @@ const fetchWarningConfig = async (arbitrageType, taskId) => {
   arbitrageTypeV.value = arbitrageType;
   taskIdV.value = taskId;
   if (res.data) {
-    Object.assign(form.value, res.data);
+    form.value = {
+      ...res.data,
+      status: res.data.status || 0, // 确保status有默认值
+      liquidationConfigStatus: res.data.liquidationConfigStatus || 0 // 确保liquidationConfigStatus有默认值
+    };
   }
 };
 defineExpose({ fetchWarningConfig })
