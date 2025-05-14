@@ -122,6 +122,13 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column label="做多强平/做空强平" align="center" prop="longInFee" :formatter="defaultFormatter" min-width="200">
+          <template #default="scope">
+            <div class="w-full mx-auto flex justify-center items-center">
+              {{ scope.row.longLiqPx ?? '-' }}<el-divider direction="vertical" /> {{ scope.row.shortLiqPx ?? '-' }}
+            </div>
+          </template>
+        </el-table-column>
 
         <el-table-column label="总盈亏/年化收益" align="center" prop="totalProfit" :formatter="defaultFormatter" min-width="200">
           <template #default="scope">

@@ -107,6 +107,13 @@ export default {
       title: '设置',
       succ: '配置成功',
       checkFail: '校验失败,请检查API配置是否正确'
+    },
+    socketStatus: {
+      title: '提示',
+      reconnectConfirm: '将触发重连，是否继续?',
+      ok: '确定',
+      cancel: '取消',
+      done: '已触发'
     }
   },
   //menu 国际化

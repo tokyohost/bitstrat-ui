@@ -46,7 +46,7 @@ onMounted(() => {
               :precision="4"
               :suffix="'%'"
               :title="(item.key === '3d' ? '3' : item.key === '7d' ? '7' : '30') + proxy.$t('home.predictedRateOfReturn.item')"
-              :value="item.value"
+              :value="item.value > 999999 ? 999999.0 : item.value"
               :value-style="{ color: item.value >= 0 ? '#67C23A' : '#F56C6C' }"
             >
               <template #suffix>

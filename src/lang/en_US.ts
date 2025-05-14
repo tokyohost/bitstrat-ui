@@ -107,6 +107,13 @@ export default {
       title: 'Settings',
       succ: 'Configuration successful',
       checkFail: 'Validation failed, please check if API settings are correct'
+    },
+    socketStatus: {
+      title: 'Warning',
+      reconnectConfirm: 'Reconnection will be triggered. Continue?',
+      ok: 'OK',
+      cancel: 'Cancel',
+      done: 'Triggered !'
     }
   },
   //menu 国际化

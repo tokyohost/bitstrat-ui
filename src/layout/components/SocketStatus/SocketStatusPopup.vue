@@ -16,7 +16,7 @@
         </div>
 
         <div class="exchange-item" v-for="item in exchangeList" :key="item.exchange">
-          <div class="api-seting-item">
+          <div class="api-seting-item" @click="exchangeConnect(item)">
             <ExchangeLogo :exchange="item.exchange"></ExchangeLogo>
             <div class="flex justify-center">
               <dict-tag :options="socket_status" :value="item.status" :i18n-profilx="'setting.api'" />
@@ -38,6 +38,7 @@ import { ApiSettingVo } from '@/layout/components/ApiSetting/types';
 import ApiConfigForm from '@/layout/components/ApiSetting/components/ApiConfigForm.vue';
 import { WebsocketStatus } from '@/layout/components/NotifySetting/types';
 import { getWebsocketStatus } from '@/layout/components/NotifySetting/notifySetting';
+import { checkWebsocketStatus } from '@/views/system/crossExchangeArbitrageTask/components';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { socket_status } = toRefs<any>(proxy?.useDict('socket_status'));
 
@@ -73,6 +74,22 @@ const configForm = ref({
   secret: '',
   passphrase: ''
 });
+const exchangeConnect = async (item: WebsocketStatus) => {
+  ElMessageBox.confirm(proxy.$t('setting.socketStatus.reconnectConfirm'), proxy.$t('setting.socketStatus.title'), {
+    confirmButtonText: proxy.$t('setting.socketStatus.ok'),
+    cancelButtonText: proxy.$t('setting.socketStatus.cancel'),
+    type: 'warning'
+  })
+    .then(async () => {
+      const exchanges = [item.exchange];
+      await checkWebsocketStatus(exchanges);
+      ElMessage({
+        type: 'info',
+        message: proxy.$t('setting.socketStatus.done')
+      });
+    })
+    .catch(() => {});
+};
 
 onMounted(() => {
   loadApiSetting();

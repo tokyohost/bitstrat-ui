@@ -105,6 +105,13 @@ export default {
       title: '설정',
       succ: '설정이 완료되었습니다',
       checkFail: '검증 실패, API 설정이 올바른지 확인하세요'
+    },
+    socketStatus: {
+      title: '알림',
+      reconnectConfirm: '재연결이 시도됩니다. 계속하시겠습니까?',
+      ok: '확인',
+      cancel: '취소',
+      done: '트리거됨!'
     }
   },
   //menu 国际化
