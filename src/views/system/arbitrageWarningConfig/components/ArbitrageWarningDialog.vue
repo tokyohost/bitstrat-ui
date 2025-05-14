@@ -1,37 +1,75 @@
 <template>
   <el-dialog :title="title" v-model="localVisible" width="900px" append-to-body>
     <el-form ref="arbitrageWarningConfigFormRef" :model="form" :rules="rules" label-width="180px">
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="警告阈值" prop="warningThreshold">
-            <el-input-number v-model="form.warningThreshold" style="width: 100%"
-                             placeholder="请输入警告阈值（%）" :precision="4" :step="0.1" :max="10">
-              <template #suffix>%</template>
-            </el-input-number>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="告警配置名称" prop="configName">
-            <el-input v-model="form.configName" placeholder="请输入告警配置名称" :maxlength="20" />
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="form.status" placeholder="请选择状态">
-              <el-option label="正常" :value="1"></el-option>
-              <el-option label="停用" :value="0"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-        </el-col>
-      </el-row>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-      </el-form-item>
+      <el-card shadow="hover" class="warning-card">
+        <template #header>
+          <div class="card-header">
+            <span>套利预警配置</span>
+            <el-switch
+              v-model="form.status"
+              :active-value="1"
+              :inactive-value="0"
+              active-text="启用"
+              inactive-text="禁用"
+            />
+          </div>
+        </template>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="套利警告阈值" prop="warningThreshold">
+              <el-input-number
+                v-model="form.warningThreshold"
+                :disabled="form.status == 0"
+                style="width: 100%"
+                placeholder="请输入警告阈值"
+                :precision="4"
+                :step="0.1"
+                :max="10"
+              >
+                <template #suffix>%</template>
+              </el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="告警配置名称" prop="configName">
+              <el-input
+                v-model="form.configName"
+                :disabled="form.status == 0"
+                placeholder="请输入告警配置名称"
+                :maxlength="20"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark"
+                        :disabled="form.status == 0"
+                        type="textarea"
+                        placeholder="请输入内容" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-card>
+
+      <el-card shadow="hover" class="warning-card">
+        <template #header>
+          <div class="card-header">
+            <span>爆仓预警配置</span>
+            <el-switch
+              v-model="form.liquidationConfigStatus"
+              :active-value="1"
+              :inactive-value="0"
+              active-text="启用"
+              inactive-text="禁用"
+            />
+          </div>
+        </template>
+      </el-card>
     </el-form>
+
     <template #footer>
       <div class="dialog-footer">
         <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
@@ -78,14 +116,14 @@ const form = ref({
   taskId: undefined,
   warningThreshold: undefined,
   configName: undefined,
-  status: 1,
-  remark: undefined
+  status: 0,
+  remark: undefined,
+  liquidationConfigStatus: 0
 });
 
 const rules = ref({
   warningThreshold: [{ required: true, message: '请输入警告阈值', trigger: 'blur' }],
   configName: [{ required: true, message: '请输入告警配置名称', trigger: 'blur' }],
-  status: [{ required: true, message: '请选择状态', trigger: 'change' }]
 });
 
 const buttonLoading = ref(false);
@@ -96,7 +134,11 @@ const fetchWarningConfig = async (arbitrageType, taskId) => {
   arbitrageTypeV.value = arbitrageType;
   taskIdV.value = taskId;
   if (res.data) {
-    Object.assign(form.value, res.data);
+    form.value = {
+      ...res.data,
+      status: res.data.status || 0, // 确保status有默认值
+      liquidationConfigStatus: res.data.liquidationConfigStatus || 0 // 确保liquidationConfigStatus有默认值
+    };
   }
 };
 defineExpose({ fetchWarningConfig })
@@ -130,3 +172,14 @@ const cancel = () => {
   localVisible.value = false; // 更新本地可见性
 };
 </script>
+
+<style scoped>
+.warning-card {
+  margin-bottom: 20px;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>
