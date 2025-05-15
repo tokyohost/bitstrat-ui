@@ -81,6 +81,19 @@ export const constantRoutes: RouteRecordRaw[] = [
     hidden: true
   },
   {
+    path: '/purchase-vip',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/vip/PurchaseVip.vue'),
+        name: 'PurchaseVip',
+        meta: { title: '购买VIP', icon: 'vip' }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,
