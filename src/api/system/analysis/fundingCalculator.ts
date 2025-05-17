@@ -1,3 +1,4 @@
+import { Decimal } from 'decimal.js';
 export type PositionSide = 'long' | 'short';
 
 /**
@@ -48,6 +49,24 @@ export function formatToDecimal(value: number | string, decimalPlaces = 4): stri
   const num = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(num) || num == null) return Number(0).toFixed(decimalPlaces);
   return num.toFixed(decimalPlaces);
+}
+
+/**
+ * 计算最低保证金
+ * @param size
+ * @param leverage
+ */
+// 封装计算最低保证金的函数
+export function calculateMargin(size: number, price: number, leverage: number): string {
+  const sizeDecimal = new Decimal(size);    // 开仓数量
+  const priceDecimal = new Decimal(price);  // 当前价格（USDT）
+  const leverageDecimal = new Decimal(leverage); // 杠杆倍数
+
+  // 计算最低保证金
+  const margin = sizeDecimal.mul(priceDecimal).div(leverageDecimal);
+
+  // 返回保证金，保留 10 位小数
+  return margin.toFixed(10);
 }
 
 /**

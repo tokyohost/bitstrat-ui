@@ -136,6 +136,7 @@ const onExchange = async (exchangeName) => {
   //   return;
   // }
   form.value.fundingIntervalHours = null;
+  form.value.symbol = null
   // 如果没有加载过，则请求后台加载
   try {
     loading.value = true;

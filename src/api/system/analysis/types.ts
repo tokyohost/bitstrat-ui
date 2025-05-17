@@ -62,6 +62,7 @@ export interface ExchangeItemForm extends ExchangeItem {
   size?: number;
   leverage?: number;
   actualSize?: number;
+  marginSize?: number; //预期需要的保证金金额
   /**
    * 收益
    */
@@ -115,6 +116,8 @@ export interface CoinContractInformation {
 
   /** 合约面值  10 就是10个对应的币对数量 */
   contractValue?: number;
+  /** 数量步长 */
+  step?: number;
 
   /** 合约乘数  1 就是合约面值*合约乘数 一个合约等于 合约面值*合约乘数  1张 = 1 * 10 = 10 */
   ctMult?: number;

@@ -573,8 +573,8 @@ const load2SideCoinContract = async () => {
   if (buyCoinInfo.code == 200) {
     buyCoinInfoData.value = buyCoinInfo.data;
   }
-  const sellMinStep = sellCoinInfoData.value.contractValue * sellCoinInfoData.value.ctMult;
-  const buyMinStep = buyCoinInfoData.value.contractValue * buyCoinInfoData.value.ctMult;
+  const sellMinStep = sellCoinInfoData.value.step;
+  const buyMinStep = buyCoinInfoData.value.step;
   minStep.value = Math.max(sellMinStep, buyMinStep);
   maxSize.value = Math.min(sellCoinInfoData.value.maxLmtSz, sellCoinInfoData.value.maxLmtSz);
   console.log('minStep', minStep.value);
@@ -599,7 +599,7 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
     ],
     ([size, leverage, fundingRate, buyPrice, sellPrice, buyFeeValue, sellFeeValue]) => {
       // console.log(size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue);
-      arbitrageForm[side].actualSize = size * leverage * (side == 'buy' ? buyPrice : sellPrice);
+      arbitrageForm[side].actualSize = size * (side == 'buy' ? buyPrice : sellPrice);
       arbitrageForm[side].fundingIncome = calculateFundingIncome(arbitrageForm[side].actualSize, fundingRate, side == 'buy' ? 'long' : 'short');
       finalPrice.value = arbitrageForm.buy.fundingIncome + arbitrageForm.sell.fundingIncome;
 

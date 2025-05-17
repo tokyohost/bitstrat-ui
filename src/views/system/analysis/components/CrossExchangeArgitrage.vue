@@ -93,6 +93,10 @@
                   </template>
                 </el-input>
               </el-form-item>
+              <el-form-item :label="'预计成本'" prop="buy.actualSize">
+                <el-input v-model="arbitrageForm.buy.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
+                </el-input>
+              </el-form-item>
               <el-form-item :label="'预计收益'">
                 <el-input
                   v-model="arbitrageForm.buy.fundingIncome"
@@ -200,6 +204,10 @@
                   </template>
                 </el-input>
               </el-form-item>
+              <el-form-item :label="'预计成本'" prop="buy.actualSize">
+                <el-input v-model="arbitrageForm.sell.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
+                </el-input>
+              </el-form-item>
               <el-form-item :label="'预计收益'">
                 <el-input
                   v-model="arbitrageForm.sell.fundingIncome"
@@ -295,7 +303,7 @@ import { orderTypeSelectOptions } from '@/constants/order-options';
 import FundingRate from '@/views/system/analysis/components/FundingRate.vue';
 import { querySymbolContractInfo, querySymbolMarketPrice } from '@/api/system/common/common';
 import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetcherMarketPrice.vue';
-import { calcAnnualizedReturnSimple, calculateFundingIncome, formatToDecimal } from '@/api/system/analysis/fundingCalculator';
+import { calcAnnualizedReturnSimple, calculateFundingIncome, formatToDecimal,calculateMargin } from '@/api/system/analysis/fundingCalculator';
 import { SymbolFee } from '@/api/system/common/types';
 import { createTask } from '@/api/system/crossExchangeArbitrageTask';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -384,6 +392,7 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     size: 0,
     leverage: 1,
     actualSize: 0,
+    marginSize: 0,
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
@@ -393,6 +402,7 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     size: 0,
     leverage: 1,
     actualSize: 0,
+    marginSize: 0,
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
@@ -441,8 +451,8 @@ const load2SideCoinContract = async () => {
   if (buyCoinInfo.code == 200) {
     buyCoinInfoData.value = buyCoinInfo.data;
   }
-  const sellMinStep = sellCoinInfoData.value.contractValue * sellCoinInfoData.value.ctMult;
-  const buyMinStep = buyCoinInfoData.value.contractValue * buyCoinInfoData.value.ctMult;
+  const sellMinStep = sellCoinInfoData.value.step;
+  const buyMinStep = buyCoinInfoData.value.step;
   minStep.value = Math.max(sellMinStep, buyMinStep);
   maxSize.value = Math.min(sellCoinInfoData.value.maxLmtSz, buyCoinInfoData.value.maxLmtSz);
   console.log('minStep', minStep.value);
@@ -467,7 +477,8 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
     ],
     ([size, leverage, fundingRate, buyPrice, sellPrice, buyFeeValue, sellFeeValue]) => {
       // console.log(size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue);
-      arbitrageForm[side].actualSize = size * leverage * (side == 'buy' ? buyPrice : sellPrice);
+      arbitrageForm[side].actualSize = size * (side == 'buy' ? buyPrice : sellPrice);
+      arbitrageForm[side].marginSize = calculateMargin(size,(side == 'buy' ? buyPrice : sellPrice),leverage);
       arbitrageForm[side].fundingIncome = calculateFundingIncome(arbitrageForm[side].actualSize, fundingRate, side == 'buy' ? 'long' : 'short');
       finalPrice.value = arbitrageForm.buy.fundingIncome + arbitrageForm.sell.fundingIncome;
 
