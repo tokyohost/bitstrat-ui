@@ -1,4 +1,5 @@
 import { Decimal } from 'decimal.js';
+import { trimTrailingZeros } from '@/api/tool/utils';
 export type PositionSide = 'long' | 'short';
 
 /**
@@ -40,6 +41,79 @@ export function calculateFundingIncome(positionValue: number, fundingRate: numbe
 }
 
 /**
+ * 使用 decimal.js 精度库估算强平价格（简化版：不含维持保证金率）
+ * @param entryPrice 开仓价（如 30000）
+ * @param leverage 杠杆倍数（如 10）
+ * @param quantity 持仓数量（如 1 BTC）
+ * @param side 持仓方向（"long" | "short"）
+ * @returns 强平价格（字符串，保留 2 位小数）
+ */
+export function estimateLiquidationPriceDecimal(
+  entryPrice: number | string,
+  leverage: number | string,
+  quantity: number | string,
+  side: 'long' | 'short'
+): string {
+  const price = new Decimal(entryPrice);
+  const lev = new Decimal(leverage);
+  const qty = new Decimal(quantity);
+
+  if (lev.lte(0) || price.lte(0) || qty.lte(0)) {
+    console.warn("参数必须为正数");
+    // throw new Error('参数必须为正数');
+    return '-';
+  }
+
+  // 保证金 = 仓位价值 / 杠杆
+  const margin = price.mul(qty).div(lev);
+
+  const liquidationPrice =
+    side === 'long'
+      ? price.sub(margin.div(qty)) // 多头强平线
+      : price.add(margin.div(qty)); // 空头强平线
+
+  return liquidationPrice.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
+}
+function isValidNumber(value) {
+  const num = Number(value);
+  return typeof value === 'string' && value.trim() !== '' && Number.isFinite(num);
+}
+/**
+ * 计算预估价相对于当前价的涨跌幅百分比
+ * @param currentPrice 当前价格
+ * @param estimatedPrice 预估价格
+ * @returns 涨跌百分比（字符串，保留2位小数，带正负号）
+ */
+export function calculatePriceChangePercent(
+  currentPrice: number | string,
+  estimatedPrice: number | string
+): string {
+  console.log("--------------->  calculatePriceChangePercent()"+currentPrice+" - "+estimatedPrice);
+  if (!currentPrice || !estimatedPrice) {
+    return '-%';
+  }
+
+  if (!isValidNumber(currentPrice)|| !isValidNumber(estimatedPrice)) {
+    return '-%';
+  }
+  const current = new Decimal(currentPrice);
+  const estimate = new Decimal(estimatedPrice);
+
+  if (current.lte(0)) {
+    // throw new Error('当前价格必须为正数');
+    return '-%'
+  }
+
+  // 涨跌百分比 = (预估价 - 当前价) / 当前价 × 100
+  const percent = estimate.sub(current).div(current).mul(100);
+  const formatted = percent.toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
+
+  // 显式添加正负号
+  return `${formatted.greaterThanOrEqualTo(0) ? '+' : ''}${formatted.toString()}%`;
+}
+
+
+/**
  * 将数字保留指定的小数位数（默认四舍五入）
  * @param value 原始数字或字符串
  * @param decimalPlaces 要保留的小数位数，默认 4
@@ -66,7 +140,7 @@ export function calculateMargin(size: number, price: number, leverage: number): 
   const margin = sizeDecimal.mul(priceDecimal).div(leverageDecimal);
 
   // 返回保证金，保留 10 位小数
-  return margin.toFixed(10);
+  return trimTrailingZeros(margin.toFixed(10));
 }
 
 /**

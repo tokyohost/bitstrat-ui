@@ -97,6 +97,10 @@
                 <el-input v-model="arbitrageForm.buy.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
                 </el-input>
               </el-form-item>
+              <el-form-item :label="'预估强平价'" prop="buy.actualSize">
+                <el-input v-model="arbitrageForm.buy.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(buyPrice,arbitrageForm.buy.liqPrice)})`">
+                </el-input>
+              </el-form-item>
               <el-form-item :label="'预计收益'">
                 <el-input
                   v-model="arbitrageForm.buy.fundingIncome"
@@ -208,6 +212,10 @@
                 <el-input v-model="arbitrageForm.sell.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
                 </el-input>
               </el-form-item>
+              <el-form-item :label="'预估强平价'" prop="buy.actualSize">
+                <el-input v-model="arbitrageForm.sell.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(arbitrageForm.buy.liqPrice,buyPrice)})`">
+                </el-input>
+              </el-form-item>
               <el-form-item :label="'预计收益'">
                 <el-input
                   v-model="arbitrageForm.sell.fundingIncome"
@@ -303,7 +311,13 @@ import { orderTypeSelectOptions } from '@/constants/order-options';
 import FundingRate from '@/views/system/analysis/components/FundingRate.vue';
 import { querySymbolContractInfo, querySymbolMarketPrice } from '@/api/system/common/common';
 import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetcherMarketPrice.vue';
-import { calcAnnualizedReturnSimple, calculateFundingIncome, formatToDecimal,calculateMargin } from '@/api/system/analysis/fundingCalculator';
+import {
+  calcAnnualizedReturnSimple,
+  calculateFundingIncome,
+  formatToDecimal,
+  calculateMargin,
+  estimateLiquidationPriceDecimal, calculatePriceChangePercent
+} from '@/api/system/analysis/fundingCalculator';
 import { SymbolFee } from '@/api/system/common/types';
 import { createTask } from '@/api/system/crossExchangeArbitrageTask';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -393,6 +407,7 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     leverage: 1,
     actualSize: 0,
     marginSize: 0,
+    liqPrice: 0,
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
@@ -403,6 +418,7 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     leverage: 1,
     actualSize: 0,
     marginSize: 0,
+    liqPrice: 0,
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
@@ -479,6 +495,7 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
       // console.log(size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue);
       arbitrageForm[side].actualSize = size * (side == 'buy' ? buyPrice : sellPrice);
       arbitrageForm[side].marginSize = calculateMargin(size,(side == 'buy' ? buyPrice : sellPrice),leverage);
+      arbitrageForm[side].liqPrice = estimateLiquidationPriceDecimal((side == 'buy' ? buyPrice : sellPrice),leverage,size,(side == 'buy' ? 'long' : 'short'));
       arbitrageForm[side].fundingIncome = calculateFundingIncome(arbitrageForm[side].actualSize, fundingRate, side == 'buy' ? 'long' : 'short');
       finalPrice.value = arbitrageForm.buy.fundingIncome + arbitrageForm.sell.fundingIncome;
 

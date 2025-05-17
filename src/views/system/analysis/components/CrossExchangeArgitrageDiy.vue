@@ -118,6 +118,10 @@
                   <el-input v-model="arbitrageForm.buy.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
                   </el-input>
                 </el-form-item>
+                <el-form-item :label="'预估强平价'" prop="buy.actualSize">
+                  <el-input v-model="arbitrageForm.buy.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(buyPrice,arbitrageForm.buy.liqPrice)})`">
+                  </el-input>
+                </el-form-item>
                 <el-form-item :label="'预计收益'">
                   <el-input
                     v-model="arbitrageForm.buy.fundingIncome"
@@ -233,8 +237,12 @@
                     </template>
                   </el-input>
                 </el-form-item>
-                <el-form-item :label="'预计成本'" prop="buy.actualSize">
+                <el-form-item :label="'预计成本'" prop="sell.actualSize">
                   <el-input v-model="arbitrageForm.sell.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
+                  </el-input>
+                </el-form-item>
+                <el-form-item :label="'预估强平价'" prop="sell.actualSize">
+                  <el-input v-model="arbitrageForm.sell.liqPrice" :key="arbitrageForm.sell.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(arbitrageForm.sell.liqPrice,buyPrice)})`">
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预计收益'">
@@ -337,7 +345,7 @@ import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetch
 import {
   calcAnnualizedReturnSimple,
   calculateFundingIncome,
-  calculateMargin,
+  calculateMargin, calculatePriceChangePercent, estimateLiquidationPriceDecimal,
   formatToDecimal
 } from '@/api/system/analysis/fundingCalculator';
 import { SymbolFee } from '@/api/system/common/types';
@@ -434,6 +442,7 @@ const arbitrageForm = ref<ArbitrageTaskForm>({
     leverage: 1,
     actualSize: 0,
     marginSize: 0,
+    liqPrice: 0,
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
@@ -444,6 +453,7 @@ const arbitrageForm = ref<ArbitrageTaskForm>({
     leverage: 1,
     actualSize: 0,
     marginSize: 0,
+    liqPrice: 0,
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
@@ -540,6 +550,7 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
       // console.log(size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue);
       arbitrageForm.value[side].actualSize = size * (side == 'buy' ? buyPrice : sellPrice);
       arbitrageForm.value[side].marginSize = calculateMargin(size,(side == 'buy' ? buyPrice : sellPrice),leverage);
+      arbitrageForm.value[side].liqPrice = estimateLiquidationPriceDecimal((side == 'buy' ? buyPrice : sellPrice),leverage,size,(side == 'buy' ? 'long' : 'short'));
       arbitrageForm.value[side].fundingIncome = calculateFundingIncome(
         arbitrageForm.value[side].actualSize,
         fundingRate,

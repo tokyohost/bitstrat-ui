@@ -63,6 +63,7 @@ export interface ExchangeItemForm extends ExchangeItem {
   leverage?: number;
   actualSize?: number;
   marginSize?: number; //预期需要的保证金金额
+  liqPrice?: number; //预估强平价
   /**
    * 收益
    */
