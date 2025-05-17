@@ -27,6 +27,14 @@
         <!--            <svg-icon class-name="search-icon" icon-class="search" />-->
         <!--          </div>-->
         <!--        </el-tooltip>-->
+
+        <!-- VIP标识 -->
+        <el-tooltip :content="isVIP ? '已开通VIP' : '开通VIP'" effect="dark" placement="bottom">
+          <div class="vip-indicator" @click="handleVipClick">
+<!--            <img :src="!isVIP ? vip_active : vip_inactive" alt="VIP标识" />-->
+            <img :src="ic_vip" alt="VIP标识" />
+          </div>
+        </el-tooltip>
         <!-- 消息 -->
         <el-tooltip :content="proxy.$t('navbar.message')" effect="dark" placement="bottom">
           <div>
@@ -70,6 +78,7 @@
         <!--        <el-tooltip :content="proxy.$t('navbar.notifySetting')" effect="dark" placement="bottom">-->
         <!--          <NotifySettingsPopup></NotifySettingsPopup>-->
         <!--        </el-tooltip>-->
+
       </template>
       <div class="avatar-container">
         <el-dropdown class="right-menu-item hover-effect" trigger="click" @command="handleCommand">
@@ -111,6 +120,10 @@ import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/
 import ApiSettingsPopup from '@/layout/components/ApiSetting/ApiSettingsPopup.vue';
 import NotifySettingsPopup from '@/layout/components/NotifySetting/NotifySettingsPopup.vue';
 import SocketStatusPopup from '@/layout/components/SocketStatus/SocketStatusPopup.vue';
+
+import vip_active from '@/assets/icons/png/vip_active.png'
+import vip_inactive from '@/assets/icons/png/vip_inactive.png'
+import ic_vip from '@/assets/icons/png/ic_vip.png'
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -209,6 +222,19 @@ watch(
   },
   { deep: true }
 );
+
+// 添加VIP状态
+const isVIP = ref(false); // 假设初始状态为未开通VIP
+
+// 处理VIP点击事件
+const handleVipClick = () => {
+  router.push({ name: 'PurchaseVip' });
+  if (!isVIP.value) {
+    // 跳转到开通VIP页面或弹出开通VIP的对话框
+    console.log('跳转到开通VIP页面');
+  }
+};
+
 </script>
 
 <style lang="scss" scoped>
@@ -315,5 +341,26 @@ watch(
       }
     }
   }
+}
+
+// VIP标识样式
+.vip-indicator {
+  display: inline-block;
+  padding: 0 8px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 18px;
+  color: #5a5e66;
+  vertical-align: text-bottom;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #409eff;
+  }
+}
+
+.vip-active {
+  color: #ffd700; // 开通VIP后的颜色
 }
 </style>
