@@ -35,47 +35,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
-// import { purchaseVip } from '@/api/vip';
+import { getAvailableVipLevelList } from '@/api/system/vip/vipLevel';
+import {purchaseVip} from "@/api/system/vip/userVip"; // 引入接口
 
-const vipPlans = ref([
-  {
-    id: 1,
-    name: '月度VIP',
-    price: 99.99,
-    features: [
-      '专属客服',
-      '优先处理',
-      '月度报告',
-      '更多特权'
-    ]
-  },
-  {
-    id: 2,
-    name: '季度VIP',
-    price: 249.99,
-    features: [
-      '专属客服',
-      '优先处理',
-      '季度报告',
-      '更多特权'
-    ]
-  },
-  {
-    id: 3,
-    name: '年度VIP',
-    price: 899.99,
-    features: [
-      '专属客服',
-      '优先处理',
-      '年度报告',
-      '更多特权'
-    ]
-  }
-]);
-
+const vipPlans = ref([]); // 初始化为空数组
 const selectedPlan = ref<number | null>(null);
+
+// 获取可用的 VIP 列表
+const fetchVipPlans = async () => {
+  try {
+    const response = await getAvailableVipLevelList(); // 调用接口
+    if (response.code === 200) {
+      vipPlans.value = response.data.map((plan: any) => ({
+        id: plan.id,
+        name: plan.name,
+        price: plan.price,
+        features: plan.features || ['专属客服',
+          '优先处理',
+          '月度报告',
+          '更多特权']
+      }));
+    } else {
+      ElMessage.error('获取VIP列表失败，请稍后重试');
+    }
+  } catch (error) {
+    console.error('获取VIP列表失败:', error);
+    ElMessage.error('获取VIP列表失败，请稍后重试');
+  }
+};
+
+// 页面加载时获取 VIP 列表
+onMounted(() => {
+  fetchVipPlans();
+});
 
 const selectPlan = (planId: number) => {
   selectedPlan.value = planId;
