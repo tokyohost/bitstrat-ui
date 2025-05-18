@@ -26,6 +26,14 @@ export const purchaseVip = (data: UserVipForm) => {
     data: data
   });
 };
+// 新增检查购买资格接口
+export function checkPurchaseVip(data: { userId: number, vipId: number }) {
+  return request({
+    url: '/system/userVip/checkPurchaseVip',
+    method: 'post',
+    data,
+  });
+}
 
 /**
  * 查询用户VIP 状态详细
@@ -72,3 +80,12 @@ export const delUserVip = (id: string | number | Array<string | number>) => {
     method: 'delete'
   });
 };
+
+// 新增 getUserVipInfo 接口调用
+export function getUserVipInfo(data: { userId: number }) {
+  return request({
+    url: '/system/userVip/getUserVipInfo',
+    method: 'post',
+    data,
+  });
+}

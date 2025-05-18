@@ -31,8 +31,25 @@
         <!-- VIP标识 -->
         <el-tooltip :content="isVIP ? '已开通VIP' : '开通VIP'" effect="dark" placement="bottom">
           <div class="vip-indicator" @click="handleVipClick">
-<!--            <img :src="!isVIP ? vip_active : vip_inactive" alt="VIP标识" />-->
-            <img :src="ic_vip" alt="VIP标识" />
+            <el-popover placement="bottom" trigger="hover" :width="300" :persistent="false" @show="fetchVipDetails">
+              <template #reference>
+                <div class="vip-indicator" @click="handleVipClick">
+                  <img :src="ic_vip" alt="VIP标识" />
+                </div>
+              </template>
+              <template #default>
+                <div v-if="vipDetails" class="vip-details">
+                  <h3>VIP详情</h3>
+                  <p>到期时间：{{ vipDetails.expireTime }}</p>
+                  <p>权益列表：{{ vipDetails.name }}</p>
+                  <ul>
+                    <li v-for="(feature, index) in vipDetails.features" :key="index">{{ feature }}</li>
+                  </ul>
+                  <div v-if="vipDetails.isRenew" class="renew-info">续费ID: {{ vipDetails.renewId }}</div>
+                </div>
+                <div v-else>加载中...</div>
+              </template>
+            </el-popover>
           </div>
         </el-tooltip>
         <!-- 消息 -->
@@ -124,6 +141,7 @@ import SocketStatusPopup from '@/layout/components/SocketStatus/SocketStatusPopu
 import vip_active from '@/assets/icons/png/vip_active.png'
 import vip_inactive from '@/assets/icons/png/vip_inactive.png'
 import ic_vip from '@/assets/icons/png/ic_vip.png'
+import {getUserVipInfo} from "@/api/system/vip/userVip";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -226,13 +244,60 @@ watch(
 // 添加VIP状态
 const isVIP = ref(false); // 假设初始状态为未开通VIP
 
-// 处理VIP点击事件
+// 新增 VIP 详情数据结构，与后端返回的 CoinsUserVipInfoVo 对齐
+const vipDetails = ref<{
+  id: number;
+  userId: number;
+  vipId: number;
+  buyTime: string;
+  expireTime: string;
+  status: number;
+  name: string;
+  level: number;
+  maxAbAmount: number;
+  maxActiveTask: number;
+  price: number;
+  avaliableDay: number;
+} | null>(null);
+
+//  fetchVipDetails 方法
+const fetchVipDetails = async () => {
+  try {
+    const response = await getUserVipInfo({
+      userId: userStore.userId, // 使用当前用户的ID
+    });
+    if (response.code === 200) {
+      const data = response.data;
+      vipDetails.value = {
+        id: data.id,
+        userId: data.userId,
+        vipId: data.vipId,
+        buyTime: data.buyTime || '未知',
+        expireTime: data.expireTime || '未知',
+        status: data.status || 0,
+        name: data.name || 'VIP会员',
+        level: data.level || 0,
+        maxAbAmount: data.maxAbAmount || 0,
+        maxActiveTask: data.maxActiveTask || 0,
+        price: data.price || 0,
+        avaliableDay: data.avaliableDay || 0,
+      };
+      isVIP.value = data.status === 1; // 根据状态判断是否为VIP
+    } else {
+      ElMessage.error('获取VIP详情失败，请稍后重试');
+    }
+  } catch (error) {
+    console.error('获取VIP详情失败:', error);
+    ElMessage.error('获取VIP详情失败，请稍后重试');
+  }
+};
+
+// 修改 handleVipClick 方法，调用 fetchVipDetails
 const handleVipClick = () => {
   router.push({ name: 'PurchaseVip' });
   if (!isVIP.value) {
-    // 跳转到开通VIP页面或弹出开通VIP的对话框
     console.log('跳转到开通VIP页面');
-  }
+  } // 调用获取VIP详情的方法
 };
 
 </script>
@@ -362,5 +427,32 @@ const handleVipClick = () => {
 
 .vip-active {
   color: #ffd700; // 开通VIP后的颜色
+}
+
+// 新增 VIP 详情样式
+.vip-details {
+  h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    li {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+  }
+  .renew-info { // 新增样式：续费信息
+    margin-top: 10px;
+    font-size: 12px;
+    color: #999;
+  }
 }
 </style>

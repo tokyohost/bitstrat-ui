@@ -38,7 +38,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { getAvailableVipLevelList } from '@/api/system/vip/vipLevel';
-import {purchaseVip} from "@/api/system/vip/userVip"; // 引入接口
+import { purchaseVip, checkPurchaseVip } from '@/api/system/vip/userVip'; // 引入新接口
 
 const vipPlans = ref([]); // 初始化为空数组
 const selectedPlan = ref<number | null>(null);
@@ -77,14 +77,45 @@ const selectPlan = (planId: number) => {
 
 const confirmPurchase = async () => {
   try {
-    await ElMessageBox.confirm('确定购买该VIP套餐吗？', '确认购买', {
+    // 调用检查购买资格接口
+    const checkResponse = await checkPurchaseVip({
+      userId: 1, // 这里需要替换为实际的用户ID
+      vipId: selectedPlan.value,
+    });
+
+    let hintTxt = '';
+    // 根据后端返回值进行逻辑判断
+    switch (checkResponse.data) {
+      case 0: // USER_VIP_CAN_PURCHASE
+        break; // 可正常购买，继续执行后续逻辑
+      case 1: // USER_VIP_CANT_PURCHASE
+        ElMessage.info('您有更高级的会员，无需购买~');
+        return; // 终止购买流程
+      case 2: // USER_VIP_RENEW
+        hintTxt += '您正在续费会员等级，';
+        ElMessage.info('您正在续费当前会员等级');
+        break;
+      case 3: // USER_VIP_UPGRADE
+        hintTxt += '您正在升级会员等级，';
+        ElMessage.info('您正在升级会员等级');
+        break;
+      default:
+        ElMessage.error('未知的购买资格状态，请联系管理员');
+        return; // 终止购买流程
+    }
+    hintTxt += '确定购买该VIP套餐吗？';
+
+    // 确认购买提示
+    await ElMessageBox.confirm(hintTxt, '确认购买', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     });
+
+    // 调用购买接口
     const response = await purchaseVip({
       userId: 1, // 这里需要替换为实际的用户ID
-      vipId: selectedPlan.value
+      vipId: selectedPlan.value,
     });
     if (response.code === 200) {
       ElMessage.success('购买成功！');
@@ -93,9 +124,9 @@ const confirmPurchase = async () => {
     }
   } catch (error) {
     console.error('购买失败:', error);
-    ElMessage.error('购买失败，请稍后重试');
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
