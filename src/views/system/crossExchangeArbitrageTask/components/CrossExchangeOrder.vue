@@ -213,7 +213,7 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预估强平价'" prop="buy.actualSize">
-                  <el-input v-model="arbitrageForm.sell.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(arbitrageForm.buy.liqPrice,buyPrice)})`">
+                  <el-input v-model="arbitrageForm.sell.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(sellPrice,arbitrageForm.sell.liqPrice)})`">
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预计收益'">
@@ -540,8 +540,9 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
     ([size, leverage, fundingRate, buyPrice, sellPrice, buyFeeValue, sellFeeValue]) => {
       // console.log(size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue);
       arbitrageForm[side].actualSize = size * (side == 'buy' ? buyPrice : sellPrice);
-      arbitrageForm[side].marginSize = calculateMargin(size,(side == 'buy' ? buyPrice : sellPrice),leverage);
-      arbitrageForm[side].liqPrice = estimateLiquidationPriceDecimal((side == 'buy' ? buyPrice : sellPrice),leverage,size,(side == 'buy' ? 'long' : 'short'));
+      console.log(toRaw(localTask));
+      arbitrageForm[side].marginSize = calculateMargin(size,(side == 'buy' ? buyPrice : sellPrice),(side == 'buy' ? localTask.longLeverage : localTask.shortLeverage));
+      arbitrageForm[side].liqPrice = estimateLiquidationPriceDecimal((side == 'buy' ? buyPrice : sellPrice),(side == 'buy' ? localTask.longLeverage : localTask.shortLeverage),size,(side == 'buy' ? 'long' : 'short'));
       arbitrageForm[side].fundingIncome = calculateFundingIncome(arbitrageForm[side].actualSize, fundingRate, side == 'buy' ? 'long' : 'short');
       finalPrice.value = arbitrageForm.buy.fundingIncome + arbitrageForm.sell.fundingIncome;
 

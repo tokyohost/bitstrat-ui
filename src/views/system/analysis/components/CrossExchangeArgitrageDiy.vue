@@ -242,7 +242,7 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预估强平价'" prop="sell.actualSize">
-                  <el-input v-model="arbitrageForm.sell.liqPrice" :key="arbitrageForm.sell.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(arbitrageForm.sell.liqPrice,buyPrice)})`">
+                  <el-input v-model="arbitrageForm.sell.liqPrice" :key="arbitrageForm.sell.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(sellPrice,arbitrageForm.sell.liqPrice)})`">
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预计收益'">

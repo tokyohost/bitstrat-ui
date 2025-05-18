@@ -1,5 +1,6 @@
 import { Decimal } from 'decimal.js';
 import { trimTrailingZeros } from '@/api/tool/utils';
+
 export type PositionSide = 'long' | 'short';
 
 /**
@@ -54,12 +55,16 @@ export function estimateLiquidationPriceDecimal(
   quantity: number | string,
   side: 'long' | 'short'
 ): string {
+  if (!isValidNumberFlexible(entryPrice) || !isValidNumberFlexible(leverage) || !isValidNumberFlexible(quantity)) {
+    return '-';
+  }
+
   const price = new Decimal(entryPrice);
   const lev = new Decimal(leverage);
   const qty = new Decimal(quantity);
 
   if (lev.lte(0) || price.lte(0) || qty.lte(0)) {
-    console.warn("参数必须为正数");
+    console.warn('参数必须为正数');
     // throw new Error('参数必须为正数');
     return '-';
   }
@@ -72,12 +77,26 @@ export function estimateLiquidationPriceDecimal(
       ? price.sub(margin.div(qty)) // 多头强平线
       : price.add(margin.div(qty)); // 空头强平线
 
-  return liquidationPrice.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toString();
+  return trimTrailingZeros(liquidationPrice.toDecimalPlaces(10, Decimal.ROUND_HALF_UP).toString());
 }
+
 function isValidNumber(value) {
   const num = Number(value);
   return typeof value === 'string' && value.trim() !== '' && Number.isFinite(num);
 }
+export function isValidNumberFlexible(value: unknown): boolean {
+  if (typeof value === 'number') {
+    return Number.isFinite(value);
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed !== '' && Number.isFinite(Number(trimmed));
+  }
+
+  return false;
+}
+
 /**
  * 计算预估价相对于当前价的涨跌幅百分比
  * @param currentPrice 当前价格
@@ -88,12 +107,12 @@ export function calculatePriceChangePercent(
   currentPrice: number | string,
   estimatedPrice: number | string
 ): string {
-  console.log("--------------->  calculatePriceChangePercent()"+currentPrice+" - "+estimatedPrice);
+  console.log('--------------->  calculatePriceChangePercent()' + currentPrice + ' - ' + estimatedPrice);
   if (!currentPrice || !estimatedPrice) {
     return '-%';
   }
 
-  if (!isValidNumber(currentPrice)|| !isValidNumber(estimatedPrice)) {
+  if (!isValidNumberFlexible(currentPrice) || !isValidNumberFlexible(estimatedPrice)) {
     return '-%';
   }
   const current = new Decimal(currentPrice);
@@ -101,12 +120,13 @@ export function calculatePriceChangePercent(
 
   if (current.lte(0)) {
     // throw new Error('当前价格必须为正数');
-    return '-%'
+    return '-%';
   }
 
   // 涨跌百分比 = (预估价 - 当前价) / 当前价 × 100
   const percent = estimate.sub(current).div(current).mul(100);
   const formatted = percent.toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
+  console.log('--------------->  calculatePriceChangePercent()' + currentPrice + ' - ' + estimatedPrice +" result="+formatted);
 
   // 显式添加正负号
   return `${formatted.greaterThanOrEqualTo(0) ? '+' : ''}${formatted.toString()}%`;
@@ -132,6 +152,11 @@ export function formatToDecimal(value: number | string, decimalPlaces = 4): stri
  */
 // 封装计算最低保证金的函数
 export function calculateMargin(size: number, price: number, leverage: number): string {
+  console.log("--------> calculateMargin", size, price, leverage);
+  if (!isValidNumberFlexible(size) || !isValidNumberFlexible(price) || !isValidNumberFlexible(leverage)) {
+    return '-';
+  }
+
   const sizeDecimal = new Decimal(size);    // 开仓数量
   const priceDecimal = new Decimal(price);  // 当前价格（USDT）
   const leverageDecimal = new Decimal(leverage); // 杠杆倍数

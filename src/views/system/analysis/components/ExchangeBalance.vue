@@ -1,7 +1,7 @@
 <template>
   <div v-if="exchange.toLowerCase() == 'binance'">
-    <p><strong>可用余额：</strong>{{ balance.availableBalance }} {{ coin }}</p>
-    <p><strong>冻结余额：</strong>{{ balance.lockedBalance }}</p>
+    <p><strong>总余额：</strong>{{ balance.balance }} {{ coin }}</p>
+    <p><strong>可交易：</strong>{{ balance.freeBalance }} {{ coin }}</p>
   </div>
 
   <div v-else-if="exchange.toLowerCase() == 'bybit'">
