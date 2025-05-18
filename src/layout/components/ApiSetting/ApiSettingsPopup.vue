@@ -84,8 +84,8 @@ const configForm = ref({
 // 每个交易所对应的字段配置
 const fieldConfigs = {
   binance: [
-    { label: 'API Key', prop: 'apiKey' },
-    { label: 'Secret', prop: 'secret', type: 'password', showPassword: true }
+    { label: 'API Key(HMAC)', prop: 'apiKey' },
+    { label: 'Secret(HMAC)', prop: 'secret', type: 'password', showPassword: true }
   ],
   okx: [
     { label: 'API Key', prop: 'apiKey' },
