@@ -1,9 +1,17 @@
 <template>
   <el-card class="w-full card-balance" :shadow="false">
     <template #header>
-      <div class="flex justify-between items-center">
-        <span>{{ exchange }} - {{ coin }} 余额</span>
-        <el-button size="small" @click="flushed" :loading="loading" icon="Refresh"> 刷新 </el-button>
+      <div class="flex flex-col">
+        <div class="flex justify-between items-center">
+          <span>{{ exchange }} - {{ coin }} 余额</span>
+          <el-button size="small" @click="flushed" :loading="loading" icon="Refresh"> 刷新 </el-button>
+        </div>
+        <div class="flex justify-start items-center">
+          <span>{{ balance && balance.apiName ? balance.apiName : '-' }}</span>
+          <el-icon v-if="!disableSwitchAccount" class="hover:cursor-pointer hover:color-emerald ml1 color-amber" color="amber" @click="showAccount"
+            ><Switch
+          /></el-icon>
+        </div>
       </div>
     </template>
 
@@ -39,6 +47,7 @@
       <!--      <el-empty description="暂无数据" />-->
       <p>加载失败</p>
     </div>
+    <AccountSelectDialog v-model:visible="accountPanelShow" :exchange-name="exchange" @select="selectAccount"></AccountSelectDialog>
   </el-card>
 </template>
 
@@ -47,20 +56,35 @@ import { ref, onMounted, watch } from 'vue';
 import { AccountBalance, QueryBalanceBody, QueryFeeBody, SymbolFee } from '@/api/system/common/types';
 import { queryBalanceByEx, queryFeeByExSymbol } from '@/api/system/common/common';
 import ExchangeBalance from '@/views/system/analysis/components/ExchangeBalance.vue';
+import AccountSelectDialog from '@/views/system/analysis/components/AccountSelectDialog.vue';
+import { ApiVO } from '@/api/system/api/types';
 
-const props = defineProps<{
-  symbol: string;
-  coin: string;
-  exchange: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    symbol: string;
+    coin: string;
+    exchange: string;
+    apiId?: number;
+    disableSwitchAccount?: boolean;
+  }>(),
+  {
+    disableSwitchAccount: false
+  }
+);
 
+const apiAccount = ref<ApiVO | null>(null);
+const apiAccountId = ref(props.apiId);
 const loading = ref(false);
 const balance = ref<AccountBalance | null>(null);
 const fee = ref<SymbolFee | null>(null);
 const emit = defineEmits<{
   (e: 'changeFee', val: SymbolFee): void;
 }>();
+const accountPanelShow = ref(false);
 
+const showAccount = () => {
+  accountPanelShow.value = true;
+};
 const flushed = async () => {
   loading.value = true;
   balance.value = null;
@@ -76,9 +100,11 @@ const fetchBalance = async () => {
   try {
     const { data } = await queryBalanceByEx({
       coin: props.coin,
-      exchange: props.exchange
+      exchange: props.exchange,
+      apiId: apiAccountId.value
     } as QueryBalanceBody);
     balance.value = data;
+    apiAccountId.value = data.apiId;
   } catch (err) {
     console.error('获取余额失败', err);
     balance.value = null;
@@ -93,7 +119,8 @@ const fetchFee = async () => {
   try {
     const { data } = await queryFeeByExSymbol({
       symbol: props.symbol,
-      exchange: props.exchange
+      exchange: props.exchange,
+      apiId: apiAccountId.value
     } as QueryFeeBody);
     fee.value = data;
     emit('changeFee', fee.value);
@@ -105,6 +132,19 @@ const fetchFee = async () => {
   }
 };
 
+const selectAccount = (account: ApiVO) => {
+  apiAccount.value = account;
+  apiAccountId.value = account.id as number;
+  flushed();
+};
+const getAccountId = async (): Promise<number> => {
+  console.log('getAccountId', apiAccountId.value);
+  return apiAccountId.value;
+};
+defineExpose({
+  getAccountId
+});
+
 // 初始化加载
 onMounted(() => {
   fetchBalance();
@@ -113,6 +153,13 @@ onMounted(() => {
 
 // 响应 symbol / exchange 变更
 watch(() => [props.symbol, props.exchange], fetchBalance);
+watch(
+  () => props.apiId,
+  (apiId) => {
+    console.log('load apiId', apiId);
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>

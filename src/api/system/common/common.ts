@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { TaskQuery, TaskVO } from '@/api/system/task/types';
 import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
-import { AccountBalance, DeviceInfo, ExchangeData, QueryBalanceBody, SetLeverageBody } from '@/api/system/common/types';
+import { AccountBalance, DeviceInfo, ExchangeData, QueryBalanceBody, SetLeverageBody, SymbolFee } from '@/api/system/common/types';
 import { CoinContractInformation, FundingRate } from '@/api/system/analysis/types';
 import { SymbolFundingRate } from '@/views/system/analysis/components/type';
 
@@ -80,7 +80,7 @@ export const queryBalanceByEx = (data: QueryBalanceBody): AxiosPromise<AccountBa
   });
 };
 
-export const queryFeeByExSymbol = (data: QueryBalanceBody): AxiosPromise<AccountBalance> => {
+export const queryFeeByExSymbol = (data: QueryBalanceBody): AxiosPromise<SymbolFee> => {
   return request({
     url: '/common/queryFeeByExSymbol',
     method: 'post',

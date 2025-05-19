@@ -1,6 +1,6 @@
 <template>
-  <el-form :model="props.modelValue" label-width="100px">
-    <el-form-item v-for="field in fields" :key="field.prop" :label="t(`${i18nPrefix}.${field.prop}`)">
+  <el-form :model="props.modelValue" label-width="100px" label-position="top">
+    <el-form-item v-for="field in fields" :prop="field.prop" :key="field.prop" :label="t(`${i18nPrefix}.${field.prop}`)">
       <el-input
         v-model="props.modelValue[field.prop]"
         :type="field.type || 'text'"

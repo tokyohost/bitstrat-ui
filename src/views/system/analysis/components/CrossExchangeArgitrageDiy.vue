@@ -51,6 +51,7 @@
                 </el-form-item>
                 <el-form-item :label="''">
                   <BalanceCard
+                    ref="buyBalanceRef"
                     v-if="localData.buy?.exchangeName"
                     coin="USDT"
                     :symbol="localData.buy?.symbol"
@@ -165,6 +166,7 @@
                 </el-form-item>
                 <el-form-item :label="''">
                   <BalanceCard
+                    ref="sellBalanceRef"
                     v-if="localData.sell?.exchangeName"
                     coin="USDT"
                     :symbol="localData.sell?.symbol"
@@ -350,6 +352,9 @@ const showSelectLongEx = ref(false);
 const showSelectShortEx = ref(false);
 const refershKey = ref(1);
 
+const sellBalanceRef = useTemplateRef('sellBalanceRef');
+const buyBalanceRef = useTemplateRef('buyBalanceRef');
+
 // 创建本地副本（深克隆）
 const localData = ref({ ...toRaw(props.data) });
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
@@ -435,7 +440,8 @@ const arbitrageForm = ref<ArbitrageTaskForm>({
     exchangeName: props.data?.sell?.exchangeName
   },
   batchIncome: 0,
-  batchPrice: 25
+  batchPrice: 25,
+  symbol: null
 });
 const sellCoinInfoData = ref<CoinContractInformation>({
   maxLeverage: undefined
@@ -477,10 +483,10 @@ const check2SideSymbol = () => {
     return false;
   }
 
-  if (localData.value.buy.symbol !== localData.value.sell.symbol) {
-    console.log('两边币对不一致');
-    return false;
-  }
+  // if (localData.value.buy.symbol !== localData.value.sell.symbol) {
+  //   console.log('两边币对不一致');
+  //   return false;
+  // }
   return true;
 };
 const load2SideCoinContract = async () => {
@@ -622,8 +628,22 @@ function swapBuySell() {
   localData.value.sell = tmp;
 }
 
-const handleConfirm = () => {
+const handleConfirm = async () => {
   emit('confirm', localData.value);
+  const apiId = await buyBalanceRef.value.getAccountId();
+
+  if (!apiId) {
+    ElMessage.error('please choose account first');
+    return;
+  }
+  arbitrageForm.value.buy.accountId = apiId;
+  const apiIdsell = await sellBalanceRef.value.getAccountId();
+
+  if (!apiIdsell) {
+    ElMessage.error('please choose account first');
+    return;
+  }
+  arbitrageForm.value.sell.accountId = apiIdsell;
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       if (!check2SideSymbol()) {

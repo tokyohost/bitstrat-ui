@@ -52,14 +52,18 @@ export interface QueryBalanceBody {
   exchange?: string | number;
   symbol?: string | number;
   coin?: string | number;
+  apiId?: number;
 }
 export interface QueryFeeBody {
   exchange?: string | number;
   symbol?: string | number;
+  apiId?: number;
 }
 export interface AccountBalance {
   balance?: string | number;
   symbol?: string | number;
+  apiName?: string;
+  apiId?: number;
 }
 
 export interface SymbolFee {

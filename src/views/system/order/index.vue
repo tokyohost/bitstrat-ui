@@ -99,6 +99,11 @@
         </el-table-column>
 
         <el-table-column label="手续费" align="center" prop="fee" min-width="120" />
+        <el-table-column label="平仓盈亏" align="center" prop="pnl" min-width="120">
+          <template #default="scope">
+            {{ trimTrailingZeros(scope.row.pnl) ?? '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="批次" align="center" prop="batchCount">
           <template #default="scope"> {{ scope.row.batchCount ?? '-' }}/{{ scope.row.batchTotal ?? '-' }} </template>
         </el-table-column>
