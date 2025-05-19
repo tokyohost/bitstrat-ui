@@ -2,7 +2,7 @@
   <div>
     <el-dialog v-model="visibleRef" :title="title" width="1200px" style="min-height: 700px" :close-on-click-modal="false" @close="$emit('close')">
       <!-- 显示传入对象内容 -->
-      <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'" :key="new Date()">
+      <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'" :key="new Date().getMilliseconds()">
         <div class="ab-card">
           <el-card :shadow="'never'" style="flex: 1">
             <div class="form-item-algin">
@@ -30,6 +30,9 @@
                 <el-form-item :label="''">
                   <BalanceCard
                     coin="USDT"
+                    ref="buyBalanceRef"
+                    :disable-switch-account="true"
+                    :api-id="localTask.longAccountId"
                     :symbol="localData.symbol"
                     :exchange="localData.buy?.exchangeName"
                     @change-fee="
@@ -146,6 +149,9 @@
                 <el-form-item :label="''">
                   <BalanceCard
                     coin="USDT"
+                    ref="sellBalanceRef"
+                    :disable-switch-account="true"
+                    :api-id="localTask.shortAccountId"
                     :symbol="localData.symbol"
                     :exchange="localData.sell?.exchangeName"
                     @change-fee="
@@ -354,7 +360,9 @@ const props = defineProps({
 
 // 创建本地副本（深克隆）
 const localData = reactive({ ...toRaw(props.data) });
+console.log('localData', toRaw(localData));
 const localTask = reactive({ ...toRaw(props.task) });
+console.log('localTask', toRaw(localTask));
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
 const roles = reactive<ElFormRules>({
   buy: {

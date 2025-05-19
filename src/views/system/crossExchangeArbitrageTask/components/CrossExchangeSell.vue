@@ -24,7 +24,7 @@
                     <FundingRate
                       :exchange="localData.buy?.exchangeName"
                       :symbol="localData.symbol"
-                      :key="new Date()"
+                      :key="new Date().getMilliseconds()"
                       @change="
                         (f) => {
                           arbitrageForm.buy.fundingRate = f;
@@ -36,6 +36,8 @@
                 <el-form-item :label="''">
                   <BalanceCard
                     coin="USDT"
+                    :disable-switch-account="true"
+                    :api-id="localTask.longAccountId"
                     :symbol="localData.symbol"
                     :exchange="localData.buy?.exchangeName"
                     @change-fee="
@@ -126,6 +128,8 @@
                     coin="USDT"
                     :symbol="localData.symbol"
                     :exchange="localData.sell?.exchangeName"
+                    :disable-switch-account="true"
+                    :api-id="localTask.shortAccountId"
                     @change-fee="
                       (val) => {
                         sellFee = val;
@@ -272,7 +276,6 @@ import { OrderResult, SymbolFee } from '@/api/system/common/types';
 import { closePositionOrder, createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask';
 import { CrossExchangeArbitrageTaskVO } from '@/api/system/crossExchangeArbitrageTask/types';
 import OrderResultDialog from '@/views/system/crossExchangeArbitrageTask/components/OrderResultDialog.vue';
-import { b } from 'vitest/dist/chunks/suite.BJU7kdY9';
 import { checkWebsocketStatus } from '@/views/system/crossExchangeArbitrageTask/components/index';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface Props {
@@ -280,6 +283,8 @@ interface Props {
   title?: string | undefined;
   taskId?: string | number | undefined;
   data?: object | undefined;
+  task?: object | undefined;
+
   visible?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -287,6 +292,7 @@ const props = withDefaults(defineProps<Props>(), {
   title: '',
   taskId: '',
   visible: false,
+  task: () => ({}),
   data: () => ({})
 });
 // const props = defineProps({
@@ -312,6 +318,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // 创建本地副本（深克隆）
 const localData = reactive({ ...toRaw(props.data) });
+const localTask = reactive({ ...toRaw(props.task) });
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
 const roles = reactive<ElFormRules>({
   buy: {

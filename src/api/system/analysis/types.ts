@@ -71,6 +71,7 @@ export interface ExchangeItemForm extends ExchangeItem {
   fundingRate?: number;
   orderType?: string | number; // 下单方式 limit / market
   fundingIntervalHours?: number;
+  accountId?: number;
 }
 export interface ArbitrageTaskForm {
   buy?: ExchangeItemForm;
@@ -90,6 +91,7 @@ export interface ArbitrageTaskForm {
    *单腿下单方向 buy / sell
    */
   singleOrderSide?: string;
+  symbol?: string;
 }
 
 export interface ExchangeItem {

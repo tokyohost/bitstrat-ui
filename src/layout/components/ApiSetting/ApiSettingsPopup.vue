@@ -10,8 +10,11 @@
 
       <!-- API 设置项列表 -->
       <div class="exchange-list">
-        <p style="margin-top: 0">{{ proxy.$t('navbar.apiSetting') }}</p>
-        <div class="exchange-item" v-for="item in exchangeList" :key="item.exchangeName" @click="openConfig(item)">
+        <div class="flex justify-between">
+          <p style="margin-top: 0">{{ proxy.$t('navbar.apiSetting') }}</p>
+          <el-icon class="hover:cursor-pointer" @click="showConfigList(null)"><Setting /></el-icon>
+        </div>
+        <div class="exchange-item" v-for="item in exchangeList" :key="item.exchangeName" @click="showConfigList(item)">
           <div class="api-seting-item">
             <ExchangeLogo :exchange="item.exchangeName"></ExchangeLogo>
             <dict-tag :options="api_setting_status" :value="item.status" :i18n-profilx="'setting.api'" />
@@ -19,7 +22,7 @@
         </div>
       </div>
     </el-popover>
-
+    <ApiListDialog v-model:visible="visible"></ApiListDialog>
     <!-- 配置弹窗 -->
     <el-dialog
       v-model="configDialogVisible"
@@ -52,9 +55,11 @@ import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 import { checkApi, getApiSettingDetail, getApiSettingStatus, setApi } from '@/layout/components/ApiSetting/apiSetting';
 import { ApiSettingVo } from '@/layout/components/ApiSetting/types';
 import ApiConfigForm from '@/layout/components/ApiSetting/components/ApiConfigForm.vue';
+import ApiListDialog from '@/layout/components/ApiSetting/components/ApiListDialog.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { api_setting_status } = toRefs<any>(proxy?.useDict('api_setting_status'));
 
+const visible = ref(false);
 // 交易所列表
 const exchangeList = ref<ApiSettingVo[]>([
   {
@@ -107,6 +112,10 @@ const fieldConfigs = {
 const currentFields = computed(() => {
   return fieldConfigs[currentExchange.value?.exchangeName.toLowerCase() as keyof typeof fieldConfigs] || [];
 });
+// 打开配置弹窗
+const showConfigList = async (exchange: (typeof exchangeList)[0]) => {
+  visible.value = true;
+};
 // 打开配置弹窗
 const openConfig = async (exchange: (typeof exchangeList)[0]) => {
   currentExchange.value = exchange;

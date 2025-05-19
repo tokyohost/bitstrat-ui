@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="visibleRef" :title="title" width="1200px" style="min-height: 700px" :close-on-click-modal="false" @close="$emit('close')">
     <!-- 显示传入对象内容 -->
-    <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'" :key="new Date()">
+    <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'" :key="new Date().getMilliseconds()">
       <div class="ab-card">
         <el-card :shadow="'never'" style="flex: 1">
           <div class="form-item-algin">
@@ -18,7 +18,7 @@
                     <FundingRate
                       :exchange="localData.buy?.exchangeName"
                       :symbol="localData.symbol"
-                      :key="new Date()"
+                      :key="new Date().getMilliseconds()"
                       @change="
                         (f) => {
                           arbitrageForm.buy.fundingRate = f;
@@ -32,6 +32,7 @@
               </el-form-item>
               <el-form-item :label="''">
                 <BalanceCard
+                  ref="buyBalanceRef"
                   coin="USDT"
                   :symbol="localData.symbol"
                   :exchange="localData.buy?.exchangeName"
@@ -132,7 +133,7 @@
                     <FundingRate
                       :exchange="localData.sell?.exchangeName"
                       :symbol="localData.symbol"
-                      :key="new Date()"
+                      :key="new Date().getMilliseconds()"
                       @change="
                         (f) => {
                           arbitrageForm.sell.fundingRate = f;
@@ -147,6 +148,7 @@
               <el-form-item :label="''">
                 <BalanceCard
                   coin="USDT"
+                  ref="sellBalanceRef"
                   :symbol="localData.symbol"
                   :exchange="localData.sell?.exchangeName"
                   @change-fee="
@@ -336,6 +338,9 @@ const props = defineProps({
   }
 });
 
+const sellBalanceRef = useTemplateRef('sellBalanceRef');
+const buyBalanceRef = useTemplateRef('buyBalanceRef');
+
 // 创建本地副本（深克隆）
 const localData = reactive({ ...toRaw(props.data) });
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
@@ -411,7 +416,8 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
-    exchangeName: props.data?.buy?.exchangeName
+    exchangeName: props.data?.buy?.exchangeName,
+    accountId: null
   },
   sell: {
     size: 0,
@@ -422,7 +428,8 @@ const arbitrageForm = reactive<ArbitrageTaskForm>({
     fundingIncome: 0,
     fundingRate: 0,
     symbol: props.data?.symbol,
-    exchangeName: props.data?.sell?.exchangeName
+    exchangeName: props.data?.sell?.exchangeName,
+    accountId: null
   },
   batchIncome: 0,
   batchPrice: 25
@@ -559,8 +566,23 @@ function swapBuySell() {
   localData.sell = tmp;
 }
 
-const handleConfirm = () => {
+const handleConfirm = async () => {
   emit('confirm', localData);
+  const apiId = await buyBalanceRef.value.getAccountId();
+
+  if (!apiId) {
+    ElMessage.error('please choose account first');
+    return;
+  }
+  arbitrageForm.buy.accountId = apiId;
+  const apiIdsell = await sellBalanceRef.value.getAccountId();
+
+  if (!apiIdsell) {
+    ElMessage.error('please choose account first');
+    return;
+  }
+  arbitrageForm.sell.accountId = apiIdsell;
+
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       const data = {

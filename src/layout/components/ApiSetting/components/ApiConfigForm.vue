@@ -1,6 +1,6 @@
 <template>
-  <el-form :model="props.modelValue" label-width="180px" label-position="top">
-    <el-form-item v-for="field in fields" :key="field.prop" :label="field.label">
+  <el-form :model="props.modelValue" label-width="100px" label-position="top">
+    <el-form-item v-for="field in fields" :prop="field.prop" :key="field.prop" :label="field.label">
       <el-input
         v-model="props.modelValue[field.prop]"
         :type="field.type || 'text'"
