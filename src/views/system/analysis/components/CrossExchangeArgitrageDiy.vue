@@ -116,11 +116,15 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预计成本'" prop="buy.actualSize">
-                  <el-input v-model="arbitrageForm.buy.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
-                  </el-input>
+                  <el-input v-model="arbitrageForm.buy.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`"> </el-input>
                 </el-form-item>
                 <el-form-item :label="'预估强平价'" prop="buy.actualSize">
-                  <el-input v-model="arbitrageForm.buy.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(buyPrice,arbitrageForm.buy.liqPrice)})`">
+                  <el-input
+                    v-model="arbitrageForm.buy.liqPrice"
+                    placeholder="0"
+                    disabled
+                    :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(buyPrice, arbitrageForm.buy.liqPrice)})`"
+                  >
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预计收益'">
@@ -240,11 +244,16 @@
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预计成本'" prop="sell.actualSize">
-                  <el-input v-model="arbitrageForm.sell.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`">
-                  </el-input>
+                  <el-input v-model="arbitrageForm.sell.marginSize" placeholder="0" disabled :formatter="(value) => `≈$ ${value}`"> </el-input>
                 </el-form-item>
                 <el-form-item :label="'预估强平价'" prop="sell.actualSize">
-                  <el-input v-model="arbitrageForm.sell.liqPrice" :key="arbitrageForm.sell.liqPrice" placeholder="0" disabled :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(sellPrice,arbitrageForm.sell.liqPrice)})`">
+                  <el-input
+                    v-model="arbitrageForm.sell.liqPrice"
+                    :key="arbitrageForm.sell.liqPrice"
+                    placeholder="0"
+                    disabled
+                    :formatter="(value) => `≈$ ${value} (${calculatePriceChangePercent(sellPrice, arbitrageForm.sell.liqPrice)})`"
+                  >
                   </el-input>
                 </el-form-item>
                 <el-form-item :label="'预计收益'">
@@ -347,7 +356,9 @@ import AutoFetcherMarketPrice from '@/views/system/analysis/components/AutoFetch
 import {
   calcAnnualizedReturnSimple,
   calculateFundingIncome,
-  calculateMargin, calculatePriceChangePercent, estimateLiquidationPriceDecimal,
+  calculateMargin,
+  calculatePriceChangePercent,
+  estimateLiquidationPriceDecimal,
   formatToDecimal
 } from '@/api/system/analysis/fundingCalculator';
 import { SymbolFee } from '@/api/system/common/types';
@@ -518,13 +529,15 @@ const load2SideCoinContract = async () => {
   if (!check2SideSymbol()) {
     return;
   }
-  const sellCoinInfo = await querySymbolContractInfo(localData.value.sell?.exchangeName, localData.value.sell?.symbol);
+  const sellAccountId = await sellBalanceRef.value.getAccountId();
+  const sellCoinInfo = await querySymbolContractInfo(localData.value.sell?.exchangeName, localData.value.sell?.symbol, sellAccountId);
   const sellCoin = {};
   if (sellCoinInfo.code == 200) {
     sellCoinInfoData.value = sellCoinInfo.data;
   }
+  const buyAccountId = await buyBalanceRef.value.getAccountId();
   const buyCoin = {};
-  const buyCoinInfo = await querySymbolContractInfo(localData.value.buy?.exchangeName, localData.value.buy?.symbol);
+  const buyCoinInfo = await querySymbolContractInfo(localData.value.buy?.exchangeName, localData.value.buy?.symbol, buyAccountId);
   if (buyCoinInfo.code == 200) {
     buyCoinInfoData.value = buyCoinInfo.data;
   }
@@ -555,8 +568,13 @@ function setupActualSizeSync(side: 'buy' | 'sell') {
     ([size, leverage, fundingRate, buyPrice, sellPrice, buyFeeValue, sellFeeValue]) => {
       // console.log(size, leverage, fundingRate, buyPrice, sellPrice,buyFeeValue,sellFeeValue);
       arbitrageForm.value[side].actualSize = size * (side == 'buy' ? buyPrice : sellPrice);
-      arbitrageForm.value[side].marginSize = calculateMargin(size,(side == 'buy' ? buyPrice : sellPrice),leverage);
-      arbitrageForm.value[side].liqPrice = estimateLiquidationPriceDecimal((side == 'buy' ? buyPrice : sellPrice),leverage,size,(side == 'buy' ? 'long' : 'short'));
+      arbitrageForm.value[side].marginSize = calculateMargin(size, side == 'buy' ? buyPrice : sellPrice, leverage);
+      arbitrageForm.value[side].liqPrice = estimateLiquidationPriceDecimal(
+        side == 'buy' ? buyPrice : sellPrice,
+        leverage,
+        size,
+        side == 'buy' ? 'long' : 'short'
+      );
       arbitrageForm.value[side].fundingIncome = calculateFundingIncome(
         arbitrageForm.value[side].actualSize,
         fundingRate,

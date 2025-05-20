@@ -570,13 +570,13 @@ const batchCount = computed(() => {
 });
 const load2SideCoinContract = async () => {
   console.log('load2SideCoinContract');
-  const sellCoinInfo = await querySymbolContractInfo(localData.sell?.exchangeName, localData.symbol);
+  const sellCoinInfo = await querySymbolContractInfo(localData.sell?.exchangeName, localData.symbol, localTask.shortAccountId);
   const sellCoin = {};
   if (sellCoinInfo.code == 200) {
     sellCoinInfoData.value = sellCoinInfo.data;
   }
   const buyCoin = {};
-  const buyCoinInfo = await querySymbolContractInfo(localData.buy?.exchangeName, localData.symbol);
+  const buyCoinInfo = await querySymbolContractInfo(localData.buy?.exchangeName, localData.symbol, localTask.longAccountId);
   if (buyCoinInfo.code == 200) {
     buyCoinInfoData.value = buyCoinInfo.data;
   }

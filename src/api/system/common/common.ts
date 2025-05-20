@@ -104,13 +104,14 @@ export const querySymbolFundingRate = (exchange: string, symbol: string): AxiosP
  * @param exchange
  * @param symbol
  */
-export const querySymbolContractInfo = (exchange: string, symbol: string): AxiosPromise<CoinContractInformation> => {
+export const querySymbolContractInfo = (exchange: string, symbol: string, accountId?: number): AxiosPromise<CoinContractInformation> => {
   return request({
     url: '/common/querySymbolContractInfo',
     method: 'get',
     params: {
       exchange,
-      symbol
+      symbol,
+      accountId
     }
   });
 };
