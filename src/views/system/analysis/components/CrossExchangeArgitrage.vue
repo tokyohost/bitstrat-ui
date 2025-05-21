@@ -36,6 +36,7 @@
                   coin="USDT"
                   :symbol="localData.symbol"
                   :exchange="localData.buy?.exchangeName"
+                  @change-account="refAccount"
                   @change-fee="
                     (val) => {
                       buyFee = val;
@@ -155,6 +156,7 @@
                   ref="sellBalanceRef"
                   :symbol="localData.symbol"
                   :exchange="localData.sell?.exchangeName"
+                  @change-account="refAccount"
                   @change-fee="
                     (val) => {
                       sellFee = val;
@@ -349,6 +351,15 @@ const props = defineProps({
 
 const sellBalanceRef = useTemplateRef('sellBalanceRef');
 const buyBalanceRef = useTemplateRef('buyBalanceRef');
+watch([sellBalanceRef, buyBalanceRef], ([newSell, newBuy]) => {
+  if (newSell && newBuy) {
+    //处理需要调用两个ref 的逻辑
+    load2SideCoinContract();
+  }
+});
+const refAccount = (accountId) => {
+  load2SideCoinContract();
+};
 
 // 创建本地副本（深克隆）
 const localData = reactive({ ...toRaw(props.data) });
@@ -473,6 +484,7 @@ const batchCount = computed(() => {
   return Math.floor(100 / arbitrageForm.batchPrice);
 });
 const load2SideCoinContract = async () => {
+  console.log('load2SideCoinContract', toRaw(localData));
   const sellAccountId = await sellBalanceRef.value.getAccountId();
   const sellCoinInfo = await querySymbolContractInfo(localData.sell?.exchangeName, localData.symbol, sellAccountId);
   const sellCoin = {};
@@ -542,7 +554,9 @@ watch(
   () => props.data,
   (newData) => {
     Object.assign(localData, toRaw(newData));
-    load2SideCoinContract();
+    // if (props.visible) {
+    //   load2SideCoinContract();
+    // }
   }
 );
 const emit = defineEmits(['update:visible', 'close', 'confirm']);

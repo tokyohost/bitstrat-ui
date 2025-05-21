@@ -319,6 +319,17 @@ const props = withDefaults(defineProps<Props>(), {
 // 创建本地副本（深克隆）
 const localData = reactive({ ...toRaw(props.data) });
 const localTask = reactive({ ...toRaw(props.task) });
+
+watch(
+  props.task,
+  (nValue) => {
+    if (nValue) {
+      Object.assign(localTask, toRaw(nValue));
+      load2SideCoinContract();
+    }
+  },
+  { immediate: true }
+);
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
 const roles = reactive<ElFormRules>({
   buy: {
@@ -639,7 +650,7 @@ watch(
   () => props.data,
   (newData) => {
     Object.assign(localData, toRaw(newData));
-    load2SideCoinContract();
+    // load2SideCoinContract();
   }
 );
 const emit = defineEmits(['update:visible', 'close', 'confirm']);

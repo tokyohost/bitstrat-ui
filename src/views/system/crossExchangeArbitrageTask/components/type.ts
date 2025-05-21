@@ -90,3 +90,8 @@ export interface CreateArbitrageTaskVo {
 
   batchPrice?: number;
 }
+
+export interface websocketExAccount {
+  exchange: string;
+  accountId: number;
+}

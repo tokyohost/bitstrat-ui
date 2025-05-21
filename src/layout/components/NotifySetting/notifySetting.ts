@@ -1,7 +1,7 @@
 import { AxiosPromise } from 'axios';
 import request from '@/utils/request';
 import { ApiSettingCheck, ApiSettingDetail, ApiSettingVo, UpdateApiSettingVo } from '@/layout/components/ApiSetting/types';
-import { WebsocketStatus } from '@/layout/components/NotifySetting/types';
+import { WebsocketExStatus, WebsocketStatus } from '@/layout/components/NotifySetting/types';
 
 export function getNotifySettingStatus(): AxiosPromise<ApiSettingVo[]> {
   return request({
@@ -9,7 +9,7 @@ export function getNotifySettingStatus(): AxiosPromise<ApiSettingVo[]> {
     method: 'get'
   });
 }
-export function getWebsocketStatus(): AxiosPromise<WebsocketStatus[]> {
+export function getWebsocketStatus(): AxiosPromise<WebsocketExStatus[]> {
   return request({
     url: '/coinsUser/getWebsocketStatus',
     method: 'get'

@@ -30,4 +30,12 @@ export interface WebsocketStatus {
   status?: string;
 
   dely?: number;
+
+  apiId?: number;
+  apiName?: string;
+}
+
+export interface WebsocketExStatus {
+  exchangeName: string;
+  datas: WebsocketStatus;
 }

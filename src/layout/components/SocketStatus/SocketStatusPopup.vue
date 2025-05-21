@@ -14,16 +14,24 @@
           <p style="margin-top: 0">{{ proxy.$t('navbar.socketStatus') }}</p>
           <el-icon class="hover:cursor-pointer" @click="refresh"><RefreshLeft /></el-icon>
         </div>
-
-        <div class="exchange-item" v-for="item in exchangeList" :key="item.exchange">
-          <div class="api-seting-item" @click="exchangeConnect(item)">
-            <ExchangeLogo :exchange="item.exchange"></ExchangeLogo>
-            <div class="flex justify-center">
-              <dict-tag :options="socket_status" :value="item.status" :i18n-profilx="'setting.api'" />
-              <el-tag type="success" class="ml-1" v-if="item.status == 'active'">{{ item.dely ?? '0' }}ms</el-tag>
+        <el-collapse accordion>
+          <el-collapse-item :title="data.exchangeName" v-for="data in exchangeList" :key="data.exchangeName">
+            <template v-slot:title>
+              <ExchangeLogo :exchange="data.exchangeName"></ExchangeLogo>
+            </template>
+            <div class="exchange-item" v-for="item in data.datas">
+              <div class="api-seting-item" @click="exchangeConnect(item)">
+                <div>
+                  {{ item.apiName ?? '-' }}
+                </div>
+                <div class="flex justify-center">
+                  <dict-tag :options="socket_status" :value="item.status" :i18n-profilx="'setting.api'" />
+                  <el-tag type="success" class="ml-1" v-if="item.status == 'active'">{{ item.dely ?? '0' }}ms</el-tag>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </el-collapse-item>
+        </el-collapse>
       </div>
     </el-popover>
   </div>
@@ -36,17 +44,17 @@ import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 import { checkApi, getApiSettingDetail, getApiSettingStatus, setApi } from '@/layout/components/ApiSetting/apiSetting';
 import { ApiSettingVo } from '@/layout/components/ApiSetting/types';
 import ApiConfigForm from '@/layout/components/ApiSetting/components/ApiConfigForm.vue';
-import { WebsocketStatus } from '@/layout/components/NotifySetting/types';
+import { WebsocketExStatus, WebsocketStatus } from '@/layout/components/NotifySetting/types';
 import { getWebsocketStatus } from '@/layout/components/NotifySetting/notifySetting';
-import { checkWebsocketStatus } from '@/views/system/crossExchangeArbitrageTask/components';
+import { checkWebsocketStatus, checkWebsocketStatusByAccountId } from '@/views/system/crossExchangeArbitrageTask/components';
+import { websocketExAccount } from '@/views/system/crossExchangeArbitrageTask/components/type';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { socket_status } = toRefs<any>(proxy?.useDict('socket_status'));
 
 // 交易所列表
-const exchangeList = ref<WebsocketStatus[]>([
+const exchangeList = ref<WebsocketExStatus[]>([
   {
-    exchange: undefined,
-    status: undefined
+    exchangeName: ''
   }
 ]);
 const loading = ref(false);
@@ -82,7 +90,11 @@ const exchangeConnect = async (item: WebsocketStatus) => {
   })
     .then(async () => {
       const exchanges = [item.exchange];
-      await checkWebsocketStatus(exchanges);
+      const data: websocketExAccount = {
+        exchange: item.exchange,
+        accountId: item.apiId
+      };
+      await checkWebsocketStatusByAccountId([data]);
       ElMessage({
         type: 'info',
         message: proxy.$t('setting.socketStatus.done')

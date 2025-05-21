@@ -56,6 +56,7 @@
                     coin="USDT"
                     :symbol="localData.buy?.symbol"
                     :exchange="localData.buy?.exchangeName"
+                    @change-account="refAccount"
                     @change-fee="
                       (val) => {
                         buyFee = val;
@@ -183,6 +184,7 @@
                     coin="USDT"
                     :symbol="localData.sell?.symbol"
                     :exchange="localData.sell?.exchangeName"
+                    @change-account="refAccount"
                     @change-fee="
                       (val) => {
                         sellFee = val;
@@ -386,7 +388,15 @@ const refershKey = ref(1);
 
 const sellBalanceRef = useTemplateRef('sellBalanceRef');
 const buyBalanceRef = useTemplateRef('buyBalanceRef');
-
+watch([sellBalanceRef, buyBalanceRef], ([newSell, newBuy]) => {
+  if (newSell && newBuy) {
+    //处理需要调用两个ref 的逻辑
+    load2SideCoinContract();
+  }
+});
+const refAccount = (accountId) => {
+  load2SideCoinContract();
+};
 // 创建本地副本（深克隆）
 const localData = ref({ ...toRaw(props.data) });
 const arbitrageFormRef = ref<InstanceType<typeof ElForm>>();
@@ -602,7 +612,7 @@ watch(
   () => props.data,
   (newData) => {
     Object.assign(localData.value, toRaw(newData));
-    load2SideCoinContract();
+    // load2SideCoinContract();
   }
 );
 const emit = defineEmits(['update:visible', 'close', 'confirm']);

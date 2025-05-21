@@ -4,10 +4,20 @@ import { getWebsocketStatus } from '@/layout/components/NotifySetting/notifySett
 import { AxiosPromise } from 'axios';
 import { LinerSymbol } from '@/views/system/analysis/components/type';
 import request from '@/utils/request';
+import { websocketExAccount } from '@/views/system/crossExchangeArbitrageTask/components/type';
 
 export function connectSocketByEx(exs: WebsocketStatus[]): AxiosPromise<LinerSymbol[]> {
   return request({
     url: '/common/connectSocketByEx',
+    method: 'post',
+    data: {
+      exchanges: exs
+    }
+  });
+}
+export function connectSocketByExAndAccountId(exs: websocketExAccount[]): AxiosPromise<LinerSymbol[]> {
+  return request({
+    url: '/common/connectSocketByExAndAccountId',
     method: 'post',
     data: {
       exchanges: exs
@@ -45,4 +55,8 @@ export async function checkWebsocketStatus(exchanges: string[]) {
   } catch (error) {
     console.error('检查 WebSocket 状态时发生错误:', error);
   }
+}
+export async function checkWebsocketStatusByAccountId(exchange: websocketExAccount[]) {
+  const axiosResponse = await connectSocketByExAndAccountId(exchange);
+  return axiosResponse.data;
 }

@@ -79,6 +79,7 @@ const balance = ref<AccountBalance | null>(null);
 const fee = ref<SymbolFee | null>(null);
 const emit = defineEmits<{
   (e: 'changeFee', val: SymbolFee): void;
+  (e: 'changeAccount', val: number): void;
 }>();
 const accountPanelShow = ref(false);
 
@@ -135,6 +136,7 @@ const fetchFee = async () => {
 const selectAccount = (account: ApiVO) => {
   apiAccount.value = account;
   apiAccountId.value = account.id as number;
+  emit('changeAccount', account.id as number);
   flushed();
 };
 const getAccountId = async (): Promise<number> => {

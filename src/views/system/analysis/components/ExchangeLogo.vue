@@ -57,5 +57,6 @@ function onError() {
 }
 .exchange-info {
   display: flex;
+  align-items: center;
 }
 </style>
