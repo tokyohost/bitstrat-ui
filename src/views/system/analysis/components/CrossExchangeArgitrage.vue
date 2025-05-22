@@ -1,5 +1,13 @@
 <template>
-  <el-dialog v-model="visibleRef" :title="title" width="1200px" style="min-height: 700px" :close-on-click-modal="false" @close="$emit('close')">
+  <el-dialog
+    v-model="visibleRef"
+    v-if="visibleRef"
+    :title="title"
+    width="1200px"
+    style="min-height: 700px"
+    :close-on-click-modal="false"
+    @close="$emit('close')"
+  >
     <!-- 显示传入对象内容 -->
     <el-form ref="arbitrageFormRef" :model="arbitrageForm" :rules="roles" :label-position="'top'" :key="new Date().getMilliseconds()">
       <div class="ab-card">

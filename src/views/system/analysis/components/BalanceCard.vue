@@ -141,6 +141,9 @@ const selectAccount = (account: ApiVO) => {
 };
 const getAccountId = async (): Promise<number> => {
   console.log('getAccountId', apiAccountId.value);
+  if (apiAccountId.value == undefined) {
+    await fetchBalance();
+  }
   return apiAccountId.value;
 };
 defineExpose({
@@ -157,8 +160,11 @@ onMounted(() => {
 watch(() => [props.symbol, props.exchange], fetchBalance);
 watch(
   () => props.apiId,
-  (apiId) => {
+  async (apiId) => {
     console.log('load apiId', apiId);
+    // if (apiId == undefined) {
+    //   await fetchBalance();
+    // }
   },
   { immediate: true }
 );
