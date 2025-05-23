@@ -5,6 +5,13 @@
         <div class="flex justify-start">
           <div>资金费历史趋势</div>
           <div><el-button size="small" @click="refresh" :loading="loading" class="ml1" icon="Refresh"></el-button></div>
+          <div>
+            <el-select v-model="interval" placeholder="选择时间间隔" size="small" @change="refresh" style="width: 100px" class="ml1">
+              <el-option :key="'m1'" :label="'1分钟'" :value="'m1'" />
+              <el-option :key="'m5'" :label="'5分钟'" :value="'m5'" />
+              <el-option :key="'h8'" :label="'8小时'" :value="'h8'" />
+            </el-select>
+          </div>
         </div>
       </template>
       <div v-if="loading" class="text-center p-4 h-400px" v-loading="loading">加载中...</div>
@@ -43,6 +50,7 @@ watch(
 );
 
 const visible = ref(false);
+const interval = ref('m5');
 const loading = ref(false);
 const chartData = ref<ChartData>({
   frDataMap: {},
@@ -59,7 +67,7 @@ const refresh = () => {
 const open = async (symbol: string) => {
   loading.value = true;
   try {
-    const response = await queryFundingRateBySymbolInterval(symbol, 'm5');
+    const response = await queryFundingRateBySymbolInterval(symbol, interval.value);
     chartData.value = {
       frDataMap: response.data.frDataMap,
       dateList: response.data.dateList,
