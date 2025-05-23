@@ -16,10 +16,11 @@ const props = defineProps<Props>();
 const chartRef = ref<HTMLDivElement | null>(null);
 let chartInstance: echarts.ECharts | null = null;
 let resizeObserver: ResizeObserver | null = null;
-// 格式化时间戳
+const padZero = (n: number): string => (n < 10 ? '0' + n : '' + n);
+
 const formatDate = (ts: number): string => {
   const d = new Date(ts);
-  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
+  return `${d.getFullYear()}-${padZero(d.getMonth() + 1)}-${padZero(d.getDate())} ${padZero(d.getHours())}:${padZero(d.getMinutes())}`;
 };
 
 const getSelected = () => {
