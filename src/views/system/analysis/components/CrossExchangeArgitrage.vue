@@ -26,6 +26,7 @@
                     <FundingRate
                       :exchange="localData.buy?.exchangeName"
                       :symbol="localData.symbol"
+                      :showFrchart="true"
                       :key="new Date().getMilliseconds()"
                       @change="
                         (f) => {
@@ -146,6 +147,7 @@
                     <FundingRate
                       :exchange="localData.sell?.exchangeName"
                       :symbol="localData.symbol"
+                      :showFrchart="true"
                       :key="new Date().getMilliseconds()"
                       @change="
                         (f) => {
@@ -341,6 +343,7 @@ import {
 } from '@/api/system/analysis/fundingCalculator';
 import { SymbolFee } from '@/api/system/common/types';
 import { createTask } from '@/api/system/crossExchangeArbitrageTask';
+import FrLineChartDialog from '@/views/system/analysis/components/FrLineChartDialog.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const props = defineProps({
   visible: {

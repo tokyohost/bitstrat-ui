@@ -1,13 +1,13 @@
 <template>
-  <div class="flex items-center space-x-2 p-3 rounded border shadow-sm">
+  <div class="flex items-center p-3 rounded border shadow-sm">
     <div v-if="showCountDown">
       <el-popover placement="right" :width="180" trigger="click" :title="'下一次结算倒计时'">
         <template #reference>
           <div class="funding-size hover:cursor-pointer" v-loading="loading">
-<!--            <div v-if="loading">-->
-<!--              <el-skeleton :rows="1" :count="1" animated />-->
-<!--            </div>-->
-            <div :class="['text-base', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']">
+            <!--            <div v-if="loading">-->
+            <!--              <el-skeleton :rows="1" :count="1" animated />-->
+            <!--            </div>-->
+            <div :class="['text-base', 'min-h-2xl', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']">
               {{ displayRate }}
             </div>
           </div>
@@ -20,15 +20,16 @@
       </el-popover>
     </div>
     <div class="funding-size" v-else v-loading="loading">
-<!--      <div v-if="loading">-->
-<!--        <el-skeleton :rows="1" :count="1" animated />-->
-<!--      </div>-->
+      <!--      <div v-if="loading">-->
+      <!--        <el-skeleton :rows="1" :count="1" animated />-->
+      <!--      </div>-->
       <div :class="['text-base', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']">
         {{ displayRate }}
       </div>
     </div>
 
-    <el-button size="small" @click="emitRefresh" :loading="loading" icon="Refresh" v-if="!showRefresh == false"></el-button>
+    <el-button size="small" @click="emitRefresh" :loading="loading" class="ml1" icon="Refresh" v-if="!showRefresh == false"></el-button>
+    <FrLineChartDialog v-if="showFrchart" :symbol="props.symbol"></FrLineChartDialog>
   </div>
 </template>
 
@@ -37,11 +38,13 @@ import { computed } from 'vue';
 import { querySymbolFundingRate } from '@/api/system/common/common';
 import { SymbolFundingRate } from '@/views/system/analysis/components/type';
 import CountdownTimer from '@/views/system/analysis/components/CountdownTimer.vue';
+import FrLineChartDialog from '@/views/system/analysis/components/FrLineChartDialog.vue';
 
 interface Props {
   exchange: string; // 交易所名称
   symbol: string; // 币种符号，如 BTC/USDT
   showRefresh?: boolean;
+  showFrchart?: boolean;
   showCountDown?: boolean;
 }
 const rate = ref<number>(0);
@@ -50,7 +53,8 @@ const rateData = ref<SymbolFundingRate>({});
 const loading = ref<boolean>(false);
 const props = withDefaults(defineProps<Props>(), {
   showRefresh: true, // 设置默认值
-  showCountDown: false // 设置默认值
+  showCountDown: false, // 设置默认值
+  showFrchart: false // 设置默认值
 });
 
 const emit = defineEmits<{

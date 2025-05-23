@@ -1,7 +1,7 @@
 import { AxiosPromise } from 'axios';
 import { WebsocketStatus } from '@/layout/components/NotifySetting/types';
 import request from '@/utils/request';
-import { LinerSymbol } from '@/views/system/analysis/components/type';
+import { CoinGlassRundingRate, LinerSymbol } from '@/views/system/analysis/components/type';
 
 export function queryLinerSymbolsByEx(ex: string): AxiosPromise<LinerSymbol[]> {
   return request({
@@ -18,6 +18,16 @@ export function queryLinerSymbolsFundingTimeInterval(ex: string, symbol: string)
     method: 'get',
     params: {
       exchange: ex,
+      symbol: symbol
+    }
+  });
+}
+export function queryFundingRateBySymbolInterval(symbol: string, interval: string): AxiosPromise<CoinGlassRundingRate> {
+  return request({
+    url: '/analysis/queryFundingRateBySymbolInterval',
+    method: 'get',
+    params: {
+      interval: interval,
       symbol: symbol
     }
   });

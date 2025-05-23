@@ -23,3 +23,13 @@ export interface LinerSymbol {
 
   fundingInterval?: number;
 }
+
+export interface CoinGlassRundingRate {
+  frDataMap?: { [x: string]: number[] };
+
+  dataMap?: { [x: string]: number[] };
+
+  dateList?: number[];
+
+  priceList?: number[];
+}
