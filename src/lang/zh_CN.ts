@@ -219,5 +219,10 @@ export default {
     }
   },
   //跨所套利
-  abEx: {}
+  abEx: {},
+  cryptoSlogan: {
+    sloganSplit1: '您的密钥将使用',
+    sloganSplit2: 'PKCS1_OAEP',
+    sloganSplit3: '技术进行加密和存储。'
+  }
 };

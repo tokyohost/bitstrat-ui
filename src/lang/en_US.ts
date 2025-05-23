@@ -221,5 +221,10 @@ export default {
       title: 'Predicted Rate of Return',
       item: '-Day Return (Annualized)'
     }
+  },
+  cryptoSlogan: {
+    sloganSplit1: 'Your key will be encrypted and stored using',
+    sloganSplit2: 'PKCS1_OAEP',
+    sloganSplit3: 'technology.'
   }
 };

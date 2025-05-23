@@ -122,6 +122,7 @@
       <!--          <el-input v-model="configForm.passphrase" />-->
       <!--        </el-form-item>-->
       <template #footer>
+        <CryptoSlogan></CryptoSlogan>
         <el-button @click="dialog.visible = false">取消</el-button>
         <el-button type="primary" @click="submitForm">保存</el-button>
       </template>
@@ -139,6 +140,7 @@ import { checkApi, getApiSettingStatus } from '@/layout/components/ApiSetting/ap
 import ApiConfigForm from '@/layout/components/ApiSetting/components/ApiConfigForm.vue';
 import { ref } from 'vue';
 import { ApiSettingVo } from '@/layout/components/ApiSetting/types';
+import CryptoSlogan from '@/layout/components/ApiSetting/components/CryptoSlogan.vue';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DialogApiList from '@/views/system/api/pupUpIndex.vue';
+import CryptoSlogan from '@/layout/components/ApiSetting/components/CryptoSlogan.vue';
 
 const props = defineProps<{
   visible: boolean;
@@ -10,15 +11,30 @@ const emit = defineEmits<{
 const close = () => {
   emit('update:visible', false);
 };
+
+const localVisible = ref(props.visible);
+
+// 监听 props.visible，同步到本地
+watch(
+  () => props.visible,
+  (val) => {
+    localVisible.value = val;
+  }
+);
+
+// 监听本地变化，通知父组件更新
+watch(localVisible, (val) => {
+  emit('update:visible', val);
+});
 </script>
 
 <template>
   <div>
-    <el-dialog v-model="props.visible" title="config api" width="1200px">
+    <el-dialog v-model="localVisible" title="config api" width="1200px">
       <DialogApiList></DialogApiList>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="close">关闭</el-button>
+          <CryptoSlogan></CryptoSlogan>
         </div>
       </template>
     </el-dialog>

@@ -219,5 +219,10 @@ export default {
       title: '예상 수익률',
       item: '일 수익률'
     }
+  },
+  cryptoSlogan: {
+    sloganSplit1: '귀하의 키는',
+    sloganSplit2: 'PKCS1_OAEP',
+    sloganSplit3: '기술을 사용하여 암호화 및 저장됩니다.'
   }
 };
