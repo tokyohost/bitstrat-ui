@@ -7,7 +7,7 @@
         :model="arbitrageForm"
         :rules="buyEnable && sellEnable ? roles : buyEnable ? rolesLeft : rolesRight"
         :label-position="'top'"
-        :key="new Date()"
+        :key="new Date().getMilliseconds()"
       >
         <div class="ab-card">
           <el-card :shadow="'never'" style="flex: 1">
@@ -24,6 +24,7 @@
                     <FundingRate
                       :exchange="localData.buy?.exchangeName"
                       :symbol="localData.symbol"
+                      :showFrchart="true"
                       :key="new Date().getMilliseconds()"
                       @change="
                         (f) => {
@@ -114,7 +115,8 @@
                     <FundingRate
                       :exchange="localData.sell?.exchangeName"
                       :symbol="localData.symbol"
-                      :key="new Date()"
+                      :key="new Date().getMilliseconds()"
+                      :showFrchart="true"
                       @change="
                         (f) => {
                           arbitrageForm.sell.fundingRate = f;
@@ -276,7 +278,8 @@ import { OrderResult, SymbolFee } from '@/api/system/common/types';
 import { closePositionOrder, createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask';
 import { CrossExchangeArbitrageTaskVO } from '@/api/system/crossExchangeArbitrageTask/types';
 import OrderResultDialog from '@/views/system/crossExchangeArbitrageTask/components/OrderResultDialog.vue';
-import { checkWebsocketStatus } from '@/views/system/crossExchangeArbitrageTask/components/index';
+import { checkWebsocketStatus, checkWebsocketStatusByAccountId } from '@/views/system/crossExchangeArbitrageTask/components/index';
+import { websocketExAccount } from '@/views/system/crossExchangeArbitrageTask/components/type';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface Props {
   currData?: CrossExchangeArbitrageTaskVO | undefined;
@@ -692,8 +695,15 @@ function swapBuySell() {
 
 const handleConfirm = async () => {
   //检查websocket 状态
-  const exchanges = [localData.buy.exchangeName, localData.sell.exchangeName];
-  await checkWebsocketStatus(exchanges);
+  const buydata: websocketExAccount = {
+    exchange: localTask.longEx,
+    accountId: localTask.longAccountId
+  };
+  const selldata: websocketExAccount = {
+    exchange: localTask.shortEx,
+    accountId: localTask.shortAccountId
+  };
+  await checkWebsocketStatusByAccountId([buydata, selldata]);
   emit('confirm', localData);
   arbitrageFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {

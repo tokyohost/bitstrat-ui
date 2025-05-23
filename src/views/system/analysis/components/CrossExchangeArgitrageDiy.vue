@@ -37,6 +37,7 @@
                         v-if="localData.buy?.exchangeName"
                         :exchange="localData.buy?.exchangeName"
                         :symbol="localData.buy?.symbol"
+                        :showFrchart="true"
                         :key="new Date().getMilliseconds()"
                         @change="
                           (f) => {
@@ -165,6 +166,7 @@
                         v-if="localData.sell?.exchangeName"
                         :exchange="localData.sell?.exchangeName"
                         :symbol="localData.sell?.symbol"
+                        :showFrchart="true"
                         :key="new Date().getMilliseconds()"
                         @change="
                           (f) => {

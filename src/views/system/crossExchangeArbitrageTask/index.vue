@@ -35,24 +35,29 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="实时资金费率" align="center" prop="longEx" width="200">
+        <el-table-column label="实时资金费率" align="center" prop="longEx" min-width="250">
           <template #default="scope">
-            <div class="w-full mx-auto flex justify-center items-center">
-              <FundingRate
-                :exchange="scope.row.longEx"
-                :symbol="scope.row.symbol"
-                :key="new Date()"
-                :show-refresh="false"
-                show-count-down
-              ></FundingRate>
-              <el-divider direction="vertical" />
-              <FundingRate
-                :exchange="scope.row.shortEx"
-                :symbol="scope.row.symbol"
-                :key="new Date()"
-                :show-refresh="false"
-                show-count-down
-              ></FundingRate>
+            <div class="flex justify-center items-center">
+              <div class="w-full mx-auto flex justify-center items-center">
+                <FundingRate
+                  :exchange="scope.row.longEx"
+                  :symbol="scope.row.symbol"
+                  :key="new Date().getMilliseconds()"
+                  :show-refresh="false"
+                  show-count-down
+                ></FundingRate>
+                <el-divider direction="vertical" />
+                <FundingRate
+                  :exchange="scope.row.shortEx"
+                  :symbol="scope.row.symbol"
+                  :key="new Date().getMilliseconds()"
+                  :show-refresh="false"
+                  show-count-down
+                ></FundingRate>
+              </div>
+              <div>
+                <FrLineChartDialog :symbol="scope.row.symbol" :selected-ex="[scope.row.longEx, scope.row.shortEx]"></FrLineChartDialog>
+              </div>
             </div>
           </template>
         </el-table-column>
@@ -321,6 +326,7 @@ import CrossExchangeSell from '@/views/system/crossExchangeArbitrageTask/compone
 import { crossTaskOptions } from '@/constants/CrossTask-options';
 import FundingFeeDisplay from '@/views/system/crossExchangeArbitrageTask/components/FundingFeeDisplay.vue';
 import ArbitrageWarningDialog from '@/views/system/arbitrageWarningConfig/components/ArbitrageWarningDialog.vue';
+import FrLineChartDialog from '@/views/system/analysis/components/FrLineChartDialog.vue';
 
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;

@@ -18,7 +18,8 @@
                     <FundingRate
                       :exchange="localData.buy?.exchangeName"
                       :symbol="localData.symbol"
-                      :key="new Date()"
+                      :key="new Date().getMilliseconds()"
+                      :showFrchart="true"
                       @change="
                         (f) => {
                           arbitrageForm.buy.fundingRate = f;
@@ -52,7 +53,7 @@
                         :model-value="localTask?.longLeverage"
                         :min="1"
                         :max="buyCoinInfoData.maxLeverage"
-                        step="1"
+                        :step="1"
                         placeholder="请输入杠杆倍数"
                       >
                         <template #suffix>倍</template>
@@ -141,7 +142,8 @@
                     <FundingRate
                       :exchange="localData.sell?.exchangeName"
                       :symbol="localData.symbol"
-                      :key="new Date()"
+                      :key="new Date().getMilliseconds()"
+                      :showFrchart="true"
                       @change="
                         (f) => {
                           arbitrageForm.sell.fundingRate = f;
@@ -343,7 +345,8 @@ import { createOrder, createTask } from '@/api/system/crossExchangeArbitrageTask
 import OrderResultDialog from '@/views/system/crossExchangeArbitrageTask/components/OrderResultDialog.vue';
 import { orderTypeSelectOptions } from '@/constants/order-options';
 import { CrossExchangeArbitrageTaskVO } from '@/api/system/crossExchangeArbitrageTask/types';
-import { checkWebsocketStatus } from '@/views/system/crossExchangeArbitrageTask/components/index';
+import { checkWebsocketStatus, checkWebsocketStatusByAccountId } from '@/views/system/crossExchangeArbitrageTask/components/index';
+import { websocketExAccount } from '@/views/system/crossExchangeArbitrageTask/components/type';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const props = defineProps({
   visible: {
@@ -651,8 +654,17 @@ function swapBuySell() {
 
 const handleConfirm = async () => {
   //检查websocket 状态
-  const exchanges = [localData.buy.exchangeName, localData.sell.exchangeName];
-  await checkWebsocketStatus(exchanges);
+  // const exchanges = [localData.buy.exchangeName, localData.sell.exchangeName];
+  const buydata: websocketExAccount = {
+    exchange: localTask.longEx,
+    accountId: localTask.longAccountId
+  };
+  const selldata: websocketExAccount = {
+    exchange: localTask.shortEx,
+    accountId: localTask.shortAccountId
+  };
+  await checkWebsocketStatusByAccountId([buydata, selldata]);
+  // await checkWebsocketStatus(exchanges);
   // return;
   emit('confirm', localData);
   arbitrageFormRef.value?.validate(async (valid: boolean) => {

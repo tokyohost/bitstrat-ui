@@ -25,6 +25,10 @@ export function connectSocketByExAndAccountId(exs: websocketExAccount[]): AxiosP
   });
 }
 
+/**
+ * 弃用！！！！！
+ * @param exchanges
+ */
 export async function checkWebsocketStatus(exchanges: string[]) {
   const exchangeList = ref<WebsocketStatus[]>([
     {

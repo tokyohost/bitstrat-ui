@@ -7,7 +7,7 @@
             <!--            <div v-if="loading">-->
             <!--              <el-skeleton :rows="1" :count="1" animated />-->
             <!--            </div>-->
-            <div :class="['text-base', 'min-h-2xl', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']">
+            <div :class="['text-base', 'font-semibold', 'text-600', rate > 0 ? 'down-color' : 'red']">
               {{ displayRate }}
             </div>
           </div>
@@ -29,7 +29,7 @@
     </div>
 
     <el-button size="small" @click="emitRefresh" :loading="loading" class="ml1" icon="Refresh" v-if="!showRefresh == false"></el-button>
-    <FrLineChartDialog v-if="showFrchart" :symbol="props.symbol"></FrLineChartDialog>
+    <FrLineChartDialog v-if="showFrchart" :symbol="props.symbol" :selected-ex="[props.exchange]"></FrLineChartDialog>
   </div>
 </template>
 
