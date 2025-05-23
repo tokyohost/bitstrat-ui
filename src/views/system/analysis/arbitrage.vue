@@ -12,6 +12,7 @@ import CrossExchangeArgitrage from '@/views/system/analysis/components/CrossExch
 import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelector.vue';
 import FixedNumber from '@/views/system/analysis/components/FixedNumber.vue';
 import CrossExchangeArgitrageDiy from '@/views/system/analysis/components/CrossExchangeArgitrageDiy.vue';
+import FrLineChartDialog from '@/views/system/analysis/components/FrLineChartDialog.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const datalist = ref<CoinFundingInfo[]>();
 
@@ -186,6 +187,16 @@ onMounted(() => {
               :exchange="scope.row.sell?.exchangeName"
               :exchangeLogo="scope.row.sell?.exchangeLogo"
             />
+          </template>
+        </el-table-column>
+        <el-table-column prop="feeGroup" label="费率历史" min-width="80">
+          <template #default="scope">
+            <div class="flex justify-start items-center">
+              <FrLineChartDialog
+                :symbol="scope.row.symbol"
+                :selected-ex="[scope.row.buy.exchangeName, scope.row.sell.exchangeName]"
+              ></FrLineChartDialog>
+            </div>
           </template>
         </el-table-column>
         <el-table-column prop="apr" label="当前年化" width="180">
