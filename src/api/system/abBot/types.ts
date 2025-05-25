@@ -55,7 +55,7 @@ export interface AbBotVO {
   userId: string | number;
 
 }
-
+import { ApiVO } from '@/api/system/api/types';
 export interface AbBotForm extends BaseEntity {
   /**
    * id
@@ -111,6 +111,8 @@ export interface AbBotForm extends BaseEntity {
    * 用户id
    */
   userId?: string | number;
+
+  canUseApis?: ApiVO[];
 
 }
 
