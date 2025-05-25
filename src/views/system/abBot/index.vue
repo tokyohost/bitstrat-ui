@@ -7,34 +7,13 @@
             <el-form-item label="机器人名称" prop="botName">
               <el-input v-model="queryParams.botName" placeholder="请输入机器人名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="套利币对百分比阈值(高于此阈值触发建仓)" prop="abPercentThreshold">
-              <el-input v-model="queryParams.abPercentThreshold" placeholder="请输入套利币对百分比阈值(高于此阈值触发建仓)" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="距离资金费结算时间触发阈值(满足此时间内允许建仓/平仓)" prop="triggerMinutes">
-              <el-input v-model="queryParams.triggerMinutes" placeholder="请输入距离资金费结算时间触发阈值(满足此时间内允许建仓/平仓)" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="币对最低要求持仓量(高于此阈值触发建仓)" prop="minVolume">
-              <el-input v-model="queryParams.minVolume" placeholder="请输入币对最低要求持仓量(高于此阈值触发建仓)" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="杠杆倍数" prop="leverage">
-              <el-input v-model="queryParams.leverage" placeholder="请输入杠杆倍数" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="开仓最低USDT" prop="minSize">
-              <el-input v-model="queryParams.minSize" placeholder="请输入开仓最低USDT" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="开仓最高USDT" prop="maxSize">
-              <el-input v-model="queryParams.maxSize" placeholder="请输入开仓最高USDT" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="分批每批最低下单USDT" prop="batchSize">
-              <el-input v-model="queryParams.batchSize" placeholder="请输入分批每批最低下单USDT" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="状态  1-已创建 2-正在运行 3-已持仓" prop="status">
-              <el-select v-model="queryParams.status" placeholder="请选择状态  1-已创建 2-正在运行 3-已持仓" clearable >
-                <el-option v-for="dict in batch_order_status" :key="dict.value" :label="dict.label" :value="dict.value"/>
+
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" placeholder="请选择机器人状态" clearable >
+                <el-option v-for="dict in ab_bot_status" :key="dict.value" :label="dict.label" :value="dict.value">
+                  <dict-tag :options="ab_bot_status" :value="dict.value"/>
+                </el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item label="用户id" prop="userId">
-              <el-input v-model="queryParams.userId" placeholder="请输入用户id" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -68,16 +47,16 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="id" align="center" prop="id" v-if="true" />
         <el-table-column label="机器人名称" align="center" prop="botName" />
-        <el-table-column label="套利币对百分比阈值(高于此阈值触发建仓)" align="center" prop="abPercentThreshold" />
-        <el-table-column label="距离资金费结算时间触发阈值(满足此时间内允许建仓/平仓)" align="center" prop="triggerMinutes" />
-        <el-table-column label="币对最低要求持仓量(高于此阈值触发建仓)" align="center" prop="minVolume" />
+        <el-table-column label="百分比阈值" align="center" prop="abPercentThreshold" />
+        <el-table-column label="结算时间阈值" align="center" prop="triggerMinutes" />
+        <el-table-column label="最低持仓量" align="center" prop="minVolume" />
         <el-table-column label="杠杆倍数" align="center" prop="leverage" />
-        <el-table-column label="开仓最低USDT" align="center" prop="minSize" />
-        <el-table-column label="开仓最高USDT" align="center" prop="maxSize" />
-        <el-table-column label="分批每批最低下单USDT" align="center" prop="batchSize" />
-        <el-table-column label="状态  1-已创建 2-正在运行 3-已持仓" align="center" prop="status">
+        <el-table-column label="开仓最低" align="center" prop="minSize" />
+        <el-table-column label="开仓最高" align="center" prop="maxSize" />
+        <el-table-column label="最低下单" align="center" prop="batchSize" />
+        <el-table-column label="状态" align="center" prop="status">
           <template #default="scope">
-            <dict-tag :options="batch_order_status" :value="scope.row.status"/>
+            <dict-tag :options="ab_bot_status" :value="scope.row.status"/>
           </template>
         </el-table-column>
         <el-table-column label="用户id" align="center" prop="userId" />
@@ -96,44 +75,45 @@
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改套利机器人对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="abBotFormRef" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="dialog.title" v-model="dialog.visible" width="1200px" append-to-body>
+      <el-form ref="abBotFormRef" :model="form" :rules="rules" label-width="180px" label-position="top">
         <el-form-item label="机器人名称" prop="botName">
           <el-input v-model="form.botName" placeholder="请输入机器人名称" />
         </el-form-item>
         <el-form-item label="套利币对百分比阈值(高于此阈值触发建仓)" prop="abPercentThreshold">
-          <el-input v-model="form.abPercentThreshold" placeholder="请输入套利币对百分比阈值(高于此阈值触发建仓)" />
+          <el-input v-model="form.abPercentThreshold" placeholder="请输入套利币对百分比阈值" />
         </el-form-item>
         <el-form-item label="距离资金费结算时间触发阈值(满足此时间内允许建仓/平仓)" prop="triggerMinutes">
-          <el-input v-model="form.triggerMinutes" placeholder="请输入距离资金费结算时间触发阈值(满足此时间内允许建仓/平仓)" />
+          <el-input v-model="form.triggerMinutes" placeholder="请输入距离资金费结算时间触发阈值" />
         </el-form-item>
         <el-form-item label="币对最低要求持仓量(高于此阈值触发建仓)" prop="minVolume">
-          <el-input v-model="form.minVolume" placeholder="请输入币对最低要求持仓量(高于此阈值触发建仓)" />
+          <el-input v-model="form.minVolume" placeholder="请输入币对最低要求持仓量(万U)" />
         </el-form-item>
         <el-form-item label="杠杆倍数" prop="leverage">
           <el-input v-model="form.leverage" placeholder="请输入杠杆倍数" />
         </el-form-item>
-        <el-form-item label="开仓最低USDT" prop="minSize">
+        <el-form-item label="开仓最低USDT(AB账户最低需要可使用的金额)" prop="minSize">
           <el-input v-model="form.minSize" placeholder="请输入开仓最低USDT" />
         </el-form-item>
-        <el-form-item label="开仓最高USDT" prop="maxSize">
+        <el-form-item label="开仓最高USDT(AB账户最高允许持仓的金额)" prop="maxSize">
           <el-input v-model="form.maxSize" placeholder="请输入开仓最高USDT" />
         </el-form-item>
-        <el-form-item label="分批每批最低下单USDT" prop="batchSize">
+        <el-form-item label="分批每批最低下单USDT(每次下单的实际金额)" prop="batchSize">
           <el-input v-model="form.batchSize" placeholder="请输入分批每批最低下单USDT" />
         </el-form-item>
-        <el-form-item label="状态  1-已创建 2-正在运行 3-已持仓" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态  1-已创建 2-正在运行 3-已持仓">
+        <el-form-item label="状态" prop="status" v-if="dialog.disabled == false">
+          <el-select v-model="form.status" placeholder="请选择状态">
             <el-option
-                v-for="dict in batch_order_status"
+                v-for="dict in ab_bot_status"
                 :key="dict.value"
                 :label="dict.label"
                 :value="parseInt(dict.value)"
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户id" />
+        <el-form-item label="账户" prop="status">
+          <AccountMutiSelect v-model:model-value="selectedApis"></AccountMutiSelect>
+<!--          <AccountSelectWrapper :model-value="selectedApis" />-->
         </el-form-item>
       </el-form>
       <template #footer>
@@ -149,10 +129,14 @@
 <script setup name="AbBot" lang="ts">
 import { listAbBot, getAbBot, delAbBot, addAbBot, updateAbBot } from '@/api/system/abBot';
 import { AbBotVO, AbBotQuery, AbBotForm } from '@/api/system/abBot/types';
+import AccountMutiSelect from '@/views/system/abBot/components/AccountMutiSelect.vue';
+import AccountSelectWrapper from '@/views/system/abBot/components/AccountSelectWrapper.vue';
+import { ApiVO } from '@/api/system/api/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const { batch_order_status } = toRefs<any>(proxy?.useDict('batch_order_status'));
+const { ab_bot_status } = toRefs<any>(proxy?.useDict('ab_bot_status'));
 
+const selectedApis = ref<ApiVO[]>([]);
 const abBotList = ref<AbBotVO[]>([]);
 const buttonLoading = ref(false);
 const loading = ref(true);
@@ -182,6 +166,7 @@ const initFormData: AbBotForm = {
   batchSize: undefined,
   status: undefined,
   userId: undefined,
+  canUseApis: []
 }
 const data = reactive<PageData<AbBotForm, AbBotQuery>>({
   form: {...initFormData},
@@ -275,6 +260,7 @@ const submitForm = () => {
   abBotFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
+      form.value.canUseApis = selectedApis.value
       if (form.value.id) {
         await updateAbBot(form.value).finally(() =>  buttonLoading.value = false);
       } else {

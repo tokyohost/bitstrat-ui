@@ -15,6 +15,7 @@
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
               <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+              <el-button icon="Refresh" @click="syncBalanceBtn">更新账户余额</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -88,7 +89,7 @@
 </template>
 
 <script setup name="Api" lang="ts">
-import { listApi, getApi, delApi, addApi, updateApi } from '@/api/system/api';
+import { listApi, getApi, delApi, addApi, updateApi, syncBalance } from '@/api/system/api';
 import { ApiVO, ApiQuery, ApiForm } from '@/api/system/api/types';
 import { ExchangeVo } from '@/api/system/common/types';
 import { getSupportExchange } from '@/api/system/common/common';
@@ -183,7 +184,12 @@ const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
 };
-
+const syncBalanceBtn = async () => {
+  loading.value = true;
+  let axiosResponse = await syncBalance();
+  ElMessage.success(axiosResponse.msg)
+  loading.value = false;
+}
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: ApiVO[]) => {
   ids.value = selection.map((item) => item.id);

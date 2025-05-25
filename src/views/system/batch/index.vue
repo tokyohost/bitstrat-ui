@@ -26,7 +26,7 @@
       <el-table v-loading="loading" :data="batchList" @selection-change="handleSelectionChange">
         <!--        <el-table-column type="selection" width="55" align="center" />-->
         <el-table-column label="币对" align="center" prop="symbol" />
-        <el-table-column label="卖出/买入" align="center" prop="buyEx">
+        <el-table-column label="卖出/买入" align="center" prop="buyEx" min-width="200">
           <template #default="scope">
             <div class="w-full mx-auto flex justify-center items-center">
               {{ scope.row.sellEx ?? '-' }}
