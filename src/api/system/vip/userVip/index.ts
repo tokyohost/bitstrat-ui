@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { UserVipVO, UserVipForm, UserVipQuery } from '@/api/system/userVip/types';
+import { UserVipVO, UserVipForm, UserVipQuery } from '@/api/system/vip/userVip/types';
 
 /**
  * 查询用户VIP 状态列表

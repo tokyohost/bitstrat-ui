@@ -15,6 +15,12 @@ export const listApi = (query?: ApiQuery): AxiosPromise<ApiVO[]> => {
     params: query
   });
 };
+export const syncBalance = (): AxiosPromise<ApiVO[]> => {
+  return request({
+    url: '/system/api/syncBalance',
+    method: 'get',
+  });
+};
 
 /**
  * 查询交易所API详细
