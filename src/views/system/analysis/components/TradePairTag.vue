@@ -6,7 +6,7 @@
     <span class="text-sm font-bold text-gray-800">
       {{ symbol }}
     </span>
-    <ExchangeLogo :exchange="exchange" v-if="props.diyExLogo || !exchangeLogo"></ExchangeLogo>
+    <ExchangeLogo :exchange="exchange" v-if="props.diyExLogo || !exchangeLogo" :key="exchange"></ExchangeLogo>
     <img :src="exchangeLogo" :alt="exchange" v-else class="w-4 h-4 rounded-full object-contain" />
     <span class="text-sm text-gray-600" v-if="!props.diyExLogo || !exchangeLogo">{{ exchange }}</span>
     <slot></slot>
