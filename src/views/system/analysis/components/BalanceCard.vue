@@ -139,6 +139,7 @@ const selectAccount = (account: ApiVO) => {
   emit('changeAccount', account.id as number);
   flushed();
 };
+
 const getAccountId = async (): Promise<number> => {
   console.log('getAccountId', apiAccountId.value);
   if (apiAccountId.value == undefined) {
@@ -146,8 +147,14 @@ const getAccountId = async (): Promise<number> => {
   }
   return apiAccountId.value;
 };
+
+const setAccountId = (accountId: number) => {
+  apiAccountId.value = accountId;
+  flushed();
+};
 defineExpose({
-  getAccountId
+  getAccountId,
+  setAccountId
 });
 
 // 初始化加载

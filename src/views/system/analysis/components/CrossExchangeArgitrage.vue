@@ -601,11 +601,16 @@ const handleSwitch = () => {
   swapBuySell();
 };
 // 对调函数
-function swapBuySell() {
+const swapBuySell = async () => {
   const tmp = localData.buy;
   localData.buy = localData.sell;
   localData.sell = tmp;
-}
+
+  const apiIdbuy = await buyBalanceRef.value.getAccountId();
+  const apiIdsell = await sellBalanceRef.value.getAccountId();
+  buyBalanceRef.value.setAccountId(apiIdsell);
+  sellBalanceRef.value.setAccountId(apiIdbuy);
+};
 
 const handleConfirm = async () => {
   emit('confirm', localData);
