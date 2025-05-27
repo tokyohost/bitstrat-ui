@@ -321,6 +321,7 @@ const fetchWarningConfig = async (arbitrageType, configParam) => {
       status: res.data.status ?? 0,
       liquidationConfigStatus: res.data.liquidationConfigStatus ?? 0,
       warningThreshold: res.data.warningThreshold ?? undefined,
+    };
   } else {
     form.value = {
       ...form.value,
