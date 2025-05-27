@@ -257,7 +257,7 @@ const localVisible = computed({
 
 const form = ref({
   taskId: undefined,
-  symbol: undefined,          // Add symbol field
+  symbol: undefined,
   warningThreshold: undefined,
   configName: undefined,
   status: 0,
@@ -269,8 +269,8 @@ const form = ref({
   shortLiquidationInterval: undefined,
   longEx: undefined,
   shortEx: undefined,
-  longLiqPx: undefined,      // Add longLiqPx field
-  shortLiqPx: undefined,     // Add shortLiqPx field
+  longLiqPx: undefined,
+  shortLiqPx: undefined,
 });
 
 // 动态计算校验规则
@@ -315,15 +315,13 @@ const fetchWarningConfig = async (arbitrageType, configParam) => {
   console.log('fetchWarningConfig', res)
   if (res.data) {
     form.value = {
-      ...form.value,         // Keep default values
-      ...res.data,          // Spread API response data
-      ...configParam,        // Override with config params
-      status: res.data.status ?? 0,  // Use nullish coalescing
+      ...form.value,
+      ...res.data, 
+      ...configParam,
+      status: res.data.status ?? 0,
       liquidationConfigStatus: res.data.liquidationConfigStatus ?? 0,
-      warningThreshold: res.data.warningThreshold ?? undefined,  // Ensure warningThreshold is set
-    };
+      warningThreshold: res.data.warningThreshold ?? undefined,
   } else {
-    // Reset form with config params when no data
     form.value = {
       ...form.value,
       ...configParam,
