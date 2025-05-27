@@ -500,7 +500,8 @@ const submitForm = () => {
 /** 监控按钮操作 */
 const handleMonitor = async (row?: CrossExchangeArbitrageTaskVO) => {
   showMonitor.value = true; // 打开窗口
-  let configParam = {taskId:row.id, ...row};
+  const { id, ...rest } = row || {}
+  let configParam = {taskId:row.id, ...rest};
   arbitrageWarningDialogRef.value.fetchWarningConfig(1, configParam); // 调用 fetchWarningConfig 方法
 };
 
