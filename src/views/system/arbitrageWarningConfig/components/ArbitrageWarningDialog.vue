@@ -78,7 +78,7 @@
                         {{ longMarketPrice }}
                       </el-tag>
                     </span>
-                    <el-tooltip 
+                    <el-tooltip
                       :content="`如果从当前价格${longMarketPrice}下跌${form.longLiquidationThreshold}%后的预期价格`"
                       placement="top"
                     >
@@ -89,8 +89,8 @@
                 <div class="threshold-row">
                   <span class="threshold-label">
                     上涨{{ form.longLiquidationThreshold }}%:
-                    <el-tag 
-                      size="small" 
+                    <el-tag
+                      size="small"
                       :type="isNearLongLiqPrice('up') ? 'danger' : 'info'"
                       class="threshold-tag"
                     >
@@ -158,8 +158,8 @@
                         {{ shortMarketPrice }}
                       </el-tag>
                     </span>
-                    <el-tooltip 
-                      :content="`如果从当前价格${shortMarketPrice}上涨${form.shortLiquidationThreshold}%后的预期价格`" 
+                    <el-tooltip
+                      :content="`如果从当前价格${shortMarketPrice}上涨${form.shortLiquidationThreshold}%后的预期价格`"
                       placement="top"
                     >
                       <el-icon class="info-icon"><InfoFilled /></el-icon>
@@ -169,8 +169,8 @@
                 <div class="threshold-row">
                   <span class="threshold-label">
                     上涨{{ form.shortLiquidationThreshold }}%:
-                    <el-tag 
-                      size="small" 
+                    <el-tag
+                      size="small"
                       :type="isNearShortLiqPrice('up') ? 'danger' : 'info'"
                       class="threshold-tag"
                     >
@@ -257,6 +257,7 @@ const localVisible = computed({
 
 const form = ref({
   taskId: undefined,
+  symbol: undefined,
   warningThreshold: undefined,
   configName: undefined,
   status: 0,
@@ -268,24 +269,26 @@ const form = ref({
   shortLiquidationInterval: undefined,
   longEx: undefined,
   shortEx: undefined,
+  longLiqPx: undefined,
+  shortLiqPx: undefined,
 });
 
 // 动态计算校验规则
 const rules = computed(() => ({
-  warningThreshold: [{ 
-    required: form.value.status === 1, 
-    message: '请输入警告阈值', 
-    trigger: 'change' 
+  warningThreshold: [{
+    required: form.value.status === 1,
+    message: '请输入警告阈值',
+    trigger: 'change'
   }],
-  longLiquidationThreshold: [{ 
-    required: form.value.liquidationConfigStatus === 1, 
-    message: '请输入做多预警阈值', 
-    trigger: 'change' 
+  longLiquidationThreshold: [{
+    required: form.value.liquidationConfigStatus === 1,
+    message: '请输入做多预警阈值',
+    trigger: 'change'
   }],
-  shortLiquidationThreshold: [{ 
-    required: form.value.liquidationConfigStatus === 1, 
-    message: '请输入做空预警阈值', 
-    trigger: 'change' 
+  shortLiquidationThreshold: [{
+    required: form.value.liquidationConfigStatus === 1,
+    message: '请输入做空预警阈值',
+    trigger: 'change'
   }]
 }));
 
@@ -296,11 +299,9 @@ watch([
 ], () => {
   // 延迟执行以确保DOM更新
   nextTick(() => {
-    arbitrageWarningConfigFormRef.value?.validateFields([
-      'warningThreshold',
-      'longLiquidationThreshold',
-      'shortLiquidationThreshold'
-    ]);
+    arbitrageWarningConfigFormRef.value?.validate(undefined, {
+      validateField: ['warningThreshold', 'longLiquidationThreshold', 'shortLiquidationThreshold']
+    });
   });
 });
 
@@ -314,10 +315,19 @@ const fetchWarningConfig = async (arbitrageType, configParam) => {
   console.log('fetchWarningConfig', res)
   if (res.data) {
     form.value = {
-      ...res.data,
+      ...form.value,
+      ...res.data, 
       ...configParam,
-      status: res.data.status || 0, // 确保status有默认值
-      liquidationConfigStatus: res.data.liquidationConfigStatus || 0 // 确保liquidationConfigStatus有默认值
+      status: res.data.status ?? 0,
+      liquidationConfigStatus: res.data.liquidationConfigStatus ?? 0,
+      warningThreshold: res.data.warningThreshold ?? undefined,
+    };
+  } else {
+    form.value = {
+      ...form.value,
+      ...configParam,
+      status: 0,
+      liquidationConfigStatus: 0,
     };
   }
 };
@@ -397,11 +407,11 @@ onUnmounted(() => {
 
 const isNearLongLiqPrice = (direction: 'up' | 'down') => {
   if (!form.value.longLiqPx || !longMarketPrice.value || longMarketPrice.value === '-') return false;
-  
+
   const currentPrice = parseFloat(longMarketPrice.value);
   const liqPrice = parseFloat(form.value.longLiqPx);
   const threshold = parseFloat(form.value.longLiquidationThreshold || '0');
-  
+
   if (direction === 'down') {
     const downPrice = currentPrice * (1 - threshold / 100);
     return Math.abs(downPrice - liqPrice) / liqPrice < 0.05; // 5% threshold
@@ -411,11 +421,11 @@ const isNearLongLiqPrice = (direction: 'up' | 'down') => {
 
 const isNearShortLiqPrice = (direction: 'up' | 'down') => {
   if (!form.value.shortLiqPx || !shortMarketPrice.value || shortMarketPrice.value === '-') return false;
-  
+
   const currentPrice = parseFloat(shortMarketPrice.value);
   const liqPrice = parseFloat(form.value.shortLiqPx);
   const threshold = parseFloat(form.value.shortLiquidationThreshold || '0');
-  
+
   if (direction === 'up') {
     const upPrice = currentPrice * (1 + threshold / 100);
     return Math.abs(upPrice - liqPrice) / liqPrice < 0.05; // 5% threshold
@@ -427,7 +437,7 @@ const isNearShortLiqPrice = (direction: 'up' | 'down') => {
 const calculateThresholdPrice = (currentPrice: string, threshold: number, direction: 'up' | 'down') => {
   const price = parseFloat(currentPrice);
   if (isNaN(price) || !threshold) return '-';
-  
+
   const multiplier = direction === 'up' ? (1 + threshold / 100) : (1 - threshold / 100);
   return (price * multiplier).toFixed(4);
 };
