@@ -61,6 +61,23 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column label="实时价差监控" align="center" prop="longEx" min-width="150">
+          <template #default="scope">
+            <div class="flex justify-center items-center">
+              <div>
+                <CompareLineChartDialog
+                  :exchange-a="scope.row.longEx"
+                  :symbol-a="scope.row.symbol"
+                  :type-a="'swap'"
+                  :exchange-b="scope.row.shortEx"
+                  :symbol-b="scope.row.symbol"
+                  :type-b="'swap'"
+                >
+                </CompareLineChartDialog>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="计划做多/计划做空" align="center" prop="longSize" :formatter="defaultFormatter" min-width="200">
           <template #default="scope">
             <div class="flex justify-center items-start">
@@ -327,6 +344,7 @@ import { crossTaskOptions } from '@/constants/CrossTask-options';
 import FundingFeeDisplay from '@/views/system/crossExchangeArbitrageTask/components/FundingFeeDisplay.vue';
 import ArbitrageWarningDialog from '@/views/system/arbitrageWarningConfig/components/ArbitrageWarningDialog.vue';
 import FrLineChartDialog from '@/views/system/analysis/components/FrLineChartDialog.vue';
+import CompareLineChartDialog from '@/views/system/analysis/components/CompareLineChartDialog.vue';
 
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -500,7 +518,7 @@ const submitForm = () => {
 /** 监控按钮操作 */
 const handleMonitor = async (row?: CrossExchangeArbitrageTaskVO) => {
   showMonitor.value = true; // 打开窗口
-  let configParam = {taskId:row.id, ...row};
+  const configParam = { taskId: row.id, ...row };
   arbitrageWarningDialogRef.value.fetchWarningConfig(1, configParam); // 调用 fetchWarningConfig 方法
 };
 
