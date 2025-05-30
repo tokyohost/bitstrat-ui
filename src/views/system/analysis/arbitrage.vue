@@ -13,6 +13,7 @@ import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelecto
 import FixedNumber from '@/views/system/analysis/components/FixedNumber.vue';
 import CrossExchangeArgitrageDiy from '@/views/system/analysis/components/CrossExchangeArgitrageDiy.vue';
 import FrLineChartDialog from '@/views/system/analysis/components/FrLineChartDialog.vue';
+import CompareLineChartDialog from '@/views/system/analysis/components/CompareLineChartDialog.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const datalist = ref<CoinFundingInfo[]>();
 
@@ -196,6 +197,23 @@ onMounted(() => {
                 :symbol="scope.row.symbol"
                 :selected-ex="[scope.row.buy.exchangeName, scope.row.sell.exchangeName]"
               ></FrLineChartDialog>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="实时价差监控" align="center" prop="longEx" min-width="150">
+          <template #default="scope">
+            <div class="flex justify-center items-center">
+              <div>
+                <CompareLineChartDialog
+                  :exchange-a="scope.row.buy.exchangeName"
+                  :symbol-a="scope.row.symbol"
+                  :type-a="'swap'"
+                  :exchange-b="scope.row.sell.exchangeName"
+                  :symbol-b="scope.row.symbol"
+                  :type-b="'swap'"
+                >
+                </CompareLineChartDialog>
+              </div>
             </div>
           </template>
         </el-table-column>

@@ -40,13 +40,13 @@ const buildWsUrl = () => {
     `&exchange2=${props.exchangeB}&symbol2=${props.symbolB}&type2=${props.typeB}`
   );
 };
-
+const titleText = ref('');
 // 初始化 ECharts
 const initChart = () => {
   if (chartContainer.value) {
     chartInstance = echarts.init(chartContainer.value);
     chartInstance.setOption({
-      title: { text: '' },
+      title: { text: titleText.value },
       tooltip: { trigger: 'axis' },
       legend: {
         data: [props.exchangeA.toLowerCase(), props.exchangeB.toLowerCase()],
@@ -94,7 +94,27 @@ const updateChart = () => {
   const lastIndex = dataA.length - 1;
   const lastA = dataA[lastIndex];
   const lastB = dataB[lastIndex];
+  titleText.value = `{a|${props.exchangeA} ${lastA}}\n{b|${props.exchangeB} ${lastB}}`;
+
   chartInstance?.setOption({
+    title: {
+      text: titleText.value,
+      textStyle: {
+        rich: {
+          a: {
+            fontWeight: 'bold',
+            fontSize: 16,
+            color: '#E6A23C',
+            lineHeight: 24
+          },
+          b: {
+            color: '#F56C6C',
+            fontSize: 16,
+            lineHeight: 24
+          }
+        }
+      }
+    },
     xAxis: { data: timestamps },
     series: [
       {
