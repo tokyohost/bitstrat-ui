@@ -51,9 +51,9 @@ const initChart = () => {
       legend: {
         data: [props.exchangeA.toLowerCase(), props.exchangeB.toLowerCase()],
         top: 'top',
-        left: 'left',
+        left: 'right',
         textStyle: {
-          fontSize: 14
+          fontSize: 12
         }
       },
       grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
@@ -270,7 +270,7 @@ onUnmounted(() => {
 
 <template>
   <div class="flex justify-between" style="width: 100%">
-    <div ref="chartContainer" style="width: 100%; height: 400px"></div>
+    <div ref="chartContainer" style="width: 100%; min-height: 400px;height: 100%"></div>
     <price-diff-bar :ab-diff="spreadAminusB" :ba-diff="spreadBminusA" :price-a="priceA" :price-b="priceB"></price-diff-bar>
   </div>
 </template>

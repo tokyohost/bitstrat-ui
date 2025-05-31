@@ -53,6 +53,11 @@ export const constantRoutes: RouteRecordRaw[] = [
     hidden: true
   },
   {
+    path: '/workspace',
+    component: () => import('@/views/components/workspace/Workspace.vue'),
+    hidden: true
+  },
+  {
     path: '/:pathMatch(.*)*',
     component: () => import('@/views/error/404.vue'),
     hidden: true
