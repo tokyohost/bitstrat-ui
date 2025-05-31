@@ -50,7 +50,7 @@
         <button class="delete-btn" @click="$emit('remove')">✕</button>
       </div>
       <div class="card-content">
-        <component :is="component" />
+        <component :is="component" :id="props.id" v-model:componentData="props.compontentData" @config="configDone"/>
       </div>
     </div>
   </vue-draggable-resizable>
@@ -59,10 +59,11 @@
 <script setup lang="ts">
 import VueDraggableResizable from 'vue-draggable-resizable';
 import 'vue-draggable-resizable/style.css';
+import { CompontentData } from '@/views/components/type/type';
 
 const props = withDefaults(
   defineProps<{
-    id: number
+    id: number|string
     name: string
     component: Component
     x: number
@@ -71,14 +72,23 @@ const props = withDefaults(
     h: number
     minWidth?: number
     minHeight?: number
+    compontentData?: CompontentData
   }>(),
   {
     minWidth: 100,
-    minHeight: 100
+    minHeight: 100,
+    compontentData: () => ({})
   }
 )
 
-const emit = defineEmits(['remove', 'try-move', 'change-temp']);
+
+const emit = defineEmits(['remove', 'try-move', 'change-temp',"configDone"]);
+
+
+const configDone = (config: CompontentData) => {
+  console.log("configDone",config);
+  emit('configDone', config);
+}
 
 const onChanging = (left: number, top: number, width: number, height: number) => {
   emit('change-temp', {
@@ -155,7 +165,8 @@ onMounted(()=>{
 
 ::v-deep .handle {
   border: 0;
-  background: none;
+  //background: none;
+  background: #909399;
 }
 
 .active-class {

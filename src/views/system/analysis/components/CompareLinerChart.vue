@@ -27,6 +27,7 @@ let resizeObserver: ResizeObserver | null = null;
 // 每 5 秒发送一次 ping 消息
 const HEARTBEAT_INTERVAL = 5 * 1000;
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+const loading = ref<boolean>(true);
 
 const timestamps: string[] = [];
 const dataA: number[] = [];
@@ -94,7 +95,7 @@ const updateChart = () => {
   const lastIndex = dataA.length - 1;
   const lastA = dataA[lastIndex];
   const lastB = dataB[lastIndex];
-  titleText.value = `{a|${props.exchangeA} ${lastA}}\n{b|${props.exchangeB} ${lastB}}`;
+  titleText.value = `{a|${props.exchangeA}[A] $${lastA}}\n{b|${props.exchangeB}[B] $${lastB}}`;
 
   chartInstance?.setOption({
     title: {
@@ -102,15 +103,18 @@ const updateChart = () => {
       textStyle: {
         rich: {
           a: {
-            fontWeight: 'bold',
-            fontSize: 16,
+            // fontWeight: 'bold',
+            fontSize: 14,
             color: '#E6A23C',
-            lineHeight: 24
+            lineHeight: 24,
+            align: 'right',
           },
           b: {
             color: '#F56C6C',
-            fontSize: 16,
-            lineHeight: 24
+            fontSize: 14,
+            lineHeight: 24,
+            align: 'right',
+            width: 200
           }
         }
       }
@@ -185,7 +189,13 @@ const priceA = ref(0);
 const priceB = ref(0);
 
 onMounted(() => {
-  initChart();
+
+  try{
+    initChart();
+  }catch (e){
+    loading.value =false;
+    return;
+  }
   const wsUrl = buildWsUrl();
   socket = new ReconnectingWebSocket(wsUrl);
 
@@ -205,7 +215,7 @@ onMounted(() => {
         spreadAminusB.value = +(priceA.value - priceB.value).toFixed(8);
         spreadBminusA.value = +(priceB.value - priceA.value).toFixed(8);
 
-        console.log(`A-B: ${spreadAminusB.value}, B-A: ${spreadBminusA.value}`);
+        // console.log(`A-B: ${spreadAminusB.value}, B-A: ${spreadBminusA.value}`);
 
         // 你可以选择：
         // 1. 渲染到图表上（新增一条 spread 折线）
@@ -239,7 +249,7 @@ onMounted(() => {
   });
   socket.addEventListener('open', () => {
     console.log('WebSocket 连接已打开');
-
+    loading.value = false;
     // 启动心跳
     heartbeatTimer = setInterval(() => {
       if (socket.readyState === WebSocket.OPEN) {
@@ -265,11 +275,12 @@ onUnmounted(() => {
     clearInterval(heartbeatTimer);
     heartbeatTimer = null;
   }
+  loading.value = true;
 });
 </script>
 
 <template>
-  <div class="flex justify-between" style="width: 100%">
+  <div class="flex justify-between" style="width: 100%" v-loading="loading">
     <div ref="chartContainer" style="width: 100%; min-height: 400px;height: 100%"></div>
     <price-diff-bar :ab-diff="spreadAminusB" :ba-diff="spreadBminusA" :price-a="priceA" :price-b="priceB"></price-diff-bar>
   </div>

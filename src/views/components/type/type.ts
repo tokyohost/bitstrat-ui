@@ -1,4 +1,4 @@
-interface ComponentItem {
+export interface ComponentItem {
   cid:number
   id?: number|string
   name: string
@@ -9,5 +9,127 @@ interface ComponentItem {
   component: any
   minHeight?: number
   minWidth?: number
+  compontentData?: CompontentData //组件数据
+}
+export interface CompontentData{
+  id?:number|string
+
+}
+//价差对比组件数据
+export interface CompareWidget extends CompontentData {
+  businessType?: string;
+  exchangeA: string;
+  symbolA: string;
+  typeA: string;
+  exchangeB: string;
+  symbolB: string;
+  typeB: string;
+  symbolTmpA?: string;
+  symbolTmpB?: string;
+}
+
+export function getdefaultLayout() {
+  return "[\n" +
+    "  {\n" +
+    "    \"cid\": 1,\n" +
+    "    \"id\": \"9f387c21-3660-4b26-a1f7-881f6761f64a\",\n" +
+    "    \"name\": \"价差监控\",\n" +
+    "    \"x\": 0,\n" +
+    "    \"y\": 0,\n" +
+    "    \"w\": 1080,\n" +
+    "    \"h\": 560,\n" +
+    "    \"component\": {\n" +
+    "      \"name\": \"AsyncComponentWrapper\"\n" +
+    "    },\n" +
+    "    \"compontentData\": {\n" +
+    "      \"typeA\": \"swap\",\n" +
+    "      \"exchangeA\": \"okx\",\n" +
+    "      \"symbolTmpA\": \"ETH-USDT-SWAP\",\n" +
+    "      \"symbolA\": \"ETH\",\n" +
+    "      \"typeB\": \"swap\",\n" +
+    "      \"exchangeB\": \"binance\",\n" +
+    "      \"symbolTmpB\": \"ETHUSDT\",\n" +
+    "      \"symbolB\": \"ETH\",\n" +
+    "      \"id\": \"9fd1c2a2-d66d-4809-b51c-6730b1d4d0dc\"\n" +
+    "    },\n" +
+    "    \"minWidth\": 1200,\n" +
+    "    \"minHeight\": 560\n" +
+    "  },\n" +
+    "  {\n" +
+    "    \"cid\": 3,\n" +
+    "    \"id\": \"c44583e5-8c03-4798-b0d2-5793d4d79ad6\",\n" +
+    "    \"name\": \"挂单\",\n" +
+    "    \"x\": 1430,\n" +
+    "    \"y\": 0,\n" +
+    "    \"w\": 300,\n" +
+    "    \"h\": 930,\n" +
+    "    \"component\": {\n" +
+    "      \"name\": \"AsyncComponentWrapper\"\n" +
+    "    },\n" +
+    "    \"compontentData\": {\n" +
+    "      \n" +
+    "    }\n" +
+    "  },\n" +
+    "  {\n" +
+    "    \"cid\": 4,\n" +
+    "    \"id\": \"e2113333-d14b-42d2-8cad-24dc1a563dab\",\n" +
+    "    \"name\": \"成交记录\",\n" +
+    "    \"x\": 1740,\n" +
+    "    \"y\": 0,\n" +
+    "    \"w\": 300,\n" +
+    "    \"h\": 930,\n" +
+    "    \"component\": {\n" +
+    "      \"name\": \"AsyncComponentWrapper\"\n" +
+    "    },\n" +
+    "    \"compontentData\": {\n" +
+    "      \n" +
+    "    }\n" +
+    "  },\n" +
+    "  {\n" +
+    "    \"cid\": 5,\n" +
+    "    \"id\": \"6dfc05dc-55e6-41e4-92c1-517ef0c56c02\",\n" +
+    "    \"name\": \"消息通知\",\n" +
+    "    \"x\": 1090,\n" +
+    "    \"y\": 530,\n" +
+    "    \"w\": 330,\n" +
+    "    \"h\": 400,\n" +
+    "    \"component\": {\n" +
+    "      \"name\": \"AsyncComponentWrapper\"\n" +
+    "    },\n" +
+    "    \"compontentData\": {\n" +
+    "      \n" +
+    "    }\n" +
+    "  },\n" +
+    "  {\n" +
+    "    \"cid\": 7,\n" +
+    "    \"id\": \"ff275ee3-9be0-4d2f-be28-8931927db02a\",\n" +
+    "    \"name\": \"实时持仓\",\n" +
+    "    \"x\": 0,\n" +
+    "    \"y\": 570,\n" +
+    "    \"w\": 1080,\n" +
+    "    \"h\": 360,\n" +
+    "    \"component\": {\n" +
+    "      \"name\": \"AsyncComponentWrapper\"\n" +
+    "    },\n" +
+    "    \"compontentData\": {\n" +
+    "      \n" +
+    "    }\n" +
+    "  },\n" +
+    "  {\n" +
+    "    \"cid\": 6,\n" +
+    "    \"id\": \"473aded0-100e-4a86-9b28-22a4ad178270\",\n" +
+    "    \"name\": \"自动双腿下单\",\n" +
+    "    \"x\": 1090,\n" +
+    "    \"y\": 0,\n" +
+    "    \"w\": 330,\n" +
+    "    \"h\": 520,\n" +
+    "    \"component\": {\n" +
+    "      \"name\": \"AsyncComponentWrapper\"\n" +
+    "    },\n" +
+    "    \"compontentData\": {\n" +
+    "      \n" +
+    "    }\n" +
+    "  }\n" +
+    "]"
 }
 

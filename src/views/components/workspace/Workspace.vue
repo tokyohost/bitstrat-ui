@@ -38,9 +38,11 @@
         :h="item.h"
         :name="item.name"
         :component="item.component"
+        :compontent-data="item.compontentData"
         @remove="removeComponent(item.id)"
         @try-move="tryMove"
         @change-temp="changeTemp"
+        @config-done="configDoneWorkSpace"
         :min-height="item.minHeight"
         :min-width="item.minWidth"
       />
@@ -56,6 +58,7 @@ import DraggableCard from './DraggableCard.vue'
 // await import CompareWidget from '@/views/components/widgets/CompareWidget.vue'
 // await import TableWidget from '@/views/components/widgets/TableWidget.vue'
 import { defineAsyncComponent, markRaw } from 'vue'
+import { ComponentItem, CompontentData, getdefaultLayout } from '@/views/components/type/type';
 
 // 异步懒加载组件，并用 markRaw 避免 Vue 响应式包裹
 const ChartWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ChartWidget.vue')))
@@ -71,7 +74,8 @@ const availableComponents = ref<ComponentItem[]>([
   { cid:4,name: '成交记录', component: ChartWidget },
   { cid:5,name: '消息通知', component: ChartWidget },
   { cid:6,name: '自动双腿下单', component: ChartWidget },
-  { cid:7,name: '表格组件', component: TableWidget },
+  { cid:7,name: '实时持仓', component: ChartWidget },
+  { cid:8,name: '表格组件', component: TableWidget },
 ])
 
 const components = ref<ComponentItem[]>([])
@@ -110,25 +114,37 @@ const addComponent = (comp: ComponentItem) => {
   saveLayout()
   ElMessage.success("添加成功")
 }
-const loadComponent = (comp: ComponentItem,x?:number,y?:number,w?:number,h?:number) => {
-  components.value.push({
+const loadComponent = (comp: ComponentItem,x?:number,y?:number,w?:number,h?:number,data?:CompontentData) => {
+  const component = {
     cid:comp.cid,
-    id: crypto.randomUUID(),
+      id: crypto.randomUUID(),
     name: comp.name,
     x:x??comp.x,
     y:y??comp.y,
     w:w??comp.w,
     h:h??comp.h,
     component: comp.component,
+    compontentData: data??{},
     minWidth:comp.minWidth,
     minHeight:comp.minHeight,
-  })
+  } as ComponentItem
+
+  components.value.push(component)
+  // console.log("loadComponent", component);
+  // console.log("loadComponent data ", data);
 }
-const lastValidStateMap = new Map<number, { x: number; y: number; w: number; h: number }>()
-const removeComponent = (id: number) => {
+const lastValidStateMap = new Map<number|string, { x: number; y: number; w: number; h: number }>()
+const removeComponent = (id: number|string) => {
   components.value = components.value.filter((c) => c.id !== id)
   lastValidStateMap.delete(id)
   saveLayout()
+}
+const configDoneWorkSpace = (config:CompontentData)=>{
+   let find = components.value.find((c) => c.id == config.id);
+   if(find){
+     find.compontentData= config
+   }
+   saveLayout()
 }
 
 const changeTemp = (payload: {
@@ -138,9 +154,9 @@ const changeTemp = (payload: {
   w: number
   h: number
 }) => {
-  console.log(payload);
+  // console.log(payload);
   const item = components.value.find((c) => c.id === payload.id)
-  console.log(item);
+  // console.log(item);
   if (!item) return
 
   const proposed = { ...payload }
@@ -211,24 +227,34 @@ const saveLayout = () => {
 
 const loadLayout = () => {
   const saved = localStorage.getItem(STORAGE_KEY)
+  let parse = []
   if (saved) {
     try {
-      let parse = JSON.parse(saved);
-      for (let i = 0; i < parse.length; i++) {
-        let cacheComp = parse[i];
-        let filter = availableComponents.value.filter((item)=>item.cid == cacheComp.cid);
-        if (filter) {
-          let component = filter[0] as ComponentItem;
-          loadComponent(component,cacheComp.x,cacheComp.y,cacheComp.w,cacheComp.h);
-        }
-      }
-      // components.value = JSON.parse(saved)
+      parse = JSON.parse(saved);
+
     } catch (e) {
       console.error('Failed to parse layout:', e)
+    }
+  }else{
+    //加载默认
+    let defaultLayout = getdefaultLayout();
+    console.log(defaultLayout);
+    parse = JSON.parse(defaultLayout);
+  }
+
+
+  for (let i = 0; i < parse.length; i++) {
+    let cacheComp = parse[i];
+    // console.log("cache",cacheComp);
+    let filter = availableComponents.value.filter((item)=>item.cid == cacheComp.cid);
+    if (filter) {
+      let component = filter[0] as ComponentItem;
+      loadComponent(component,cacheComp.x,cacheComp.y,cacheComp.w,cacheComp.h,cacheComp.compontentData);
     }
   }
 }
 const resetLayout = () => {
+  saveLayout()
   location.reload()
 }
 const removeAll = () => {

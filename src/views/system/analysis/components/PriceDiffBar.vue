@@ -13,8 +13,10 @@ const chartMinusRef = ref<HTMLDivElement | null>(null);
 
 let chart1: echarts.ECharts | null = null;
 let chart2: echarts.ECharts | null = null;
-const resizeObserver: ResizeObserver | null = null;
-
+const resizeObserver = new ResizeObserver(() => {
+  chart1?.resize();
+  chart2?.resize();
+});
 // 计算百分比差值
 const abPercent = computed(() => {
   if (props.priceB === 0) return 0;
@@ -76,10 +78,7 @@ const renderCharts = () => {
       }
     ]
   });
-  resizeObserver = new ResizeObserver(() => {
-    chart1?.resize();
-    chart2?.resize();
-  });
+
   resizeObserver.observe(chartPlusRef.value);
   resizeObserver.observe(chartMinusRef.value);
 };
