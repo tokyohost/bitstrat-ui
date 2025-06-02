@@ -95,7 +95,7 @@ const updateChart = () => {
   const lastIndex = dataA.length - 1;
   const lastA = dataA[lastIndex];
   const lastB = dataB[lastIndex];
-  titleText.value = `{a|${props.exchangeA}[A] $${lastA}}\n{b|${props.exchangeB}[B] $${lastB}}`;
+  titleText.value = `{a|${props.exchangeA}[${props.symbolA}][A] $${lastA}}\n{b|${props.exchangeB}[${props.symbolB}][B] $${lastB}}`;
 
   chartInstance?.setOption({
     title: {
@@ -160,7 +160,7 @@ const updateChart = () => {
           symbolSize: 5,
           label: {
             show: true,
-            formatter: `${lastB}`,
+            formatter: `${lastB} `,
             fontSize: 12,
             color: '#F56C6C'
           },

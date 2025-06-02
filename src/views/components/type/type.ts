@@ -28,6 +28,103 @@ export interface CompareWidget extends CompontentData {
   symbolTmpB?: string;
 }
 
+
+export interface PositionWsData {
+  exchange?: string
+
+  /**
+   * 仓位类型
+   * see {@link PositionType}
+   */
+  posType?: string
+
+  symbol?: string
+
+  size?: number
+
+  /**
+   * see {@link SideType}
+   */
+  side?: string
+
+  avgPrice?: number
+
+  /**
+   * 资金费
+   */
+  fundingFee?: number
+
+  /**
+   * 手续费
+   */
+  fee?: number
+
+  /**
+   * 盈亏
+   */
+  profit?: number
+
+  /**
+   * 未实现盈亏
+   */
+  unrealizedProfit?: number
+
+  /**
+   * 保证金模式
+   */
+  marginType?: string
+
+  /**
+   * 保证金
+   */
+  marginPrice?: number
+
+  /**
+   * 保证金率
+   */
+  marginRatio?: number
+
+  /**
+   * api名称
+   */
+  accountName?: string
+
+  /**
+   * 更新时间
+   */
+  updateTime?: string
+
+  /**
+   * 杠杆倍数
+   */
+  leverage?: number
+
+  /**
+   * 预估强平价
+   */
+  liqPrice?: number
+
+  /**
+   * 是否平仓
+   */
+  closed?: boolean
+
+  accountId?: number
+}
+
+export interface WebsocketMsgData<T> {
+  /**
+   * see {@link WebsocketMsgType}
+   */
+  type?: string
+
+  accountId?: number
+
+  exchangeName?: string
+
+  data?: T
+}
+
 export function getdefaultLayout() {
   return "[\n" +
     "  {\n" +

@@ -59,22 +59,25 @@ import DraggableCard from './DraggableCard.vue'
 // await import TableWidget from '@/views/components/widgets/TableWidget.vue'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { ComponentItem, CompontentData, getdefaultLayout } from '@/views/components/type/type';
+import { initWebSocket } from '@/utils/websocket';
 
 // 异步懒加载组件，并用 markRaw 避免 Vue 响应式包裹
 const ChartWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ChartWidget.vue')))
 const CompareWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/CompareWidget.vue')))
 const TableWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/TableWidget.vue')))
+const OrderWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/OrderWidget.vue')))
+const PositionWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/PositionWidget.vue')))
 
 const componentPanelDrawer = ref(false)
 
 const availableComponents = ref<ComponentItem[]>([
-  { cid:1,name: '价差监控', component: CompareWidget, minWidth: 1200, minHeight: 560 },
+  { cid:1,name: '价差监控', component: CompareWidget, minWidth: 500, minHeight: 400 },
   { cid:2,name: '图表组件', component: ChartWidget },
   { cid:3,name: '挂单', component: ChartWidget },
-  { cid:4,name: '成交记录', component: ChartWidget },
+  { cid:4,name: '成交记录', component: OrderWidget ,minWidth:300, minHeight:500 },
   { cid:5,name: '消息通知', component: ChartWidget },
-  { cid:6,name: '自动双腿下单', component: ChartWidget },
-  { cid:7,name: '实时持仓', component: ChartWidget },
+  { cid:6,name: '自动双腿下单', component: ChartWidget},
+  { cid:7,name: '实时持仓', component: PositionWidget,minWidth:700, minHeight:360  },
   { cid:8,name: '表格组件', component: TableWidget },
 ])
 
@@ -263,6 +266,8 @@ const removeAll = () => {
 }
 onMounted(() => {
   loadLayout()
+  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket');
 })
 </script>
 

@@ -17,7 +17,7 @@
 import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 
 interface Props {
-  direction: 'long' | 'short';
+  direction: 'long' | 'short' | string;
   symbol: string;
   exchange: string;
   exchangeLogo: string;

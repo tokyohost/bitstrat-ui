@@ -152,7 +152,7 @@ onMounted(()=>{
 </script>
 
 <template>
-  <div style="padding: 8px;" >
+  <div class="flex-1 w-full p-2" >
     <div class="flex justify-end">
       <el-button @click="showSettingFlag =true"><img src="../../../assets/icons/png/setting.png" height="20" width="20" /></el-button>
       <el-dialog

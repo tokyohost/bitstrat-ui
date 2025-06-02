@@ -5,6 +5,8 @@
     :y="y"
     :w="w"
     :h="h"
+    :min-width="minWidth ?? 200"
+    :min-height="minHeight ?? 200"
     :parent="true"
     :resizable="true"
     :draggable="true"
@@ -49,7 +51,7 @@
         <span>{{ name }}</span>
         <button class="delete-btn" @click="$emit('remove')">✕</button>
       </div>
-      <div class="card-content">
+      <div :class="['card-content', 'flex']" :style="{ height: props.h + 'px' }">
         <component :is="component" :id="props.id" v-model:componentData="props.compontentData" @config="configDone"/>
       </div>
     </div>
@@ -148,7 +150,7 @@ onMounted(()=>{
 
 .card-content {
   flex: 1;
-  padding: 12px;
+  padding: 0px;
 }
 
 .delete-btn {

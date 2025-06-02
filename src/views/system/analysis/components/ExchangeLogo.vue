@@ -1,7 +1,7 @@
 <template>
   <div class="exchange-info">
     <img v-if="logoUrl" :src="logoUrl" :alt="exchange" class="exchange-logo" @error="onError" />
-    {{ exchange }}
+    {{ exchange ? exchange.toUpperCase() : '' }}
     <slot name="default"></slot>
   </div>
 </template>
@@ -51,8 +51,8 @@ function onError() {
 
 <style scoped>
 .exchange-logo {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   vertical-align: middle;
 }
 .exchange-info {

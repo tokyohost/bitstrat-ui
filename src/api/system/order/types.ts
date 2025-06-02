@@ -49,11 +49,23 @@ export interface OrderVO {
    */
   price: string;
 
+  /**
+   * 下单方向
+   */
+  side?: string;
+  /**
+   * 是否是平仓单 1-是 0-不是
+   */
+  closePositionOrder?: number;
+
   cumExecQty: string | number;
   orderEnd: string | number;
   leavesQty: string | number;
   leavesValue: string | number;
   cumExecValue: string | number;
+  marketPrice: string;
+  createTime: string,
+  updateTime: string,
 }
 
 export interface OrderForm extends BaseEntity {

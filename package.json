@@ -37,6 +37,7 @@
     "js-cookie": "3.0.5",
     "jsencrypt": "3.3.2",
     "json-editor-vue3": "^1.1.1",
+    "mitt": "^3.0.1",
     "nprogress": "0.2.0",
     "pinia": "2.2.6",
     "reconnecting-websocket": "^4.4.0",
