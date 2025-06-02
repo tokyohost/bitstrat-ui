@@ -15,7 +15,7 @@ const props = defineProps<{
   typeB: string;
 }>();
 
-const API_SERVER = import.meta.env.VITE_API_SERVER || 'ws://localhost:7400';
+const API_SERVER = import.meta.env.VITE_APP_API_WS_SERVER || 'ws://localhost:7400';
 const token = getToken();
 
 const priceMap = new Map<string, number>(); // 存最近一次每个交易所的价格

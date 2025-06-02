@@ -15,7 +15,7 @@ function handleWsMessage(data: WebsocketMsgData<PositionWsData[]>) {
   const result = positionList.value.filter(
     item => item.accountId != accountId
   )
-  console.log("result", result);
+  // console.log("result", result);
   positionList.value = result
 
   let positions = data.data;
@@ -23,7 +23,7 @@ function handleWsMessage(data: WebsocketMsgData<PositionWsData[]>) {
     positionList.value.unshift(position);
   }
 
-  console.log("positions", toRaw(positionList.value));
+  // console.log("positions", toRaw(positionList.value));
 }
 
 onMounted(() => {
@@ -39,7 +39,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex-1 overflow-y-auto p-3 overflow-y-hidden hover:overflow-y-auto ">
     <div class="flex flex-col gap-y-1">
-      <PositionWidgetItem v-for="(item) in positionList"  :key="new Date().getTime()" class="hover:cursor-pointer" :position="item"></PositionWidgetItem>
+      <PositionWidgetItem v-for="(item,index) in positionList"  :key="new Date().getTime()+index" class="hover:cursor-pointer" :position="item"></PositionWidgetItem>
     </div>
   </div>
 </template>

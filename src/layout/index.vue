@@ -68,8 +68,8 @@ onMounted(() => {
 });
 
 onMounted(() => {
-  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket');
+  // const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  initWebSocket(import.meta.env.VITE_APP_USER_WEBSOCKET_SERVER+"");
 });
 
 onMounted(() => {

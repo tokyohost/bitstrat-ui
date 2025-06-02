@@ -9,6 +9,7 @@ export interface ComponentItem {
   component: any
   minHeight?: number
   minWidth?: number
+  hasSetting?: boolean
   compontentData?: CompontentData //组件数据
 }
 export interface CompontentData{
@@ -125,6 +126,10 @@ export interface WebsocketMsgData<T> {
   data?: T
 }
 
+export interface ABOrderForm {
+  type?: 'maxAminB'|'maxBminA'
+}
+
 export function getdefaultLayout() {
   return "[\n" +
     "  {\n" +
@@ -135,6 +140,7 @@ export function getdefaultLayout() {
     "    \"y\": 0,\n" +
     "    \"w\": 1080,\n" +
     "    \"h\": 560,\n" +
+    "    \"hasSetting\": true,\n" +
     "    \"component\": {\n" +
     "      \"name\": \"AsyncComponentWrapper\"\n" +
     "    },\n" +
@@ -220,6 +226,7 @@ export function getdefaultLayout() {
     "    \"y\": 0,\n" +
     "    \"w\": 330,\n" +
     "    \"h\": 520,\n" +
+    "    \"hasSetting\": true,\n" +
     "    \"component\": {\n" +
     "      \"name\": \"AsyncComponentWrapper\"\n" +
     "    },\n" +

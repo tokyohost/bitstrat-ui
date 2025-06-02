@@ -9,7 +9,8 @@ export const initWebSocket = (url: any) => {
   if (import.meta.env.VITE_APP_WEBSOCKET === 'false') {
     return;
   }
-  url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
+  // url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
+  url = url + '?token=' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
   useWebSocket(url, {
     autoReconnect: {
       // 重连最大次数

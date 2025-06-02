@@ -49,10 +49,15 @@
     <div class="card">
       <div class="card-header drag-handle">
         <span>{{ name }}</span>
-        <button class="delete-btn" @click="$emit('remove')">✕</button>
+        <div>
+          <button class="delete-btn pt-1" @click="openSetting" v-if="hasSetting">
+            <el-icon class="pt-1"><Operation /></el-icon>
+          </button>
+          <button class="delete-btn" @click="$emit('remove')">✕</button>
+        </div>
       </div>
       <div :class="['card-content', 'flex']" :style="{ height: (props.h - 80) + 'px' }">
-        <component :is="component" :id="props.id" v-model:componentData="props.compontentData" @config="configDone"/>
+        <component ref="currComponent" :is="component" :id="props.id" v-model:componentData="props.compontentData" @config="configDone"/>
       </div>
     </div>
   </vue-draggable-resizable>
@@ -62,6 +67,7 @@
 import VueDraggableResizable from 'vue-draggable-resizable';
 import 'vue-draggable-resizable/style.css';
 import { CompontentData } from '@/views/components/type/type';
+const currComponent = useTemplateRef("currComponent")
 
 const props = withDefaults(
   defineProps<{
@@ -74,11 +80,13 @@ const props = withDefaults(
     h: number
     minWidth?: number
     minHeight?: number
+    hasSetting?: boolean
     compontentData?: CompontentData
   }>(),
   {
     minWidth: 100,
     minHeight: 100,
+    hasSetting: false,
     compontentData: () => ({})
   }
 )
@@ -91,7 +99,9 @@ const configDone = (config: CompontentData) => {
   console.log("configDone",config);
   emit('configDone', config);
 }
-
+const openSetting = ()=>{
+  currComponent.value?.openSetting();
+}
 const onChanging = (left: number, top: number, width: number, height: number) => {
   emit('change-temp', {
     id: props.id,

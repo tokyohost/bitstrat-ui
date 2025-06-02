@@ -12,14 +12,14 @@ function handleWsMessage(data: OrderVO) {
   const id = data.orderId;
 
   if (orderMap.value.has(id)) {
-    console.log("存在");
+    // console.log("存在");
     // 已存在，找到索引并替换原位置
     const index = orderList.value.findIndex(item => item.orderId === id);
     if (index !== -1) {
       orderList.value.splice(index, 1, data); // 原地替换
     }
   } else {
-    console.log("不存在");
+    // console.log("不存在");
     // 不存在，插入最前
     orderList.value.unshift(data);
 

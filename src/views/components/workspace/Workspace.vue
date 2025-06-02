@@ -37,6 +37,7 @@
         :w="item.w"
         :h="item.h"
         :name="item.name"
+        :has-setting="item.hasSetting"
         :component="item.component"
         :compontent-data="item.compontentData"
         @remove="removeComponent(item.id)"
@@ -51,45 +52,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ComponentPanel from './ComponentPanel.vue'
-import DraggableCard from './DraggableCard.vue'
+import { ref } from 'vue';
+import ComponentPanel from './ComponentPanel.vue';
+import DraggableCard from './DraggableCard.vue';
 // await import ChartWidget from '@/views/components/widgets/ChartWidget.vue'
 // await import CompareWidget from '@/views/components/widgets/CompareWidget.vue'
 // await import TableWidget from '@/views/components/widgets/TableWidget.vue'
-import { defineAsyncComponent, markRaw } from 'vue'
+import { defineAsyncComponent, markRaw } from 'vue';
 import { ComponentItem, CompontentData, getdefaultLayout } from '@/views/components/type/type';
 import { initWebSocket } from '@/utils/websocket';
 
 // 异步懒加载组件，并用 markRaw 避免 Vue 响应式包裹
-const ChartWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ChartWidget.vue')))
-const CompareWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/CompareWidget.vue')))
-const TableWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/TableWidget.vue')))
-const OrderWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/OrderWidget.vue')))
-const PositionWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/PositionWidget.vue')))
-const AccountWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/AccountWidget.vue')))
+const ChartWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ChartWidget.vue')));
+const CompareWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/CompareWidget.vue')));
+const TableWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/TableWidget.vue')));
+const OrderWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/OrderWidget.vue')));
+const PositionWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/PositionWidget.vue')));
+const AccountWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/AccountWidget.vue')));
+const ABOrderWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ABOrderWidget.vue')));
 
-const componentPanelDrawer = ref(false)
+const componentPanelDrawer = ref(false);
 
 const availableComponents = ref<ComponentItem[]>([
-  { cid:1,name: '价差监控', component: CompareWidget, minWidth: 500, minHeight: 400 },
-  { cid:2,name: '图表组件', component: ChartWidget },
-  { cid:3,name: '挂单', component: ChartWidget },
-  { cid:4,name: '成交记录', component: OrderWidget ,minWidth:300, minHeight:500 },
-  { cid:5,name: '消息通知', component: ChartWidget },
-  { cid:6,name: '自动双腿下单', component: ChartWidget},
-  { cid:7,name: '实时持仓', component: PositionWidget,minWidth:700, minHeight:360  },
-  { cid:80,name: '账户情况', component: AccountWidget,minWidth:300, minHeight:200  },
-  { cid:90,name: '表格组件', component: TableWidget },
-])
+  { cid: 1, name: '价差监控', component: CompareWidget, minWidth: 500, minHeight: 400, hasSetting: true },
+  { cid: 2, name: '图表组件', component: ChartWidget, hasSetting: false },
+  { cid: 3, name: '挂单', component: ChartWidget, hasSetting: false },
+  { cid: 4, name: '成交记录', component: OrderWidget, minWidth: 300, minHeight: 500, hasSetting: false },
+  { cid: 5, name: '消息通知', component: ChartWidget, hasSetting: false },
+  { cid: 6, name: '自动双腿下单', component: ABOrderWidget, minWidth: 300, minHeight: 500, hasSetting: true },
+  { cid: 7, name: '实时持仓', component: PositionWidget, minWidth: 700, minHeight: 360, hasSetting: false },
+  { cid: 80, name: '账户情况', component: AccountWidget, minWidth: 300, minHeight: 200, hasSetting: false },
+  { cid: 90, name: '表格组件', component: TableWidget, hasSetting: false }
+]);
 
-const components = ref<ComponentItem[]>([])
+const components = ref<ComponentItem[]>([]);
 
 const addComponent = (comp: ComponentItem) => {
-  let x = 50 + components.value.length * 20
-  let y = 50 + components.value.length * 20
-  const w = comp.minWidth ?? 300
-  const h = comp.minHeight ?? 200
+  let x = 50 + components.value.length * 20;
+  let y = 50 + components.value.length * 20;
+  const w = comp.minWidth ?? 300;
+  const h = comp.minHeight ?? 200;
 
   // 自动寻找不重叠的位置
   // let tries = 0
@@ -105,52 +107,55 @@ const addComponent = (comp: ComponentItem) => {
   // }
 
   components.value.push({
-    cid:comp.cid,
+    cid: comp.cid,
     id: crypto.randomUUID(),
     name: comp.name,
     x,
     y,
     w,
     h,
+    hasSetting:comp.hasSetting,
     component: comp.component,
-    minWidth:comp.minWidth,
-    minHeight:comp.minHeight,
-  })
-  saveLayout()
-  ElMessage.success("添加成功")
-}
-const loadComponent = (comp: ComponentItem,x?:number,y?:number,w?:number,h?:number,data?:CompontentData) => {
+    minWidth: comp.minWidth,
+    minHeight: comp.minHeight
+  });
+  saveLayout();
+  ElMessage.success('添加成功');
+};
+const loadComponent = (comp: ComponentItem, x?: number, y?: number, w?: number, h?: number
+  , data?: CompontentData,hasSetting?:boolean) => {
   const component = {
-    cid:comp.cid,
-      id: crypto.randomUUID(),
+    cid: comp.cid,
+    id: crypto.randomUUID(),
     name: comp.name,
-    x:x??comp.x,
-    y:y??comp.y,
-    w:w??comp.w,
-    h:h??comp.h,
+    x: x ?? comp.x,
+    y: y ?? comp.y,
+    w: w ?? comp.w,
+    h: h ?? comp.h,
+    hasSetting:hasSetting ?? false,
     component: comp.component,
-    compontentData: data??{},
-    minWidth:comp.minWidth,
-    minHeight:comp.minHeight,
-  } as ComponentItem
+    compontentData: data ?? {},
+    minWidth: comp.minWidth,
+    minHeight: comp.minHeight
+  } as ComponentItem;
 
-  components.value.push(component)
+  components.value.push(component);
   // console.log("loadComponent", component);
   // console.log("loadComponent data ", data);
-}
-const lastValidStateMap = new Map<number|string, { x: number; y: number; w: number; h: number }>()
-const removeComponent = (id: number|string) => {
-  components.value = components.value.filter((c) => c.id !== id)
-  lastValidStateMap.delete(id)
-  saveLayout()
-}
-const configDoneWorkSpace = (config:CompontentData)=>{
-   let find = components.value.find((c) => c.id == config.id);
-   if(find){
-     find.compontentData= config
-   }
-   saveLayout()
-}
+};
+const lastValidStateMap = new Map<number | string, { x: number; y: number; w: number; h: number }>();
+const removeComponent = (id: number | string) => {
+  components.value = components.value.filter((c) => c.id !== id);
+  lastValidStateMap.delete(id);
+  saveLayout();
+};
+const configDoneWorkSpace = (config: CompontentData) => {
+  let find = components.value.find((c) => c.id == config.id);
+  if (find) {
+    find.compontentData = config;
+  }
+  saveLayout();
+};
 
 const changeTemp = (payload: {
   id: number
@@ -160,38 +165,36 @@ const changeTemp = (payload: {
   h: number
 }) => {
   // console.log(payload);
-  const item = components.value.find((c) => c.id === payload.id)
+  const item = components.value.find((c) => c.id === payload.id);
   // console.log(item);
-  if (!item) return
+  if (!item) return;
 
-  const proposed = { ...payload }
+  const proposed = { ...payload };
   // const others = components.value.filter((c) => c.id !== payload.id)
   // const hasOverlap = others.some((c) => isOverlap(proposed, c))
 
   // if (!hasOverlap) {
-    console.log("合法", payload);
-    // 合法 -> 记录并更新
-    item.x = proposed.x
-    item.y = proposed.y
-    item.w = proposed.w
-    item.h = proposed.h
-    lastValidStateMap.set(payload.id, { ...proposed })
-    saveLayout() // 👉 每次合法操作都保存
+  console.log('合法', payload);
+  // 合法 -> 记录并更新
+  item.x = proposed.x;
+  item.y = proposed.y;
+  item.w = proposed.w;
+  item.h = proposed.h;
+  lastValidStateMap.set(payload.id, { ...proposed });
+  saveLayout(); // 👉 每次合法操作都保存
   // } else {
   //   非法 -> 强制还原
-    // console.log("非法", payload);
-    // const last = lastValidStateMap.get(payload.id)
-    // if (last) {
-    //   item.x = last.x
-    //   item.y = last.y
-    //   item.w = last.w
-    //   item.h = last.h
-    // }
-    // loadLayout()
+  // console.log("非法", payload);
+  // const last = lastValidStateMap.get(payload.id)
+  // if (last) {
+  //   item.x = last.x
+  //   item.y = last.y
+  //   item.w = last.w
+  //   item.h = last.h
   // }
-}
-
-
+  // loadLayout()
+  // }
+};
 
 
 // 拖动尝试更新时进行碰撞检测
@@ -203,15 +206,15 @@ const tryMove = (payload: {
   h: number
   key: 'x' | 'y' | 'w' | 'h'
 }) => {
-  const current = payload
-  const others = components.value.filter((c) => c.id !== payload.id)
-  const willOverlap = others.some((c) => isOverlap(current, c))
+  const current = payload;
+  const others = components.value.filter((c) => c.id !== payload.id);
+  const willOverlap = others.some((c) => isOverlap(current, c));
 
   if (!willOverlap) {
-    const item = components.value.find((c) => c.id === payload.id)
-    if (item) item[payload.key] = payload[payload.key]
+    const item = components.value.find((c) => c.id === payload.id);
+    if (item) item[payload.key] = payload[payload.key];
   }
-}
+};
 
 // 计算是否碰撞
 function isOverlap(a: ComponentItem, b: ComponentItem): boolean {
@@ -220,27 +223,27 @@ function isOverlap(a: ComponentItem, b: ComponentItem): boolean {
     a.x >= b.x + b.w ||
     a.y + a.h <= b.y ||
     a.y >= b.y + b.h
-  )
+  );
 }
 
 //保存
-const STORAGE_KEY = 'workspace-layout'
+const STORAGE_KEY = 'workspace-layout';
 
 const saveLayout = () => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(components.value))
-}
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(components.value));
+};
 
 const loadLayout = () => {
-  const saved = localStorage.getItem(STORAGE_KEY)
-  let parse = []
+  const saved = localStorage.getItem(STORAGE_KEY);
+  let parse = [];
   if (saved) {
     try {
       parse = JSON.parse(saved);
 
     } catch (e) {
-      console.error('Failed to parse layout:', e)
+      console.error('Failed to parse layout:', e);
     }
-  }else{
+  } else {
     //加载默认
     let defaultLayout = getdefaultLayout();
     console.log(defaultLayout);
@@ -249,28 +252,29 @@ const loadLayout = () => {
 
 
   for (let i = 0; i < parse.length; i++) {
-    let cacheComp = parse[i];
+    let cacheComp = parse[i] as ComponentItem;
     // console.log("cache",cacheComp);
-    let filter = availableComponents.value.filter((item)=>item.cid == cacheComp.cid);
+    let filter = availableComponents.value.filter((item) => item.cid == cacheComp.cid);
     if (filter) {
       let component = filter[0] as ComponentItem;
-      loadComponent(component,cacheComp.x,cacheComp.y,cacheComp.w,cacheComp.h,cacheComp.compontentData);
+      loadComponent(component, cacheComp.x, cacheComp.y, cacheComp.w, cacheComp.h, cacheComp.compontentData,cacheComp.hasSetting);
     }
   }
-}
+};
 const resetLayout = () => {
-  saveLayout()
-  location.reload()
-}
+  saveLayout();
+  location.reload();
+};
 const removeAll = () => {
-  localStorage.removeItem(STORAGE_KEY)
-  location.reload()
-}
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+};
 onMounted(() => {
-  loadLayout()
-  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket');
-})
+  loadLayout();
+  // const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  console.log(import.meta.env);
+  initWebSocket(import.meta.env.VITE_APP_USER_WEBSOCKET_SERVER +"");
+});
 </script>
 
 <style scoped>
