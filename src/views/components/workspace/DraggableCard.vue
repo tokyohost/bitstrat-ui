@@ -51,7 +51,7 @@
         <span>{{ name }}</span>
         <button class="delete-btn" @click="$emit('remove')">✕</button>
       </div>
-      <div :class="['card-content', 'flex']" :style="{ height: props.h + 'px' }">
+      <div :class="['card-content', 'flex']" :style="{ height: (props.h - 80) + 'px' }">
         <component :is="component" :id="props.id" v-model:componentData="props.compontentData" @config="configDone"/>
       </div>
     </div>

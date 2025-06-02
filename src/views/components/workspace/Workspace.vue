@@ -67,6 +67,7 @@ const CompareWidget = markRaw(defineAsyncComponent(() => import('@/views/compone
 const TableWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/TableWidget.vue')))
 const OrderWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/OrderWidget.vue')))
 const PositionWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/PositionWidget.vue')))
+const AccountWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/AccountWidget.vue')))
 
 const componentPanelDrawer = ref(false)
 
@@ -78,7 +79,8 @@ const availableComponents = ref<ComponentItem[]>([
   { cid:5,name: '消息通知', component: ChartWidget },
   { cid:6,name: '自动双腿下单', component: ChartWidget},
   { cid:7,name: '实时持仓', component: PositionWidget,minWidth:700, minHeight:360  },
-  { cid:8,name: '表格组件', component: TableWidget },
+  { cid:80,name: '账户情况', component: AccountWidget,minWidth:300, minHeight:200  },
+  { cid:90,name: '表格组件', component: TableWidget },
 ])
 
 const components = ref<ComponentItem[]>([])

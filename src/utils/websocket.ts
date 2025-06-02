@@ -3,6 +3,7 @@ import { ElNotification } from 'element-plus';
 import { useNoticeStore } from '@/store/modules/notice';
 import { emitter } from '@/utils/eventBus'
 import { PositionWsData, WebsocketMsgData } from '@/views/components/type/type';
+import { WebsocketExStatus, WebsocketStatus } from '@/layout/components/NotifySetting/types';
 // 初始化socket
 export const initWebSocket = (url: any) => {
   if (import.meta.env.VITE_APP_WEBSOCKET === 'false') {
@@ -46,6 +47,11 @@ export const initWebSocket = (url: any) => {
           // 广播事件
           // console.log(data.data);
           emitter.emit('positionMessage', data as WebsocketMsgData<PositionWsData[]>)
+        }
+        if(data.type== 'account'){
+          // 广播事件
+          // console.log(data.data);
+          emitter.emit('accountMessage', data.data as WebsocketExStatus[])
         }
         return;
       }

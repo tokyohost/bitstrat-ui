@@ -37,5 +37,5 @@ export interface WebsocketStatus {
 
 export interface WebsocketExStatus {
   exchangeName: string;
-  datas: WebsocketStatus;
+  datas: WebsocketStatus[];
 }

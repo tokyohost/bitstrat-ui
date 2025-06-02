@@ -15,6 +15,7 @@
           :key="item.value + ''"
           :disable-transitions="true"
           :index="index"
+          :size="props.size"
           :type="
             item.elTagType === 'primary' ||
             item.elTagType === 'success' ||
@@ -44,6 +45,7 @@ interface Props {
   showValue?: boolean;
   separator?: string;
   i18nProfilx?: string;
+  size?: 'small'|'large'|'default';
 }
 const props = withDefaults(defineProps<Props>(), {
   showValue: true,
