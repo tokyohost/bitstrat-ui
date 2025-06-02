@@ -47,6 +47,7 @@ const initChart = () => {
   if (chartContainer.value) {
     chartInstance = echarts.init(chartContainer.value);
     chartInstance.setOption({
+      animation:false,
       title: { text: titleText.value },
       tooltip: { trigger: 'axis' },
       legend: {
@@ -98,6 +99,7 @@ const updateChart = () => {
   titleText.value = `{a|${props.exchangeA}[${props.symbolA}][A] $${lastA}}\n{b|${props.exchangeB}[${props.symbolB}][B] $${lastB}}`;
 
   chartInstance?.setOption({
+    animation:false,
     title: {
       text: titleText.value,
       textStyle: {
@@ -176,11 +178,11 @@ const updateChart = () => {
         }
       }
     ]
-  });
-  resizeObserver = new ResizeObserver(() => {
-    chartInstance?.resize();
-  });
-  resizeObserver.observe(chartContainer.value);
+  },{ notMerge: false, lazyUpdate: true });
+  // resizeObserver = new ResizeObserver(() => {
+  //   chartInstance?.resize();
+  // });
+  // resizeObserver.observe(chartContainer.value);
 };
 
 const spreadAminusB = ref(0);
@@ -265,6 +267,11 @@ onMounted(() => {
       heartbeatTimer = null;
     }
   });
+
+  resizeObserver = new ResizeObserver(() => {
+    chartInstance?.resize();
+  });
+  resizeObserver.observe(chartContainer.value);
 });
 
 onUnmounted(() => {
