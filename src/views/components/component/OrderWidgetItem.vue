@@ -14,7 +14,7 @@ const props = defineProps<{
       <div class="flex flex-row ">
         <div class="flex justify-between w-full">
           <div class="flex justify-start text-center align--center ml-2">
-            <TradePairTag :direction="props.order.side" :symbol="props.order.symbol"
+            <TradePairTag :direction="props.order.side" :symbol="props.order.symbol ?? 'UNKNOWN'"
                           :exchange="props.order.ex" :diy-ex-logo="true" :exchange-logo="'default'"></TradePairTag>
             <el-tag v-if="props.order.closePositionOrder == 1" disable-transitions type="danger" size="small" class="ml-2">平</el-tag>
           </div>
