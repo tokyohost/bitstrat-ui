@@ -23,7 +23,7 @@ const selected = (account: ApiVO) => {
 
 <template>
   <div>
-    <el-dialog v-model="props.visible" title="config api" width="1200px">
+    <el-dialog v-model="props.visible" title="config api" width="1200px" append-to-body>
       <AccountSelect :exchange-name="props.exchangeName" @select="selected"></AccountSelect>
       <template #footer>
         <div class="dialog-footer">

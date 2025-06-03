@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import CompareLinerChart from '@/views/system/analysis/components/CompareLinerChart.vue';
 import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelector.vue';
 import { getSupportExchange } from '@/api/system/common/common';
@@ -8,13 +7,16 @@ import { queryLinerSymbolsByEx } from '@/views/system/analysis/components';
 import { ref } from 'vue';
 import { LinerSymbol } from '@/views/system/analysis/components/type';
 import { ExchangeVo } from '@/api/system/common/types';
-import { ABOrderForm, CompareWidget } from '@/views/components/type/type';
+import { ABOrderData, ABOrderForm, CompareWidget } from '@/views/components/type/type';
 import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
+import OperateForm from '@/views/components/component/OperateForm.vue';
+import AccountSelectDialog from '@/views/system/analysis/components/AccountSelectDialog.vue';
+import { ApiVO } from '@/api/system/api/types';
 
 const props = withDefaults(
   defineProps<{
-    id: number | string,
-    componentData: CompareWidget
+    id: number | string;
+    componentData: ABOrderData;
   }>(),
   {
     componentData: () => ({
@@ -31,35 +33,41 @@ const showSettingFlag = ref(false);
 const refush = ref<number>(1);
 
 const emit = defineEmits<{
-  (e: 'update:componentData', value: CompareWidget): void
-  (e: 'config', value: CompareWidget): void
+  (e: 'update:componentData', value: ABOrderData): void;
+  (e: 'config', value: ABOrderData): void;
 }>();
 
 // 创建一个本地响应式副本（避免直接修改 props）
-const form = ref<CompareWidget>({ ...props.componentData } as CompareWidget);
+const form = ref<ABOrderData>({ ...props.componentData } as ABOrderData);
 
 watch(
-  () => props.componentData,  // 用函数返回，确保响应式追踪
+  () => props.componentData, // 用函数返回，确保响应式追踪
   (val) => {
     if (val) {
       console.log('componentData', toRaw(val));
-      form.value = { ...val } as CompareWidget;
+      form.value = { ...val } as ABOrderData;
       refush.value += 1;
     }
   },
   { deep: true, immediate: true }
 );
 
-const operate = ref<ABOrderForm>({
-  type:'maxAminB'
-})
-
+form.value.operate = {
+  type: 'plusAminB',
+  size: 0.1,
+  coldSec: 3,
+  maxSize: 10,
+  gap: 0,
+  closeGap: 0.4,
+  openGap: 0.4
+};
 
 const selectOk = () => {
   console.log(toRaw(form.value));
-  formRef.value.validate(valid => {
+  formRef.value.validate((valid) => {
     if (valid) {
       form.value.id = props.id;
+
       emit('update:componentData', form.value);
       emit('config', form.value);
       refush.value += 1;
@@ -68,7 +76,7 @@ const selectOk = () => {
     }
   });
 };
-const loading = ref<Boolean>(false);
+const loading = ref<boolean>(false);
 
 const formRef = useTemplateRef('exForm');
 
@@ -137,6 +145,36 @@ const symbolChange = (selectedSymbol, symbolType) => {
   const selectedSymbolObj = filteredSymbols.value.find((symbol) => symbol.symbol == selectedSymbol);
   form.value[symbolType] = selectedSymbolObj.coin;
 };
+
+const showAccountSelectA = ref(false);
+const showAccountSelectB = ref(false);
+const selectAccount = (account: ApiVO, type) => {
+  console.log(account);
+  if (type == 'A') {
+    showAccountSelectA.value = false;
+  } else if (type == 'B') {
+    showAccountSelectB.value = false;
+  }
+  const deSecAccount = {
+    id: account.id,
+    name: account.name
+  } as ApiVO;
+  form.value['account' + type] = deSecAccount;
+  emit('update:componentData', form.value);
+  emit('config', form.value);
+};
+const openSelect = (type) => {
+  const switchObj = {
+    'A': showAccountSelectA,
+    'B': showAccountSelectB
+  };
+  if (form.value.operate.status == 'stop') {
+    switchObj[type].value = true;
+  } else {
+    ElMessage.error('运行中不允许修改账户');
+  }
+};
+
 const openSetting = () => {
   showSettingFlag.value = true;
 };
@@ -150,14 +188,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex-1 w-full p-2">
-    <el-dialog
-      v-model="showSettingFlag"
-      title="选择币对"
-      width="500"
-      v-loading="loading"
-      append-to-body
-    >
+  <div class="flex-1 w-full p-2 overflow-y-hidden hover:overflow-y-auto">
+    <el-dialog v-model="showSettingFlag" title="选择币对" width="500" v-loading="loading" append-to-body>
       <div>
         <el-form :model="form" :rules="roles" ref="exForm" :label-position="'top'">
           <el-form-item label="请选择交易所A币对类型" prop="typeA">
@@ -167,17 +199,20 @@ onMounted(() => {
             </el-select>
           </el-form-item>
           <el-form-item label="选择交易所A" prop="exchangeA">
-            <el-select v-model="form.exchangeA" placeholder="请选择交易所A" @change="onExchange($event,'exchangeA')"
-                       prop="exchangeA">
-              <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name"
-                         :value="exchange.name" />
+            <el-select v-model="form.exchangeA" placeholder="请选择交易所A" @change="onExchange($event, 'exchangeA')" prop="exchangeA">
+              <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name" :value="exchange.name" />
             </el-select>
           </el-form-item>
           <el-form-item label="选择合约币种" v-if="form.exchangeA" prop="symbolTmpA">
-            <el-select v-model="form.symbolTmpA" placeholder="请选择合约币种A" id="symbol"
-                       @change="symbolChange($event,'symbolA')" :filterable="true" clearable>
-              <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.symbol"
-                         :value="symbol.symbol" />
+            <el-select
+              v-model="form.symbolTmpA"
+              placeholder="请选择合约币种A"
+              id="symbol"
+              @change="symbolChange($event, 'symbolA')"
+              :filterable="true"
+              clearable
+            >
+              <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.symbol" :value="symbol.symbol" />
             </el-select>
           </el-form-item>
           <el-form-item label="请选择交易所B币对类型" prop="typeB">
@@ -187,17 +222,20 @@ onMounted(() => {
             </el-select>
           </el-form-item>
           <el-form-item label="选择交易所B" prop="exchangeB">
-            <el-select v-model="form.exchangeB" placeholder="请选择交易所A" @change="onExchange($event,'exchangeB')"
-                       prop="exchangeB">
-              <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name"
-                         :value="exchange.name" />
+            <el-select v-model="form.exchangeB" placeholder="请选择交易所A" @change="onExchange($event, 'exchangeB')" prop="exchangeB">
+              <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name" :value="exchange.name" />
             </el-select>
           </el-form-item>
           <el-form-item label="选择合约币种" v-if="form.exchangeB" prop="symbolTmpB">
-            <el-select v-model="form.symbolTmpB" placeholder="请选择合约币种B" id="symbol"
-                       @change="symbolChange($event,'symbolB')" :filterable="true" clearable>
-              <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.symbol"
-                         :value="symbol.symbol" />
+            <el-select
+              v-model="form.symbolTmpB"
+              placeholder="请选择合约币种B"
+              id="symbol"
+              @change="symbolChange($event, 'symbolB')"
+              :filterable="true"
+              clearable
+            >
+              <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.symbol" :value="symbol.symbol" />
             </el-select>
           </el-form-item>
         </el-form>
@@ -205,55 +243,58 @@ onMounted(() => {
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="showSettingFlag = false">取消</el-button>
-          <el-button type="primary" @click="selectOk">
-            确定
-          </el-button>
+          <el-button type="primary" @click="selectOk"> 确定 </el-button>
         </div>
       </template>
     </el-dialog>
     <div class="flex flex-col gap-y-1">
       <el-card title="A" class="w-full" shadow="hover">
-        <div class="flex flex-row  gap-x-2">
-          <div class="font-400 color-green">A</div>
-          <ExchangeLogo :exchange="form.exchangeA" :key="form.exchangeA">
-            {{form.symbolA}}
-          </ExchangeLogo>
+        <div class="flex justify-between w-full">
+          <div class="flex gap-x-2 flex-row">
+            <div class="font-400 color-green">A</div>
+            <ExchangeLogo :exchange="form.exchangeA" :key="form.exchangeA">
+              {{ form.symbolA }}
+            </ExchangeLogo>
+          </div>
+          <div class="flex justify-end hover:cursor-pointer text-xs" @click="openSelect('A')">
+            <div>{{ form.accountA?.name || '-' }}</div>
+            <img src="@/assets/icons/png/switch.png" height="18" width="18" v-if="form.accountA" />
+            <div class="color-#409EFF" v-else>选择账户</div>
+            <AccountSelectDialog
+              v-model:visible="showAccountSelectA"
+              :exchange-name="form.exchangeA"
+              @select="selectAccount($event, 'A')"
+            ></AccountSelectDialog>
+          </div>
         </div>
-
       </el-card>
       <el-card title="B" class="w-full" shadow="hover">
-        <div class="flex flex-row gap-x-2">
-          <div class="font-400 color-red">B</div>
-          <ExchangeLogo :exchange="form.exchangeB" :key="form.exchangeB">
-            {{form.symbolB}}
-          </ExchangeLogo>
+        <div class="flex justify-between w-full">
+          <div class="flex gap-x-2 flex-row">
+            <div class="font-400 color-red">B</div>
+            <ExchangeLogo :exchange="form.exchangeB" :key="form.exchangeB">
+              {{ form.symbolB }}
+            </ExchangeLogo>
+          </div>
+          <div class="flex justify-end hover:cursor-pointer text-xs" @click="openSelect('B')">
+            <div>{{ form.accountB?.name || '-' }}</div>
+            <img src="@/assets/icons/png/switch.png" height="18" width="18" v-if="form.accountB" />
+            <div class="color-#409EFF" v-else>选择账户</div>
+            <AccountSelectDialog
+              v-model:visible="showAccountSelectB"
+              :exchange-name="form.exchangeB"
+              @select="selectAccount($event, 'B')"
+            ></AccountSelectDialog>
+          </div>
         </div>
-
       </el-card>
 
-      <el-card title="套利操作" class="w-full" shadow="hover">
-        <el-form >
-          <el-form-item>
-            <el-switch
-              v-model="operate.type"
-              class="mb-2"
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-              active-text="+A -B"
-              inactive-text="+B -A"
-            />
-          </el-form-item>
-          <el-form-item label="下单数量">
-            <el-input></el-input>
-          </el-form-item>
-
-        </el-form>
-
-      </el-card>
-
+      <div class="flex flex-row gap-x-2">
+        <OperateForm v-model:operate="form.operate" :disabled="false" class="flex-1" />
+        <OperateForm v-model:operate="form.operate" :disabled="true" class="flex-1" />
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

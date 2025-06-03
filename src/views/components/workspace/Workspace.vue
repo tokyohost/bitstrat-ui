@@ -1,16 +1,8 @@
 <!-- components/workspace/Workspace.vue -->
 <template>
   <div class="workspace-container">
-    <el-drawer
-      v-model="componentPanelDrawer"
-      title="添加组件"
-      :size="200"
-      :direction="'ltr'"
-    >
-      <ComponentPanel
-        :available-components="availableComponents"
-        @add="addComponent"
-      />
+    <el-drawer v-model="componentPanelDrawer" title="添加组件" :size="200" :direction="'ltr'">
+      <ComponentPanel :available-components="availableComponents" @add="addComponent" />
     </el-drawer>
 
     <div class="workspace">
@@ -79,7 +71,7 @@ const availableComponents = ref<ComponentItem[]>([
   { cid: 3, name: '挂单', component: ChartWidget, hasSetting: false },
   { cid: 4, name: '成交记录', component: OrderWidget, minWidth: 300, minHeight: 500, hasSetting: false },
   { cid: 5, name: '消息通知', component: ChartWidget, hasSetting: false },
-  { cid: 6, name: '自动双腿下单', component: ABOrderWidget, minWidth: 300, minHeight: 500, hasSetting: true },
+  { cid: 6, name: '自动双腿下单', component: ABOrderWidget, minWidth: 600, minHeight: 570, hasSetting: true },
   { cid: 7, name: '实时持仓', component: PositionWidget, minWidth: 700, minHeight: 360, hasSetting: false },
   { cid: 80, name: '账户情况', component: AccountWidget, minWidth: 300, minHeight: 200, hasSetting: false },
   { cid: 90, name: '表格组件', component: TableWidget, hasSetting: false }
@@ -88,8 +80,8 @@ const availableComponents = ref<ComponentItem[]>([
 const components = ref<ComponentItem[]>([]);
 
 const addComponent = (comp: ComponentItem) => {
-  let x = 50 + components.value.length * 20;
-  let y = 50 + components.value.length * 20;
+  const x = 50 + components.value.length * 20;
+  const y = 50 + components.value.length * 20;
   const w = comp.minWidth ?? 300;
   const h = comp.minHeight ?? 200;
 
@@ -114,7 +106,7 @@ const addComponent = (comp: ComponentItem) => {
     y,
     w,
     h,
-    hasSetting:comp.hasSetting,
+    hasSetting: comp.hasSetting,
     component: comp.component,
     minWidth: comp.minWidth,
     minHeight: comp.minHeight
@@ -122,17 +114,18 @@ const addComponent = (comp: ComponentItem) => {
   saveLayout();
   ElMessage.success('添加成功');
 };
-const loadComponent = (comp: ComponentItem, x?: number, y?: number, w?: number, h?: number
-  , data?: CompontentData,hasSetting?:boolean) => {
+const loadComponent = (comp: ComponentItem, x?: number, y?: number, w?: number, h?: number, data?: CompontentData, hasSetting?: boolean) => {
+  const id = crypto.randomUUID();
+  data.id = id;
   const component = {
     cid: comp.cid,
-    id: crypto.randomUUID(),
+    id: id,
     name: comp.name,
     x: x ?? comp.x,
     y: y ?? comp.y,
     w: w ?? comp.w,
     h: h ?? comp.h,
-    hasSetting:hasSetting ?? false,
+    hasSetting: hasSetting ?? false,
     component: comp.component,
     compontentData: data ?? {},
     minWidth: comp.minWidth,
@@ -150,20 +143,17 @@ const removeComponent = (id: number | string) => {
   saveLayout();
 };
 const configDoneWorkSpace = (config: CompontentData) => {
-  let find = components.value.find((c) => c.id == config.id);
+  console.log(' components config', config);
+  console.log(' components', components.value);
+  const find = components.value.find((c) => c.id == config.id);
   if (find) {
+    console.log('find components', find);
     find.compontentData = config;
   }
   saveLayout();
 };
 
-const changeTemp = (payload: {
-  id: number
-  x: number
-  y: number
-  w: number
-  h: number
-}) => {
+const changeTemp = (payload: { id: number; x: number; y: number; w: number; h: number }) => {
   // console.log(payload);
   const item = components.value.find((c) => c.id === payload.id);
   // console.log(item);
@@ -196,16 +186,8 @@ const changeTemp = (payload: {
   // }
 };
 
-
 // 拖动尝试更新时进行碰撞检测
-const tryMove = (payload: {
-  id: number
-  x: number
-  y: number
-  w: number
-  h: number
-  key: 'x' | 'y' | 'w' | 'h'
-}) => {
+const tryMove = (payload: { id: number; x: number; y: number; w: number; h: number; key: 'x' | 'y' | 'w' | 'h' }) => {
   const current = payload;
   const others = components.value.filter((c) => c.id !== payload.id);
   const willOverlap = others.some((c) => isOverlap(current, c));
@@ -218,12 +200,7 @@ const tryMove = (payload: {
 
 // 计算是否碰撞
 function isOverlap(a: ComponentItem, b: ComponentItem): boolean {
-  return !(
-    a.x + a.w <= b.x ||
-    a.x >= b.x + b.w ||
-    a.y + a.h <= b.y ||
-    a.y >= b.y + b.h
-  );
+  return !(a.x + a.w <= b.x || a.x >= b.x + b.w || a.y + a.h <= b.y || a.y >= b.y + b.h);
 }
 
 //保存
@@ -239,25 +216,23 @@ const loadLayout = () => {
   if (saved) {
     try {
       parse = JSON.parse(saved);
-
     } catch (e) {
       console.error('Failed to parse layout:', e);
     }
   } else {
     //加载默认
-    let defaultLayout = getdefaultLayout();
+    const defaultLayout = getdefaultLayout();
     console.log(defaultLayout);
     parse = JSON.parse(defaultLayout);
   }
 
-
   for (let i = 0; i < parse.length; i++) {
-    let cacheComp = parse[i] as ComponentItem;
+    const cacheComp = parse[i] as ComponentItem;
     // console.log("cache",cacheComp);
-    let filter = availableComponents.value.filter((item) => item.cid == cacheComp.cid);
+    const filter = availableComponents.value.filter((item) => item.cid == cacheComp.cid);
     if (filter) {
-      let component = filter[0] as ComponentItem;
-      loadComponent(component, cacheComp.x, cacheComp.y, cacheComp.w, cacheComp.h, cacheComp.compontentData,cacheComp.hasSetting);
+      const component = filter[0] as ComponentItem;
+      loadComponent(component, cacheComp.x, cacheComp.y, cacheComp.w, cacheComp.h, cacheComp.compontentData, cacheComp.hasSetting);
     }
   }
 };
@@ -273,7 +248,7 @@ onMounted(() => {
   loadLayout();
   // const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
   console.log(import.meta.env);
-  initWebSocket(import.meta.env.VITE_APP_USER_WEBSOCKET_SERVER +"");
+  initWebSocket(import.meta.env.VITE_APP_USER_WEBSOCKET_SERVER + '');
 });
 </script>
 

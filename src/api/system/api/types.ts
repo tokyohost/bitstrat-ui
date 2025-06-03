@@ -4,6 +4,8 @@ export interface ApiVO {
    */
   id: string | number;
 
+  name: string;
+
   /**
    * api key
    */
@@ -23,7 +25,6 @@ export interface ApiVO {
    * 用户id
    */
   userId: string | number;
-
 }
 
 export interface ApiForm extends BaseEntity {
@@ -51,11 +52,9 @@ export interface ApiForm extends BaseEntity {
    * 用户id
    */
   userId?: string | number;
-
 }
 
 export interface ApiQuery extends PageQuery {
-
   /**
    * api key
    */
@@ -76,11 +75,8 @@ export interface ApiQuery extends PageQuery {
    */
   userId?: string | number;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
-
-
-
