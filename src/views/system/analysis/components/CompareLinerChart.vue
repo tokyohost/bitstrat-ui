@@ -381,37 +381,37 @@ onUnmounted(() => {
           <div class="flex flex-col gap-col-1 justify-start">
             <div>5min 价差</div>
             <div>
-              MAX <span class="color-red">{{ -priceDiff5Min.max }}%</span>
+              MAX <span class="color-green-7">{{ -priceDiff5Min.min }}%</span>
             </div>
             <div>
-              MIN <span class="color-green-7">{{ -priceDiff5Min.min }}%</span>
+              MIN <span class="color-red">{{ -priceDiff5Min.max }}%</span>
             </div>
           </div>
           <div class="flex flex-col gap-col-1 justify-start">
             <div>10min 价差</div>
             <div>
-              MAX <span class="color-red">{{ -priceDiff10Min.max }}%</span>
+              MAX <span class="color-green-7">{{ -priceDiff10Min.min }}%</span>
             </div>
             <div>
-              MIN <span class="color-green-7">{{ -priceDiff10Min.min }}%</span>
+              MIN <span class="color-red">{{ -priceDiff10Min.max }}%</span>
             </div>
           </div>
           <div class="flex flex-col gap-col-1 justify-start">
             <div>20min 价差</div>
             <div>
-              MAX <span class="color-red">{{ -priceDiff20Min.max }}%</span>
+              MAX <span class="color-green-7">{{ -priceDiff20Min.min }}%</span>
             </div>
             <div>
-              MIN <span class="color-green-7">{{ -priceDiff20Min.min }}%</span>
+              MIN <span class="color-red">{{ -priceDiff20Min.max }}%</span>
             </div>
           </div>
           <div class="flex flex-col gap-col-1 justify-start">
             <div>30min 价差</div>
             <div>
-              MAX <span class="color-red">{{ -priceDiff30Min.max }}%</span>
+              MAX <span class="color-green-7">{{ -priceDiff30Min.min }}%</span>
             </div>
             <div>
-              MIN <span class="color-green-7">{{ -priceDiff30Min.min }}%</span>
+              MIN <span class="color-red">{{ -priceDiff30Min.max }}%</span>
             </div>
           </div>
         </div>
