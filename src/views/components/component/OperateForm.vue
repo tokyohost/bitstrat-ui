@@ -28,11 +28,11 @@
             <el-button type="text" @click="syncRole" v-if="!disabled"
               ><img src="@/assets/icons/png/cloud-sync.png" height="25" width="25" class="hover:color-amber" title="同步"
             /></el-button>
-
-            <el-tag :type="props.operate.status == 'run' ? 'success' : 'error'" effect="plain" round v-if="disabled">
-              {{ props.operate.status == 'run' ? '正在运行' : '已停止' }}
-            </el-tag>
-            <el-tag type="success" effect="plain" round v-if="disabled"> 20ms </el-tag>
+            <div class="flex flex-col">
+              <el-tag :type="props.operate.status == 'run' ? 'success' : 'error'" effect="plain" round v-if="disabled">
+                {{ props.operate.status == 'run' ? '正在运行' : '已停止' }}
+              </el-tag>
+            </div>
           </div>
         </div>
       </el-form-item>
@@ -77,8 +77,12 @@
         />
       </el-form-item>
       <el-form-item label="" v-if="disabled">
-        <div class="flex justify-end w-full gap-col-1">
-          <el-tag type="success" effect="plain" round v-if="disabled">上次更新时间 2025-06-03 11:22:12 </el-tag>
+        <div class="flex justify-end flex-col w-full gap-col-1 gap-row-1">
+          <el-tag type="success" effect="plain" round v-if="disabled">上次更新时间 {{ serverTask.lastUpdateTime || '-' }}</el-tag>
+          <el-tag type="success" effect="plain" round v-if="disabled">服务器时间:{{ serverTask.serverTime || '-' }}</el-tag>
+          <el-tag type="success" effect="plain" round v-if="disabled">
+            实时延迟： <span class="color-green-7">A </span>{{ serverTask.delyA }}ms /<span class="color-red"> B</span>{{ serverTask.delyB }}ms
+          </el-tag>
         </div>
       </el-form-item>
     </el-form>
@@ -88,12 +92,14 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
 import { emitter } from '@/utils/eventBus';
-import { ABOrderForm } from '@/views/components/type/type';
+import { ABOrderData, ABOrderForm } from '@/views/components/type/type';
 
 const emit = defineEmits(['syncRole', 'update:operate']);
 
 const props = defineProps<{
   operate: ABOrderForm;
+  serverTask: ABOrderData;
+  lastUpdateTime: string;
   disabled: boolean;
 }>();
 

@@ -1,8 +1,8 @@
 import { getToken } from '@/utils/auth';
 import { ElNotification } from 'element-plus';
 import { useNoticeStore } from '@/store/modules/notice';
-import { emitter } from '@/utils/eventBus'
-import { PositionWsData, WebsocketMsgData } from '@/views/components/type/type';
+import { emitter } from '@/utils/eventBus';
+import { ABOrderData, PositionWsData, WebsocketMsgData } from '@/views/components/type/type';
 import { WebsocketExStatus, WebsocketStatus } from '@/layout/components/NotifySetting/types';
 // 初始化socket
 export const initWebSocket = (url: any) => {
@@ -38,26 +38,29 @@ export const initWebSocket = (url: any) => {
       if (e.data.indexOf('ping') > 0) {
         return;
       }
-      const data = JSON.parse(e.data)
-      if(data.type){
-        if(data.type== 'order'){
+      const data = JSON.parse(e.data);
+      if (data.type) {
+        if (data.type == 'order') {
           // 广播事件
-          emitter.emit('orderMessage', data.data)
+          emitter.emit('orderMessage', data.data);
         }
-        if(data.type== 'position'){
+        if (data.type == 'position') {
           // 广播事件
           // console.log(data.data);
-          emitter.emit('positionMessage', data as WebsocketMsgData<PositionWsData[]>)
+          emitter.emit('positionMessage', data as WebsocketMsgData<PositionWsData[]>);
         }
-        if(data.type== 'account'){
+        if (data.type == 'account') {
           // 广播事件
           // console.log(data.data);
-          emitter.emit('accountMessage', data.data as WebsocketExStatus[])
+          emitter.emit('accountMessage', data.data as WebsocketExStatus[]);
+        }
+        if (data.type == 'abTaskCallback') {
+          // 广播事件
+          // console.log(data.data);
+          emitter.emit('abOrderMessage', data.data as ABOrderData[]);
         }
         return;
       }
-
-
 
       useNoticeStore().addNotice({
         message: e.data,

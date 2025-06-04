@@ -4,7 +4,7 @@ import ExchangeSelector from '@/views/system/analysis/components/ExchangeSelecto
 import { getSupportExchange } from '@/api/system/common/common';
 import { ElOption, ElSelect } from 'element-plus';
 import { queryLinerSymbolsByEx } from '@/views/system/analysis/components';
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { LinerSymbol } from '@/views/system/analysis/components/type';
 import { ExchangeVo } from '@/api/system/common/types';
 import { ABOrderData, ABOrderForm, CompareWidget } from '@/views/components/type/type';
@@ -12,6 +12,8 @@ import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 import OperateForm from '@/views/components/component/OperateForm.vue';
 import AccountSelectDialog from '@/views/system/analysis/components/AccountSelectDialog.vue';
 import { ApiVO } from '@/api/system/api/types';
+import { emitter } from '@/utils/eventBus';
+import { syncAbOrderTask } from '@/views/components/type';
 
 const props = withDefaults(
   defineProps<{
@@ -39,6 +41,24 @@ const emit = defineEmits<{
 
 // 创建一个本地响应式副本（避免直接修改 props）
 const form = ref<ABOrderData>({ ...props.componentData } as ABOrderData);
+const serverTask = ref<ABOrderData>({
+  exchangeA: props.componentData.exchangeA,
+  exchangeB: props.componentData.exchangeB,
+  symbolA: props.componentData.symbolA,
+  symbolB: props.componentData.symbolB,
+  typeA: props.componentData.typeA,
+  typeB: props.componentData.typeB,
+  operate: {
+    status: 'stop',
+    type: 'plusAminB',
+    size: null,
+    coldSec: null,
+    maxSize: null,
+    gap: null,
+    closeGap: null,
+    openGap: null
+  }
+} as ABOrderData);
 
 watch(
   () => props.componentData, // 用函数返回，确保响应式追踪
@@ -51,6 +71,30 @@ watch(
   },
   { deep: true, immediate: true }
 );
+// watch(
+//   () => form, // 用函数返回，确保响应式追踪
+//   (val) => {
+//     if (val) {
+//       console.log('componentData form-------->', toRaw(val));
+//     }
+//   },
+//   { deep: true, immediate: true }
+// );
+
+const syncRole = () => {
+  console.log('form ->', JSON.stringify(toRaw(form.value)));
+  syncAbOrderTask(form.value).then((res) => {
+    if (res.code == 200) {
+      const data = res.data as ABOrderData;
+      // form.value = data;
+      serverTask.value = data;
+      console.log(res.data);
+      ElMessage.success('同步成功');
+    } else {
+      ElMessage.error(res.msg);
+    }
+  });
+};
 
 form.value.operate = {
   type: 'plusAminB',
@@ -181,9 +225,35 @@ const openSetting = () => {
 defineExpose({
   openSetting
 });
+const handleWsMessage = (data: ABOrderData[]) => {
+  console.log('abOrderMessage', data);
+  if (data && data.length > 0) {
+    if (form.value.taskId == undefined || form.value.taskId == null) {
+      serverTask.value = data[0];
+      form.value = data[0];
+      emit('update:componentData', form.value);
+      emit('config', form.value);
+      return;
+    }
 
+    for (const orderData of data) {
+      console.log('ws taskId:', orderData.taskId, 'serverTaskId:', serverTask.value.taskId, 'formTaskId:', form.value.taskId);
+      if (orderData.taskId == serverTask.value.taskId) {
+        serverTask.value = orderData;
+        // emit('update:componentData', serverTask.value);
+        // emit('config', serverTask.value);
+        refush.value += 1;
+      }
+    }
+  }
+};
+
+onBeforeUnmount(() => {
+  emitter.off('abOrderMessage', handleWsMessage);
+});
 onMounted(() => {
   loadExchange();
+  emitter.on('abOrderMessage', handleWsMessage);
 });
 </script>
 
@@ -290,8 +360,14 @@ onMounted(() => {
       </el-card>
 
       <div class="flex flex-row gap-x-2">
-        <OperateForm v-model:operate="form.operate" :disabled="false" class="flex-1" />
-        <OperateForm v-model:operate="form.operate" :disabled="true" class="flex-1" />
+        <OperateForm v-model:operate="form.operate" :disabled="false" @syncRole="syncRole" class="flex-1" />
+        <OperateForm
+          v-model:operate="serverTask.operate"
+          :disabled="true"
+          :last-update-time="serverTask.lastUpdateTime"
+          v-model:serverTask="serverTask"
+          class="flex-1"
+        />
       </div>
     </div>
   </div>

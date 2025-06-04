@@ -30,9 +30,15 @@ export interface CompareWidget extends CompontentData {
   symbolTmpB?: string;
 }
 export interface ABOrderData extends CompareWidget {
+  taskId?: number | string;
+  delyA?: number; //A单延迟时间
+  delyB?: number; //B单延迟时间
   accountA?: ApiVO;
   accountB?: ApiVO;
   operate?: ABOrderForm;
+
+  lastUpdateTime?: string; //最后更新时间
+  serverTime?: string; //服务器时间
 }
 
 export interface PositionWsData {
