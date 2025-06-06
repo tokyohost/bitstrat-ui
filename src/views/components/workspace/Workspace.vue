@@ -30,6 +30,7 @@
         :h="item.h"
         :name="item.name"
         :has-setting="item.hasSetting"
+        :has-refresh="item.hasRefresh"
         :component="item.component"
         :compontent-data="item.compontentData"
         @remove="removeComponent(item.id)"
@@ -72,7 +73,7 @@ const availableComponents = ref<ComponentItem[]>([
   { cid: 4, name: '成交记录', component: OrderWidget, minWidth: 300, minHeight: 500, hasSetting: false },
   { cid: 5, name: '消息通知', component: ChartWidget, hasSetting: false },
   { cid: 6, name: '自动双腿下单', component: ABOrderWidget, minWidth: 600, minHeight: 570, hasSetting: true },
-  { cid: 7, name: '实时持仓', component: PositionWidget, minWidth: 700, minHeight: 360, hasSetting: false },
+  { cid: 7, name: '实时持仓', component: PositionWidget, minWidth: 700, minHeight: 360, hasSetting: false, hasRefresh: true },
   { cid: 80, name: '账户情况', component: AccountWidget, minWidth: 300, minHeight: 200, hasSetting: false },
   { cid: 90, name: '表格组件', component: TableWidget, hasSetting: false }
 ]);
@@ -107,6 +108,7 @@ const addComponent = (comp: ComponentItem) => {
     w,
     h,
     hasSetting: comp.hasSetting,
+    hasRefresh: comp.hasRefresh,
     component: comp.component,
     minWidth: comp.minWidth,
     minHeight: comp.minHeight
@@ -114,9 +116,20 @@ const addComponent = (comp: ComponentItem) => {
   saveLayout();
   ElMessage.success('添加成功');
 };
-const loadComponent = (comp: ComponentItem, x?: number, y?: number, w?: number, h?: number, data?: CompontentData, hasSetting?: boolean) => {
+const loadComponent = (
+  comp: ComponentItem,
+  x?: number,
+  y?: number,
+  w?: number,
+  h?: number,
+  data?: CompontentData,
+  hasSetting?: boolean,
+  hasRefresh?: boolean
+) => {
   const id = crypto.randomUUID();
-  data.id = id;
+  if (data) {
+    data.id = id;
+  }
   const component = {
     cid: comp.cid,
     id: id,
@@ -126,6 +139,7 @@ const loadComponent = (comp: ComponentItem, x?: number, y?: number, w?: number, 
     w: w ?? comp.w,
     h: h ?? comp.h,
     hasSetting: hasSetting ?? false,
+    hasRefresh: hasRefresh ?? false,
     component: comp.component,
     compontentData: data ?? {},
     minWidth: comp.minWidth,
@@ -232,7 +246,16 @@ const loadLayout = () => {
     const filter = availableComponents.value.filter((item) => item.cid == cacheComp.cid);
     if (filter) {
       const component = filter[0] as ComponentItem;
-      loadComponent(component, cacheComp.x, cacheComp.y, cacheComp.w, cacheComp.h, cacheComp.compontentData, cacheComp.hasSetting);
+      loadComponent(
+        component,
+        cacheComp.x,
+        cacheComp.y,
+        cacheComp.w,
+        cacheComp.h,
+        cacheComp.compontentData,
+        cacheComp.hasSetting,
+        cacheComp.hasRefresh
+      );
     }
   }
 };

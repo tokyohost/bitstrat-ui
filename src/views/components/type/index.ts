@@ -8,3 +8,10 @@ export const syncAbOrderTask = (data: ABOrderData) => {
     data: data
   });
 };
+
+export const syncPosition = () => {
+  return request({
+    url: '/system/abOrder/syncPosition',
+    method: 'get'
+  });
+};

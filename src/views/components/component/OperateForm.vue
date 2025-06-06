@@ -107,6 +107,7 @@ const syncRole = () => {
   emit('syncRole');
 };
 const change = () => {
+  emit('syncRole');
   emit('update:operate', props.operate);
 };
 </script>

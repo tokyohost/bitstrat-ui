@@ -12,6 +12,7 @@ export interface ComponentItem {
   minHeight?: number;
   minWidth?: number;
   hasSetting?: boolean;
+  hasRefresh?: boolean;
   compontentData?: CompontentData; //组件数据
 }
 export interface CompontentData {
@@ -105,6 +106,7 @@ export interface PositionWsData {
    * 更新时间
    */
   updateTime?: string;
+  serverTime?: string;
 
   /**
    * 杠杆倍数

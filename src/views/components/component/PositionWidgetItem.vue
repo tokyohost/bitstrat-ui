@@ -6,11 +6,23 @@ import { PositionWsData } from '@/views/components/type/type';
 const props = defineProps<{
   position: PositionWsData;
 }>();
+
+const customColor = computed(() => {
+  if (props.position.marginRatio < 30) {
+    return '#67c23a';
+  }
+  if (props.position.marginRatio < 70) {
+    return '#e6a23c';
+  }
+  return '#f56c6c';
+});
+
+const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
 </script>
 
 <template>
   <div>
-    <el-card class="w-full" shadow="hover">
+    <el-card class="w-full" :shadow="'never'">
       <div class="flex flex-row">
         <div class="flex justify-between w-full">
           <div class="flex justify-start text-center align--center ml-2 gap-col-1">
@@ -53,9 +65,23 @@ const props = defineProps<{
           <div class="font-400">保证金</div>
           <div class="border-b-unset ml-1">{{ props.position.marginPrice ?? '-' }} U</div>
         </div>
-        <div class="flex flex-1 text-xs">
+        <div class="flex flex-1 justify-start text-xs w-full">
           <div class="font-400">MMR</div>
-          <div class="border-b-unset ml-1">{{ props.position.marginRatio ?? '-' }}%</div>
+          <div class="border-b-unset ml-1 w-[200px] align--center text-center pt-[5px]">
+            <el-progress
+              class="w-full"
+              :stroke-width="5"
+              indeterminate
+              :format="format"
+              :text-inside="true"
+              :duration="1000"
+              :percentage="props.position.marginRatio"
+              :color="customColor"
+            />
+            <!--            <el-progress :percentage="100" status="success" :indeterminate="true" :duration="5" class="w-full" />-->
+
+            {{ props.position.marginRatio ?? '-' }}%
+          </div>
         </div>
       </div>
       <div class="flex flex-row w-full">
@@ -69,8 +95,9 @@ const props = defineProps<{
         <!--        </div>-->
       </div>
 
-      <div class="flex justify-end w-full text-xs mt-2">
-        <div>{{ props.position.updateTime }}</div>
+      <div class="flex justify-end w-full text-xs mt-2 gap-4">
+        <div>同步时间:{{ props.position.serverTime }}</div>
+        <div>仓位变更时间:{{ props.position.updateTime }}</div>
       </div>
     </el-card>
   </div>

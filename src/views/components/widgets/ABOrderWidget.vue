@@ -220,7 +220,11 @@ const openSelect = (type) => {
 };
 
 const openSetting = () => {
-  showSettingFlag.value = true;
+  if (form.value.operate.status == 'stop') {
+    showSettingFlag.value = true;
+  } else {
+    ElMessage.error('运行中不允许修改');
+  }
 };
 defineExpose({
   openSetting

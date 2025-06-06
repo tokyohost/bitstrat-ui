@@ -1,4 +1,3 @@
-
 <template>
   <vue-draggable-resizable
     :x="x"
@@ -20,7 +19,6 @@
     class="draggable-card"
     :drag-handle="'.drag-handle'"
     :class-name-active="'active-class'"
-
   >
     <template #tl>
       <div class="w-10 h-1 drag-handle color-red"></div>
@@ -35,7 +33,7 @@
       <div class="w-1 h-10 drag-handle"></div>
     </template>
     <template #br>
-      <div class="w-10  h-1 drag-handle"></div>
+      <div class="w-10 h-1 drag-handle"></div>
     </template>
     <template #bm>
       <div class="w-10 h-1 drag-handle"></div>
@@ -53,11 +51,14 @@
           <button class="delete-btn pt-1" @click="openSetting" v-if="hasSetting">
             <el-icon class="pt-1"><Operation /></el-icon>
           </button>
+          <button class="delete-btn pt-1" @click="openRefresh" v-if="hasRefresh">
+            <el-icon class="pt-1"><Refresh /></el-icon>
+          </button>
           <button class="delete-btn" @click="$emit('remove')">✕</button>
         </div>
       </div>
-      <div :class="['card-content', 'flex']" :style="{ height: (props.h - 80) + 'px' }">
-        <component ref="currComponent" :is="component" :id="props.id" v-model:componentData="props.compontentData" @config="configDone"/>
+      <div :class="['card-content', 'flex']" :style="{ height: props.h - 80 + 'px' }">
+        <component ref="currComponent" :is="component" :id="props.id" v-model:componentData="props.compontentData" @config="configDone" />
       </div>
     </div>
   </vue-draggable-resizable>
@@ -67,48 +68,52 @@
 import VueDraggableResizable from 'vue-draggable-resizable';
 import 'vue-draggable-resizable/style.css';
 import { CompontentData } from '@/views/components/type/type';
-const currComponent = useTemplateRef("currComponent")
+import { Refresh } from '@element-plus/icons-vue';
+const currComponent = useTemplateRef('currComponent');
 
 const props = withDefaults(
   defineProps<{
-    id: number|string
-    name: string
-    component: Component
-    x: number
-    y: number
-    w: number
-    h: number
-    minWidth?: number
-    minHeight?: number
-    hasSetting?: boolean
-    compontentData?: CompontentData
+    id: number | string;
+    name: string;
+    component: Component;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    minWidth?: number;
+    minHeight?: number;
+    hasSetting?: boolean;
+    hasRefresh?: boolean;
+    compontentData?: CompontentData;
   }>(),
   {
     minWidth: 100,
     minHeight: 100,
     hasSetting: false,
+    hasRefresh: false,
     compontentData: () => ({})
   }
-)
+);
 
-
-const emit = defineEmits(['remove', 'try-move', 'change-temp',"configDone"]);
-
+const emit = defineEmits(['remove', 'try-move', 'change-temp', 'configDone']);
 
 const configDone = (config: CompontentData) => {
-  console.log("configDone",config);
+  console.log('configDone', config);
   emit('configDone', config);
-}
-const openSetting = ()=>{
+};
+const openSetting = () => {
   currComponent.value?.openSetting();
-}
+};
+const openRefresh = () => {
+  currComponent.value?.openRefresh();
+};
 const onChanging = (left: number, top: number, width: number, height: number) => {
   emit('change-temp', {
     id: props.id,
     x: left,
     y: top,
     w: width ?? props.w,
-    h: height ?? props.h,
+    h: height ?? props.h
   });
 };
 const update = (key: 'x' | 'y' | 'w' | 'h', value: number) => {
@@ -121,13 +126,14 @@ const update = (key: 'x' | 'y' | 'w' | 'h', value: number) => {
     key
   });
 };
-watch(props,(value)=>{
-  onChanging(value.x,value.y,value.w,value.h);
-},{immediate:true});
-onMounted(()=>{
-
-})
-
+watch(
+  props,
+  (value) => {
+    onChanging(value.x, value.y, value.w, value.h);
+  },
+  { immediate: true }
+);
+onMounted(() => {});
 </script>
 
 <style scoped lang="scss">
