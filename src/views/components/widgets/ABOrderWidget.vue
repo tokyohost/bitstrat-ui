@@ -111,6 +111,8 @@ const selectOk = () => {
   formRef.value.validate((valid) => {
     if (valid) {
       form.value.id = props.id;
+      form.value.accountA = null;
+      form.value.accountB = null;
 
       emit('update:componentData', form.value);
       emit('config', form.value);
@@ -212,11 +214,19 @@ const openSelect = (type) => {
     'A': showAccountSelectA,
     'B': showAccountSelectB
   };
+  if (form.value['exchange' + type] && form.value['symbol' + type]) {
+
+  }else{
+    ElMessage.error("请先选择交易所、币对")
+    return;
+  }
   if (form.value.operate.status == 'stop') {
-    switchObj[type].value = true;
+
   } else {
     ElMessage.error('运行中不允许修改账户');
+    return;
   }
+  switchObj[type].value = true;
 };
 
 const openSetting = () => {
@@ -229,6 +239,18 @@ const openSetting = () => {
 defineExpose({
   openSetting
 });
+const handleOrderTaskMessage = (data: ABOrderData) => {
+  form.value = data
+  serverTask.value = data
+
+}
+const handleAddNewMessage = (data: ABOrderData) => {
+  form.value = data
+  let id = crypto.randomUUID();
+  form.value.taskId =id
+  serverTask.value = data
+  serverTask.value.taskId = id
+}
 const handleWsMessage = (data: ABOrderData[]) => {
   console.log('abOrderMessage', data);
   if (data && data.length > 0) {
@@ -246,6 +268,7 @@ const handleWsMessage = (data: ABOrderData[]) => {
         serverTask.value = orderData;
         // emit('update:componentData', serverTask.value);
         // emit('config', serverTask.value);
+        form.value.taskId = orderData.taskId;
         refush.value += 1;
       }
     }
@@ -254,10 +277,14 @@ const handleWsMessage = (data: ABOrderData[]) => {
 
 onBeforeUnmount(() => {
   emitter.off('abOrderMessage', handleWsMessage);
+  emitter.off('selectTask', handleOrderTaskMessage);
+  emitter.off('addNew', handleAddNewMessage);
 });
 onMounted(() => {
   loadExchange();
   emitter.on('abOrderMessage', handleWsMessage);
+  emitter.on('selectTask', handleOrderTaskMessage);
+  emitter.on('addNew', handleAddNewMessage);
 });
 </script>
 
@@ -364,10 +391,10 @@ onMounted(() => {
       </el-card>
 
       <div class="flex flex-row gap-x-2">
-        <OperateForm v-model:operate="form.operate" :disabled="false" @syncRole="syncRole" class="flex-1" />
+        <OperateForm v-model:operate="form.operate" v-model:serverTask="serverTask" :disabled="false" @syncRole="syncRole" class="flex-1" />
         <OperateForm
           v-model:operate="serverTask.operate"
-          :disabled="true"
+           :disabled="true"
           :last-update-time="serverTask.lastUpdateTime"
           v-model:serverTask="serverTask"
           class="flex-1"

@@ -63,6 +63,8 @@ const OrderWidget = markRaw(defineAsyncComponent(() => import('@/views/component
 const PositionWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/PositionWidget.vue')));
 const AccountWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/AccountWidget.vue')));
 const ABOrderWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ABOrderWidget.vue')));
+const ABOrderListWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ABOrderListWidget.vue')));
+const LogWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/LogWidget.vue')));
 
 const componentPanelDrawer = ref(false);
 
@@ -75,7 +77,9 @@ const availableComponents = ref<ComponentItem[]>([
   { cid: 6, name: '自动双腿下单', component: ABOrderWidget, minWidth: 600, minHeight: 570, hasSetting: true },
   { cid: 7, name: '实时持仓', component: PositionWidget, minWidth: 700, minHeight: 360, hasSetting: false, hasRefresh: true },
   { cid: 80, name: '账户情况', component: AccountWidget, minWidth: 300, minHeight: 200, hasSetting: false },
-  { cid: 90, name: '表格组件', component: TableWidget, hasSetting: false }
+  { cid: 99, name: '任务列表', component: ABOrderListWidget, minWidth: 300, minHeight: 200, hasSetting: false },
+  { cid: 90, name: '表格组件', component: TableWidget, hasSetting: false },
+  { cid: 100, name: '价差日志', component: LogWidget, hasSetting: false }
 ]);
 
 const components = ref<ComponentItem[]>([]);

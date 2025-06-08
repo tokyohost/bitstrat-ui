@@ -25,6 +25,7 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="交易所" align="center" prop="exchangeName" />
         <el-table-column label="名称" align="center" prop="name" />
+
         <el-table-column label="API Key" align="center" prop="apiKey" >
           <template #default="scope">
             <el-tooltip class="item" effect="dark" trigger="click" :content="scope.row.apiKey" placement="top">
@@ -32,6 +33,8 @@
             </el-tooltip>
           </template>
         </el-table-column>
+        <el-table-column label="总余额" align="center" prop="balance" />
+        <el-table-column label="可用余额" align="center" prop="freeBalance" />
         <el-table-column label="创建时间" align="center" prop="createTime" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">

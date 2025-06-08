@@ -15,6 +15,8 @@ export interface ApiVO {
    * api security
    */
   apiSecurity: string;
+  balance: string|number;
+  freeBalance: string|number;
 
   /**
    * 交易所

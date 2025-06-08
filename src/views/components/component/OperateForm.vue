@@ -76,8 +76,9 @@
           inactive-value="0"
         />
       </el-form-item>
-      <el-form-item label="" v-if="disabled">
+      <el-form-item label="" >
         <div class="flex justify-end flex-col w-full gap-col-1 gap-row-1">
+          <el-tag type="success" effect="plain" round v-if="!disabled">ID:{{ serverTask?.taskId || '-' }}</el-tag>
           <el-tag type="success" effect="plain" round v-if="disabled">上次更新时间 {{ serverTask.lastUpdateTime || '-' }}</el-tag>
           <el-tag type="success" effect="plain" round v-if="disabled">服务器时间:{{ serverTask.serverTime || '-' }}</el-tag>
           <el-tag type="success" effect="plain" round v-if="disabled">
@@ -98,7 +99,7 @@ const emit = defineEmits(['syncRole', 'update:operate']);
 
 const props = defineProps<{
   operate: ABOrderForm;
-  serverTask: ABOrderData;
+  serverTask?: ABOrderData;
   lastUpdateTime: string;
   disabled: boolean;
 }>();
@@ -107,7 +108,7 @@ const syncRole = () => {
   emit('syncRole');
 };
 const change = () => {
-  emit('syncRole');
+  // emit('syncRole');
   emit('update:operate', props.operate);
 };
 </script>

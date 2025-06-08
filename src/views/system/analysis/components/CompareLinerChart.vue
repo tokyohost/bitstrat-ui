@@ -77,7 +77,10 @@ const initChart = () => {
           data: dataA,
           showSymbol: false,
           connectNulls: true,
-          smooth: true
+          smooth: true,
+          lineStyle: {
+            color: '#5470C6' // 设置线条颜色（蓝色）
+          }
         },
         {
           name: props.exchangeB,
@@ -85,7 +88,10 @@ const initChart = () => {
           data: dataB,
           showSymbol: false,
           connectNulls: true,
-          smooth: true
+          smooth: true,
+          lineStyle: {
+            color: '#91CC75' // 设置线条颜色（绿色）
+          }
         }
       ]
     });
@@ -109,12 +115,12 @@ const updateChart = () => {
             a: {
               // fontWeight: 'bold',
               fontSize: 14,
-              color: '#E6A23C',
+              color: '#5470C6',
               lineHeight: 24,
               align: 'right'
             },
             b: {
-              color: '#F56C6C',
+              color: '#91CC75',
               fontSize: 14,
               lineHeight: 24,
               align: 'right',
@@ -139,7 +145,7 @@ const updateChart = () => {
               show: true,
               formatter: `${lastA}`,
               fontSize: 12,
-              color: '#F56C6C'
+              color: '#5470C6'
             },
             data: [
               {
@@ -166,7 +172,7 @@ const updateChart = () => {
               show: true,
               formatter: `${lastB} `,
               fontSize: 12,
-              color: '#F56C6C'
+              color: '#5470C6'
             },
             data: [
               {

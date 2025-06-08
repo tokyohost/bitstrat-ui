@@ -270,3 +270,88 @@ export interface WebsocketMsgDataAi<T> {
 
   data?: T;
 }
+
+
+/**
+ * 价差套利日志对象 coins_ab_order_log
+ *
+ * @author Lion Li
+ * @date 2025-06-08
+ */
+export interface CoinsAbOrderLog {
+
+  /**
+   * id
+   */
+  id?: number
+
+  /**
+   * account a
+   */
+  accountA?: number
+
+  /**
+   * account b
+   */
+  accountB?: number
+
+  /**
+   * exchangea
+   */
+  exchangeA?: string
+
+  /**
+   * exchangeb
+   */
+  exchangeB?: string
+
+  /**
+   * TaskId
+   */
+  taskId?: string
+
+  /**
+   * 日志
+   */
+  log?: string
+
+  createTime?: string
+
+  /**
+   * 租户编号
+   */
+  tenantId?: string
+
+  serialVersionUID?: number
+
+  /**
+   * 搜索值
+   */
+  searchValue?: string
+
+  /**
+   * 创建部门
+   */
+  createDept?: number
+
+  /**
+   * 创建者
+   */
+  createBy?: number
+
+  /**
+   * 创建时间
+   */
+  createTime?: string
+
+  /**
+   * 更新者
+   */
+  updateBy?: number
+
+  /**
+   * 更新时间
+   */
+  updateTime?: string
+}
+
