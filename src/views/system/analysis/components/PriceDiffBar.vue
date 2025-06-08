@@ -63,7 +63,7 @@ const renderCharts = () => {
     yAxis: {
       type: 'value',
       scale: true,
-      axisLabel: { formatter: '{value} %' }
+      axisLabel: { formatter: '-{value} %' }
     },
     series: [
       {
@@ -73,7 +73,7 @@ const renderCharts = () => {
         label: {
           show: true,
           position: 'top',
-          formatter: '{c}%'
+          formatter: '-{c}%'
         }
       }
     ]

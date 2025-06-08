@@ -346,10 +346,10 @@ onUnmounted(() => {
           <div class="flex flex-col gap-col-1 justify-start">
             <div>5min 价差</div>
             <div>
-              MAX <span class="color-red">{{ -priceDiff5Min.max }}%</span>
+              MAX <span class="color-red">{{ -priceDiff5Min.min }}%</span>
             </div>
             <div>
-              MIN <span class="color-green-7">{{ -priceDiff5Min.min }}%</span>
+              MIN <span class="color-green-7">{{ -priceDiff5Min.max }}%</span>
             </div>
           </div>
 <!--          <div class="flex flex-col gap-col-1 justify-start">-->
@@ -387,10 +387,10 @@ onUnmounted(() => {
           <div class="flex flex-col gap-col-1 justify-start">
             <div>5min 价差</div>
             <div>
-              MAX <span class="color-green-7">{{  priceDiff5Min.min }}%</span>
+              MAX <span class="color-green-7">{{ priceDiff5Min.max  }}%</span>
             </div>
             <div>
-              MIN <span class="color-red">{{ priceDiff5Min.max }}%</span>
+              MIN <span class="color-red">{{  priceDiff5Min.min}}%</span>
             </div>
           </div>
 <!--          <div class="flex flex-col gap-col-1 justify-start">-->
