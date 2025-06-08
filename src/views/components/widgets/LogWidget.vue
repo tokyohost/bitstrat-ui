@@ -29,10 +29,10 @@ onMounted(() => {
 <template>
   <div class="flex-1 w-full p-2 gap-y-1 overflow-y-hidden hover:overflow-y-auto">
     <el-card v-for="item in listAll" class="flex flex-col gap-1 justify-start mb-1" shadow="hover">
-      <div>
+      <div class="text-xs">
         {{item.log}}
       </div>
-      <div class="flex flex-col gap-1 justify-end ">
+      <div class="flex flex-col gap-1 justify-end text-xs font-bold text-align-end">
         {{item.createTime}}
       </div>
     </el-card>
