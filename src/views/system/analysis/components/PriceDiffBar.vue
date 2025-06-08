@@ -20,12 +20,12 @@ const resizeObserver = new ResizeObserver(() => {
 // 计算百分比差值
 const abPercent = computed(() => {
   if (props.priceB === 0) return 0;
-  return ((props.priceA - props.priceB) / props.priceB) * 100;
+  return ((props.priceB - props.priceA) / props.priceA) * 100;
 });
 
 const baPercent = computed(() => {
   if (props.priceA === 0) return 0;
-  return ((props.priceB - props.priceA) / props.priceA) * 100;
+  return ((props.priceA - props.priceB) / props.priceB) * 100;
 });
 
 const renderCharts = () => {
