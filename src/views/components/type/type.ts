@@ -37,6 +37,7 @@ export interface ABOrderData extends CompareWidget {
   accountA?: ApiVO;
   accountB?: ApiVO;
   operate?: ABOrderForm;
+  leverage: number; //杠杆倍数
 
   lastUpdateTime?: string; //最后更新时间
   serverTime?: string; //服务器时间
@@ -124,6 +125,8 @@ export interface PositionWsData {
   closed?: boolean;
 
   accountId?: number;
+
+  showFlag?: number;
 }
 
 export interface WebsocketMsgData<T> {
@@ -271,7 +274,6 @@ export interface WebsocketMsgDataAi<T> {
   data?: T;
 }
 
-
 /**
  * 价差套利日志对象 coins_ab_order_log
  *
@@ -279,79 +281,77 @@ export interface WebsocketMsgDataAi<T> {
  * @date 2025-06-08
  */
 export interface CoinsAbOrderLog {
-
   /**
    * id
    */
-  id?: number
+  id?: number;
 
   /**
    * account a
    */
-  accountA?: number
+  accountA?: number;
 
   /**
    * account b
    */
-  accountB?: number
+  accountB?: number;
 
   /**
    * exchangea
    */
-  exchangeA?: string
+  exchangeA?: string;
 
   /**
    * exchangeb
    */
-  exchangeB?: string
+  exchangeB?: string;
 
   /**
    * TaskId
    */
-  taskId?: string
+  taskId?: string;
 
   /**
    * 日志
    */
-  log?: string
+  log?: string;
 
-  createTime?: string
+  createTime?: string;
 
   /**
    * 租户编号
    */
-  tenantId?: string
+  tenantId?: string;
 
-  serialVersionUID?: number
+  serialVersionUID?: number;
 
   /**
    * 搜索值
    */
-  searchValue?: string
+  searchValue?: string;
 
   /**
    * 创建部门
    */
-  createDept?: number
+  createDept?: number;
 
   /**
    * 创建者
    */
-  createBy?: number
+  createBy?: number;
 
   /**
    * 创建时间
    */
-  createTime?: string
+  createTime?: string;
 
   /**
    * 更新者
    */
-  updateBy?: number
+  updateBy?: number;
 
   /**
    * 更新时间
    */
-  updateTime?: string
+  updateTime?: string;
 }
-

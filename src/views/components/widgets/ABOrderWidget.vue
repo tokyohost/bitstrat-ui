@@ -26,6 +26,7 @@ const props = withDefaults(
       exchangeB: '',
       symbolA: '',
       symbolB: '',
+      leverage: 1,
       typeA: 'swap',
       typeB: 'swap'
     })
@@ -48,6 +49,7 @@ const serverTask = ref<ABOrderData>({
   symbolB: props.componentData.symbolB,
   typeA: props.componentData.typeA,
   typeB: props.componentData.typeB,
+  leverage: 1,
   operate: {
     status: 'stop',
     type: 'plusAminB',
@@ -132,7 +134,8 @@ const roles = reactive<ElFormRules>({
   symbolTmpA: [{ required: true, message: '请选择币对', trigger: 'blur' }],
   symbolTmpB: [{ required: true, message: '请选择币对', trigger: 'blur' }],
   typeA: [{ required: true, message: '请选择币对类型', trigger: 'blur' }],
-  typeB: [{ required: true, message: '请选择币对类型', trigger: 'blur' }]
+  typeB: [{ required: true, message: '请选择币对类型', trigger: 'blur' }],
+  leverage: [{ required: true, message: '请输入杠杆倍数', trigger: 'blur' }]
 });
 // 交易所列表
 const supportExchangeList = ref<ExchangeVo[]>([]);
@@ -215,13 +218,11 @@ const openSelect = (type) => {
     'B': showAccountSelectB
   };
   if (form.value['exchange' + type] && form.value['symbol' + type]) {
-
-  }else{
-    ElMessage.error("请先选择交易所、币对")
+  } else {
+    ElMessage.error('请先选择交易所、币对');
     return;
   }
   if (form.value.operate.status == 'stop') {
-
   } else {
     ElMessage.error('运行中不允许修改账户');
     return;
@@ -240,17 +241,16 @@ defineExpose({
   openSetting
 });
 const handleOrderTaskMessage = (data: ABOrderData) => {
-  form.value = data
-  serverTask.value = data
-
-}
+  form.value = data;
+  serverTask.value = data;
+};
 const handleAddNewMessage = (data: ABOrderData) => {
-  form.value = data
-  let id = crypto.randomUUID();
-  form.value.taskId =id
-  serverTask.value = data
-  serverTask.value.taskId = id
-}
+  form.value = data;
+  const id = crypto.randomUUID();
+  form.value.taskId = id;
+  serverTask.value = data;
+  serverTask.value.taskId = id;
+};
 const handleWsMessage = (data: ABOrderData[]) => {
   console.log('abOrderMessage', data);
   if (data && data.length > 0) {
@@ -339,6 +339,9 @@ onMounted(() => {
               <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.symbol" :value="symbol.symbol" />
             </el-select>
           </el-form-item>
+          <el-form-item label="杠杆倍数(调整杠杆倍数请确认持仓已全平)" prop="leverage">
+            <el-input type="number" :min="1" :max="100" v-model="form.leverage" placeholder="请输入杠杆倍数"></el-input>
+          </el-form-item>
         </el-form>
       </div>
       <template #footer>
@@ -356,6 +359,7 @@ onMounted(() => {
             <ExchangeLogo :exchange="form.exchangeA" :key="form.exchangeA">
               {{ form.symbolA }}
             </ExchangeLogo>
+            <el-tag type="danger" size="small" disable-transitions>{{ form.leverage }}x</el-tag>
           </div>
           <div class="flex justify-end hover:cursor-pointer text-xs" @click="openSelect('A')">
             <div>{{ form.accountA?.name || '-' }}</div>
@@ -376,6 +380,7 @@ onMounted(() => {
             <ExchangeLogo :exchange="form.exchangeB" :key="form.exchangeB">
               {{ form.symbolB }}
             </ExchangeLogo>
+            <el-tag type="danger" size="small" disable-transitions>{{ form.leverage }}x</el-tag>
           </div>
           <div class="flex justify-end hover:cursor-pointer text-xs" @click="openSelect('B')">
             <div>{{ form.accountB?.name || '-' }}</div>
@@ -394,7 +399,7 @@ onMounted(() => {
         <OperateForm v-model:operate="form.operate" v-model:serverTask="serverTask" :disabled="false" @syncRole="syncRole" class="flex-1" />
         <OperateForm
           v-model:operate="serverTask.operate"
-           :disabled="true"
+          :disabled="true"
           :last-update-time="serverTask.lastUpdateTime"
           v-model:serverTask="serverTask"
           class="flex-1"

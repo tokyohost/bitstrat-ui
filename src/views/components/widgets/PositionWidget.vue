@@ -51,12 +51,14 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex-1 overflow-y-auto p-3 overflow-y-hidden hover:overflow-y-auto">
     <div class="flex flex-col gap-y-1">
-      <PositionWidgetItem
-        v-for="(item, index) in positionList"
-        :key="new Date().getTime() + index"
-        class="hover:cursor-pointer"
-        :position="item"
-      ></PositionWidgetItem>
+      <div v-for="(item, index) in positionList">
+        <PositionWidgetItem
+          v-if="item.showFlag != 10"
+          :key="new Date().getTime() + index"
+          class="hover:cursor-pointer"
+          :position="item"
+        ></PositionWidgetItem>
+      </div>
     </div>
   </div>
 </template>
