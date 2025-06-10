@@ -76,7 +76,10 @@
           inactive-value="0"
         />
       </el-form-item>
-      <el-form-item label="" >
+      <el-form-item label="控制" v-if="!disabled">
+        <el-button @click="stop">停止</el-button>
+      </el-form-item>
+      <el-form-item label="">
         <div class="flex justify-end flex-col w-full gap-col-1 gap-row-1">
           <el-tag type="success" effect="plain" round v-if="!disabled">ID:{{ serverTask?.taskId || '-' }}</el-tag>
           <el-tag type="success" effect="plain" round v-if="disabled">上次更新时间 {{ serverTask.lastUpdateTime || '-' }}</el-tag>
@@ -95,7 +98,7 @@ import { defineProps } from 'vue';
 import { emitter } from '@/utils/eventBus';
 import { ABOrderData, ABOrderForm } from '@/views/components/type/type';
 
-const emit = defineEmits(['syncRole', 'update:operate']);
+const emit = defineEmits(['syncRole', 'update:operate', 'stopRole']);
 
 const props = defineProps<{
   operate: ABOrderForm;
@@ -106,6 +109,9 @@ const props = defineProps<{
 
 const syncRole = () => {
   emit('syncRole');
+};
+const stop = () => {
+  emit('stopRole');
 };
 const change = () => {
   // emit('syncRole');

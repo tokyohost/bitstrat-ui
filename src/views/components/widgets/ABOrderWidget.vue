@@ -13,7 +13,7 @@ import OperateForm from '@/views/components/component/OperateForm.vue';
 import AccountSelectDialog from '@/views/system/analysis/components/AccountSelectDialog.vue';
 import { ApiVO } from '@/api/system/api/types';
 import { emitter } from '@/utils/eventBus';
-import { syncAbOrderTask } from '@/views/components/type';
+import { stopAbOrderTask, syncAbOrderTask } from '@/views/components/type';
 
 const props = withDefaults(
   defineProps<{
@@ -92,6 +92,20 @@ const syncRole = () => {
       serverTask.value = data;
       console.log(res.data);
       ElMessage.success('同步成功');
+    } else {
+      ElMessage.error(res.msg);
+    }
+  });
+};
+const stop = () => {
+  console.log('form ->', JSON.stringify(toRaw(form.value)));
+  stopAbOrderTask(form.value).then((res) => {
+    if (res.code == 200) {
+      const data = res.data as ABOrderData;
+      // form.value = data;
+      serverTask.value = data;
+      console.log(res.data);
+      ElMessage.success('停止成功');
     } else {
       ElMessage.error(res.msg);
     }
@@ -396,7 +410,14 @@ onMounted(() => {
       </el-card>
 
       <div class="flex flex-row gap-x-2">
-        <OperateForm v-model:operate="form.operate" v-model:serverTask="serverTask" :disabled="false" @syncRole="syncRole" class="flex-1" />
+        <OperateForm
+          v-model:operate="form.operate"
+          v-model:serverTask="serverTask"
+          :disabled="false"
+          @stopRole="stop"
+          @syncRole="syncRole"
+          class="flex-1"
+        />
         <OperateForm
           v-model:operate="serverTask.operate"
           :disabled="true"

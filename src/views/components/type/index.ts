@@ -8,6 +8,13 @@ export const syncAbOrderTask = (data: ABOrderData) => {
     data: data
   });
 };
+export const stopAbOrderTask = (data: ABOrderData) => {
+  return request({
+    url: '/system/abOrder/stop',
+    method: 'post',
+    data: data
+  });
+};
 
 export const syncPosition = () => {
   return request({
