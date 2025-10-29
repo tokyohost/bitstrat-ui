@@ -35,14 +35,15 @@ import { propTypes } from '@/utils/propTypes';
 
 const props = defineProps({
   modelValue: propTypes.string.isRequired,
-  width: propTypes.string.def('400px')
+  width: propTypes.string.def('400px'),
+  data: HostVO
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'submit']);
 const visible = ref(false);
 const { modelValue, width } = toRefs(props);
 const iconNames = ref<string[]>(icons);
-
+emit('submit', props.data);
 const filterValue = ref('');
 
 /**
