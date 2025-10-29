@@ -25,8 +25,10 @@
 
     <el-card shadow="never">
       <LineChart :xData="xData" :seriesData="seriesData" title="账户资金趋势" tooltipUnit="USDT" height="360px"> </LineChart>
+      <LineChart :xData="xDataFreeBalance" :seriesData="seriesDataFreeBalance" title="账户可用余额趋势" tooltipUnit="USDT" height="360px">
+      </LineChart>
     </el-card>
-    <el-card shadow="never">
+    <el-card shadow="never" style="display: none">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -98,7 +100,7 @@
 </template>
 
 <script setup name="AiLogs" lang="ts">
-import { listAiLogs, getAiLogs, delAiLogs, addAiLogs, updateAiLogs, loadChartData } from '@/api/system/aiLogs';
+import { listAiLogs, getAiLogs, delAiLogs, addAiLogs, updateAiLogs, loadChartData, loadChartDataFreeBalance } from '@/api/system/aiLogs';
 import { AiLogsVO, AiLogsQuery, AiLogsForm } from '@/api/system/aiLogs/types';
 import LineChart from '@/views/system/aiLogs/LineChart.vue';
 
@@ -118,6 +120,8 @@ const aiLogsFormRef = ref<ElFormInstance>();
 
 const xData = ref([]);
 const seriesData = ref([]);
+const xDataFreeBalance = ref([]);
+const seriesDataFreeBalance = ref([]);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -162,6 +166,13 @@ const getChat = async () => {
   seriesData.value = res.data.seriesData;
   loading.value = false;
 };
+const getChatFreeBalance = async () => {
+  loading.value = true;
+  const res = await loadChartDataFreeBalance(queryParams.value);
+  xDataFreeBalance.value = res.data.xData;
+  seriesDataFreeBalance.value = res.data.seriesData;
+  loading.value = false;
+};
 
 /** 取消按钮 */
 const cancel = () => {
@@ -179,6 +190,10 @@ const reset = () => {
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
+};
+const handleLoadChat = () => {
+  getChat();
+  getChatFreeBalance();
 };
 
 /** 重置按钮操作 */
@@ -250,5 +265,6 @@ const handleExport = () => {
 
 onMounted(() => {
   getList();
+  handleLoadChat();
 });
 </script>

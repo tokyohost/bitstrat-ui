@@ -133,7 +133,9 @@ function buildOption() {
         formatter: function (v) {
           return props.tooltipUnit ? `${v}` : v;
         }
-      }
+      },
+      min: (val) => val.min - 2,
+      max: (val) => val.max + 2
     },
     series
   };

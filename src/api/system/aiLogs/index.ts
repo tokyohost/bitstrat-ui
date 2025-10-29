@@ -22,6 +22,13 @@ export const loadChartData = (query?: AiLogsQuery): AxiosPromise<any> => {
     params: query
   });
 };
+export const loadChartDataFreeBalance = (query?: AiLogsQuery): AxiosPromise<any> => {
+  return request({
+    url: '/system/aiLogs/loadChartDataFreeBalance',
+    method: 'get',
+    params: query
+  });
+};
 
 /**
  * 查询AI 测试趋势详细
