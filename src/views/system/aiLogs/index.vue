@@ -4,19 +4,19 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="金额" prop="equity">
-              <el-input v-model="queryParams.equity" placeholder="请输入金额" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="可用" prop="freeBalance">
-              <el-input v-model="queryParams.freeBalance" placeholder="请输入可用" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="时间戳" prop="time">
-              <el-date-picker clearable v-model="queryParams.time" type="date" value-format="YYYY-MM-DD" placeholder="请选择时间戳" />
-            </el-form-item>
+            <!--            <el-form-item label="金额" prop="equity">-->
+            <!--              <el-input v-model="queryParams.equity" placeholder="请输入金额" clearable @keyup.enter="handleQuery" />-->
+            <!--            </el-form-item>-->
+            <!--            <el-form-item label="可用" prop="freeBalance">-->
+            <!--              <el-input v-model="queryParams.freeBalance" placeholder="请输入可用" clearable @keyup.enter="handleQuery" />-->
+            <!--            </el-form-item>-->
+            <!--            <el-form-item label="时间戳" prop="time">-->
+            <!--              <el-date-picker clearable v-model="queryParams.time" type="date" value-format="YYYY-MM-DD" placeholder="请选择时间戳" />-->
+            <!--            </el-form-item>-->
             <el-form-item>
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button type="primary" icon="Search" @click="getChat">加载图表</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+              <!--              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>-->
+              <el-button type="primary" icon="Search" @click="getChat">刷新图表</el-button>
+              <!--              <el-button icon="Refresh" @click="resetQuery">重置</el-button>-->
             </el-form-item>
           </el-form>
         </el-card>
@@ -24,10 +24,11 @@
     </transition>
 
     <el-card shadow="never">
-      <LineChart :xData="xData" :seriesData="seriesData" title="账户资金趋势" tooltipUnit="USDT" height="360px"> </LineChart>
+      <LineChart :xData="xData" :seriesData="seriesData" title="账户资金趋势" tooltipUnit="USDT" height="360px" :center-line="true"> </LineChart>
       <LineChart :xData="xDataFreeBalance" :seriesData="seriesDataFreeBalance" title="账户可用余额趋势" tooltipUnit="USDT" height="360px">
       </LineChart>
     </el-card>
+    <TestAiResult ref="aiResultref"></TestAiResult>
     <el-card shadow="never" style="display: none">
       <template #header>
         <el-row :gutter="10" class="mb8">
@@ -103,6 +104,7 @@
 import { listAiLogs, getAiLogs, delAiLogs, addAiLogs, updateAiLogs, loadChartData, loadChartDataFreeBalance } from '@/api/system/aiLogs';
 import { AiLogsVO, AiLogsQuery, AiLogsForm } from '@/api/system/aiLogs/types';
 import LineChart from '@/views/system/aiLogs/LineChart.vue';
+import TestAiResult from '@/views/system/testAiResult/index.vue';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -122,6 +124,8 @@ const xData = ref([]);
 const seriesData = ref([]);
 const xDataFreeBalance = ref([]);
 const seriesDataFreeBalance = ref([]);
+
+const aiResultref = useTemplateRef('aiResultref');
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -266,5 +270,10 @@ const handleExport = () => {
 onMounted(() => {
   getList();
   handleLoadChat();
+
+  setInterval(() => {
+    handleLoadChat();
+    aiResultref.value.getList();
+  }, 1000 * 10);
 });
 </script>

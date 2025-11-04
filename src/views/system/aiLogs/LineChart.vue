@@ -62,6 +62,10 @@ const props = defineProps({
   valueFormatter: {
     type: Function,
     default: null
+  },
+  centerLine: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -72,6 +76,7 @@ let resizeObserver = null;
 // Build echarts series from seriesData prop
 function buildSeries(seriesData) {
   return seriesData.map((s) => {
+    const latestIndex = s.data.length - 1;
     const base = {
       name: s.name || 'series',
       type: 'line',
@@ -79,9 +84,21 @@ function buildSeries(seriesData) {
       smooth: !!s.smooth,
       symbol: s.symbol ?? 'circle',
       symbolSize: s.symbolSize ?? 6,
-      showSymbol: s.showSymbol ?? false,
+      // showSymbol: s.showSymbol ?? false,
       lineStyle: s.lineStyle ?? { width: 2 },
-      emphasis: { focus: 'series' }
+      // emphasis: { focus: 'series' },
+      itemStyle: {
+        color: (params) => (params.dataIndex === latestIndex ? '#f43f5e' : '#3b82f6')
+      },
+      label: {
+        show: true,
+        position: 'top',
+        color: '#f43f5e',
+        fontWeight: 'bold',
+        formatter: (params) => (params.dataIndex === latestIndex ? params.value : '')
+        // formatter: (params) => params.value
+      },
+      emphasis: { disabled: true }
     };
     if (s.area) {
       base.areaStyle = s.areaStyle ?? { opacity: 0.15 };
@@ -94,7 +111,19 @@ function buildSeries(seriesData) {
 // Default option builder
 function buildOption() {
   const series = buildSeries(props.seriesData);
-  return {
+  if (props.centerLine) {
+    series.push({
+      type: 'line',
+      markLine: {
+        silent: true,
+        data: [{ yAxis: 1000 }],
+        lineStyle: { color: '#FF0000', type: 'dashed' },
+        label: { formatter: '1000' }
+      }
+    });
+  }
+  series.push();
+  const option = {
     color: props.colors,
     title: props.title ? { text: props.title, left: 'center' } : undefined,
     tooltip: {
@@ -139,6 +168,26 @@ function buildOption() {
     },
     series
   };
+
+  console.log('option', option);
+  return option;
+}
+
+function checkCenterLine(option) {
+  if (props.centerLine) {
+    option.markLine = {
+      silent: true,
+      data: [{ yAxis: 1000 }],
+      lineStyle: {
+        color: '#FF0000',
+        type: 'dashed'
+      },
+      label: {
+        formatter: 'Baseline: 1000',
+        position: 'end'
+      }
+    };
+  }
 }
 
 function initChart() {
@@ -149,6 +198,21 @@ function initChart() {
   }
   chart = echarts.init(container.value);
   const option = buildOption();
+  checkCenterLine(option);
+  if (props.centerLine) {
+    option.markLine = {
+      silent: true,
+      data: [{ yAxis: 1000 }],
+      lineStyle: {
+        color: '#FF0000',
+        type: 'dashed'
+      },
+      label: {
+        formatter: 'Baseline: 1000',
+        position: 'end'
+      }
+    };
+  }
   chart.setOption(option);
   if (props.loading) chart.showLoading();
   else chart.hideLoading();
@@ -157,6 +221,7 @@ function initChart() {
 function updateChart() {
   if (!chart) return;
   const option = buildOption();
+  checkCenterLine(option);
   chart.setOption(option, { notMerge: false, lazyUpdate: true });
   if (props.loading) chart.showLoading();
   else chart.hideLoading();
