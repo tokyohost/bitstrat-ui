@@ -28,6 +28,9 @@ export function checkApi(data: UpdateApiSettingVo): AxiosPromise<ApiSettingCheck
   return request({
     url: '/coinsUser/chekApi',
     method: 'post',
-    data: data
+    data: data,
+    headers: {
+      isEncrypt: true
+    }
   });
 }

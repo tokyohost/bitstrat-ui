@@ -6,7 +6,8 @@ export function useApiConfig() {
     name: null,
     apiKey: '',
     secret: '',
-    passphrase: ''
+    passphrase: '',
+    type: ''
   });
 
   const fieldConfigs = {

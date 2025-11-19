@@ -47,6 +47,11 @@
         <el-table-column label="交易所" align="center" prop="exchangeName" />
         <el-table-column label="名称" align="center" prop="name" />
         <el-table-column label="api key" align="center" prop="apiKey" />
+        <el-table-column label="type" align="center" prop="type">
+          <template #default="scope">
+            <dict-tag :options="exchange_api_type" :value="scope.row.type" />
+          </template>
+        </el-table-column>
         <!--        <el-table-column label="api secret" align="center" prop="apiSecurity" />-->
         <el-table-column label="创建时间" align="center" prop="createTime" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -116,6 +121,13 @@
           <el-input v-model="configForm.name" placeholder="请输入名称" />
         </el-form-item>
         <ApiConfigForm :fields="currentFields" :model-value="configForm" i18n-prefix="setting.apiSettingForm"></ApiConfigForm>
+        <el-form-item label="类型" prop="type">
+          <el-select v-model="configForm.type" placeholder="请选择类型" clearable>
+            <el-option v-for="dict in exchange_api_type" :key="dict.value" :label="dict.label" :value="dict.value">
+              <dict-tag :options="exchange_api_type" :value="dict.value" />
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
 
       <!--        <el-form-item label="Passphrase" v-if="currentExchange?.needPassphrase">-->
@@ -144,6 +156,7 @@ import CryptoSlogan from '@/layout/components/ApiSetting/components/CryptoSlogan
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
+const { exchange_api_type } = toRefs<any>(proxy?.useDict('exchange_api_type'));
 const apiList = ref<ApiVO[]>([]);
 const supportExchangeList = ref<ExchangeVo[]>([]);
 const buttonLoading = ref(false);
@@ -299,7 +312,8 @@ const submitForm = () => {
         exchange: configForm.value?.exchangeName,
         apiKey: configForm.value.apiKey,
         apiSecurity: configForm.value.secret,
-        passphrase: configForm.value.passphrase
+        passphrase: configForm.value.passphrase,
+        type: configForm.value.type
       };
       const checkResult = await checkApi(data);
       // if (checkResult.code == 200) {
