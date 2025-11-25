@@ -22,11 +22,11 @@
 
     <el-card shadow="never">
       <el-table v-loading="loading" :data="apiList" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" />
+        <!--        <el-table-column type="selection" width="55" align="center" />-->
         <el-table-column label="交易所" align="center" prop="exchangeName" />
         <el-table-column label="名称" align="center" prop="name" />
 
-        <el-table-column label="API Key" align="center" prop="apiKey" >
+        <el-table-column label="API Key" align="center" prop="apiKey">
           <template #default="scope">
             <el-tooltip class="item" effect="dark" trigger="click" :content="scope.row.apiKey" placement="top">
               <div class="truncate w-full max-w-[180px] hover:cursor-pointer">{{ scope.row.apiKey }}</div>
@@ -35,6 +35,11 @@
         </el-table-column>
         <el-table-column label="总余额" align="center" prop="balance" />
         <el-table-column label="可用余额" align="center" prop="freeBalance" />
+        <el-table-column label="类型" align="center" prop="type">
+          <template #default="scope">
+            <dict-tag :value="scope.row.type" :options="exchange_api_type"></dict-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" align="center" prop="createTime" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
@@ -84,7 +89,7 @@ import { ref } from 'vue';
 import { ApiSettingVo } from '@/layout/components/ApiSetting/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
+const { exchange_api_type } = toRefs<any>(proxy?.useDict('exchange_api_type'));
 const apiList = ref<ApiVO[]>([]);
 const supportExchangeList = ref<ExchangeVo[]>([]);
 const buttonLoading = ref(false);
@@ -177,10 +182,10 @@ const getList = async () => {
 };
 const syncBalanceBtn = async () => {
   loading.value = true;
-  let axiosResponse = await syncBalance();
-  ElMessage.success(axiosResponse.msg)
+  const axiosResponse = await syncBalance();
+  ElMessage.success(axiosResponse.msg);
   loading.value = false;
-}
+};
 
 /** 取消按钮 */
 const cancel = () => {

@@ -316,8 +316,6 @@ export interface CoinsAbOrderLog {
    */
   log?: string;
 
-  createTime?: string;
-
   /**
    * 租户编号
    */

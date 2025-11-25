@@ -19,6 +19,7 @@ export interface AiConfigVO {
    */
   token: string;
 
+  imgUrl: string;
 }
 
 export interface AiConfigForm extends BaseEntity {
@@ -42,10 +43,10 @@ export interface AiConfigForm extends BaseEntity {
    */
   token?: string;
 
+  imgUrl?: string;
 }
 
 export interface AiConfigQuery extends PageQuery {
-
   /**
    * 流水线名称
    */
@@ -61,11 +62,8 @@ export interface AiConfigQuery extends PageQuery {
    */
   token?: string;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
-
-
-

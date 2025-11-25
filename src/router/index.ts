@@ -74,7 +74,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: '/index',
-        component: () => import('@/views/index.vue'),
+        component: () => import('@/views/home.vue'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
@@ -95,6 +95,38 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/vip/PurchaseVip.vue'),
         name: 'PurchaseVip',
         meta: { title: '购买VIP', icon: 'vip' }
+      }
+    ]
+  },
+  {
+    path: '/account',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'balance',
+        component: () => import('@/views/system/balanceLog/index.vue'),
+        name: 'accountBalance',
+        meta: { title: '账户余额', icon: 'vip' }
+      }
+    ]
+  },
+  {
+    path: '/ai',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'ai-strategy',
+        component: () => import('@/views/system/aiTask/index.vue'),
+        name: 'aiTaskCenter',
+        meta: { title: 'AI 任务中心', icon: 'vip' }
+      },
+      {
+        path: 'ai-task-log',
+        component: () => import('@/views/system/aiTaskLogs/index.vue'),
+        name: 'aiTaskLog',
+        meta: { title: 'AI任务监控', icon: 'vip' }
       }
     ]
   },

@@ -13,7 +13,6 @@ export interface TestAiRequestVO {
    * userPrompt
    */
   content: string;
-
 }
 
 export interface TestAiRequestForm extends BaseEntity {
@@ -32,10 +31,14 @@ export interface TestAiRequestForm extends BaseEntity {
    */
   content?: string;
 
+  sysContent?: string;
+
+  result?: string;
+
+  exchange?: string;
 }
 
 export interface TestAiRequestQuery extends PageQuery {
-
   /**
    * 请求key
    */
@@ -46,11 +49,10 @@ export interface TestAiRequestQuery extends PageQuery {
    */
   content?: string;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
+
+  taskId?: string;
 }
-
-
-

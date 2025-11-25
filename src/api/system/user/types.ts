@@ -47,6 +47,7 @@ export interface UserVO extends BaseEntity {
   postIds: any;
   roleId: any;
   invitationCode: string;
+  balance: number;
   admin: boolean;
 }
 

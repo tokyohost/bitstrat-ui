@@ -18,7 +18,6 @@ export interface AiLogsVO {
    * 时间戳
    */
   time: string;
-
 }
 
 export interface AiLogsForm extends BaseEntity {
@@ -41,11 +40,9 @@ export interface AiLogsForm extends BaseEntity {
    * 时间戳
    */
   time?: string;
-
 }
 
 export interface AiLogsQuery extends PageQuery {
-
   /**
    * 金额
    */
@@ -61,11 +58,10 @@ export interface AiLogsQuery extends PageQuery {
    */
   time?: string;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
+
+  taskId?: string;
 }
-
-
-

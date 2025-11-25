@@ -66,10 +66,6 @@ const props = defineProps({
   centerLine: {
     type: Boolean,
     default: false
-  },
-  baseLinePrice: {
-    type: Number,
-    default: 0
   }
 });
 
@@ -120,9 +116,9 @@ function buildOption() {
       type: 'line',
       markLine: {
         silent: true,
-        data: [{ yAxis: props.baseLinePrice }],
+        data: [{ yAxis: 1000 }],
         lineStyle: { color: '#FF0000', type: 'dashed' },
-        label: { formatter: props.baseLinePrice + '' }
+        label: { formatter: '1000' }
       }
     });
   }
@@ -181,7 +177,7 @@ function checkCenterLine(option) {
   if (props.centerLine) {
     option.markLine = {
       silent: true,
-      data: [{ yAxis: props.baseLinePrice }],
+      data: [{ yAxis: 1000 }],
       lineStyle: {
         color: '#FF0000',
         type: 'dashed'
@@ -206,7 +202,7 @@ function initChart() {
   if (props.centerLine) {
     option.markLine = {
       silent: true,
-      data: [{ yAxis: props.baseLinePrice }],
+      data: [{ yAxis: 1000 }],
       lineStyle: {
         color: '#FF0000',
         type: 'dashed'

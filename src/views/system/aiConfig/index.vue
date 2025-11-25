@@ -29,10 +29,14 @@
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:aiConfig:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:aiConfig:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:aiConfig:edit']"
+              >修改</el-button
+            >
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:aiConfig:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:aiConfig:remove']"
+              >删除</el-button
+            >
           </el-col>
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:aiConfig:export']">导出</el-button>
@@ -47,6 +51,12 @@
         <el-table-column label="名称" align="center" prop="flowName" />
         <el-table-column label="api地址" align="center" prop="url" />
         <el-table-column label="token" align="center" prop="token" />
+        <el-table-column label="定价" align="center" prop="price">
+          <template #default="scope">
+            <span v-if="scope.row.price">{{ scope.row.price }} 元/百万Token</span>
+            <span v-else>未设置</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
@@ -72,6 +82,12 @@
         </el-form-item>
         <el-form-item label="token" prop="token">
           <el-input v-model="form.token" placeholder="请输入token" />
+        </el-form-item>
+        <el-form-item label="price" prop="price">
+          <el-input v-model="form.price" placeholder="请输入定价/百万token" />
+        </el-form-item>
+        <el-form-item label="图片" prop="imgUrl">
+          <image-upload v-model:model-value="form.imgUrl" :file-size="1" :compress-support="false"></image-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -112,22 +128,19 @@ const initFormData: AiConfigForm = {
   flowName: undefined,
   url: undefined,
   token: undefined
-}
+};
 const data = reactive<PageData<AiConfigForm, AiConfigQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     flowName: undefined,
     url: undefined,
     token: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {
-    id: [
-      { required: true, message: "id不能为空", trigger: "blur" }
-    ],
+    id: [{ required: true, message: 'id不能为空', trigger: 'blur' }]
   }
 });
 
@@ -140,55 +153,55 @@ const getList = async () => {
   aiConfigList.value = res.rows;
   total.value = res.total;
   loading.value = false;
-}
+};
 
 /** 取消按钮 */
 const cancel = () => {
   reset();
   dialog.visible = false;
-}
+};
 
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
+  form.value = { ...initFormData };
   aiConfigFormRef.value?.resetFields();
-}
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: AiConfigVO[]) => {
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-}
+};
 
 /** 新增按钮操作 */
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = "添加ai 流水线配置";
-}
+  dialog.title = '添加ai 流水线配置';
+};
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: AiConfigVO) => {
   reset();
-  const _id = row?.id || ids.value[0]
+  const _id = row?.id || ids.value[0];
   const res = await getAiConfig(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = "修改ai 流水线配置";
-}
+  dialog.title = '修改ai 流水线配置';
+};
 
 /** 提交按钮 */
 const submitForm = () => {
@@ -196,32 +209,36 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateAiConfig(form.value).finally(() =>  buttonLoading.value = false);
+        await updateAiConfig(form.value).finally(() => (buttonLoading.value = false));
       } else {
-        await addAiConfig(form.value).finally(() =>  buttonLoading.value = false);
+        await addAiConfig(form.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess("操作成功");
+      proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();
     }
   });
-}
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: AiConfigVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除ai 流水线配置编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认删除ai 流水线配置编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
   await delAiConfig(_ids);
-  proxy?.$modal.msgSuccess("删除成功");
+  proxy?.$modal.msgSuccess('删除成功');
   await getList();
-}
+};
 
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/aiConfig/export', {
-    ...queryParams.value
-  }, `aiConfig_${new Date().getTime()}.xlsx`)
-}
+  proxy?.download(
+    'system/aiConfig/export',
+    {
+      ...queryParams.value
+    },
+    `aiConfig_${new Date().getTime()}.xlsx`
+  );
+};
 
 onMounted(() => {
   getList();

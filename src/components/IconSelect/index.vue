@@ -32,11 +32,12 @@
 <script setup lang="ts">
 import icons from '@/components/IconSelect/requireIcons';
 import { propTypes } from '@/utils/propTypes';
+import { any } from 'vue-types';
 
 const props = defineProps({
   modelValue: propTypes.string.isRequired,
   width: propTypes.string.def('400px'),
-  data: HostVO
+  data: any
 });
 
 const emit = defineEmits(['update:modelValue', 'submit']);

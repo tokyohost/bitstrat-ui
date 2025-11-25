@@ -15,8 +15,8 @@ export interface ApiVO {
    * api security
    */
   apiSecurity: string;
-  balance: string|number;
-  freeBalance: string|number;
+  balance: string | number;
+  freeBalance: string | number;
 
   /**
    * 交易所
@@ -27,6 +27,7 @@ export interface ApiVO {
    * 用户id
    */
   userId: string | number;
+  type: string | number;
 }
 
 export interface ApiForm extends BaseEntity {

@@ -20,7 +20,8 @@
       <!--        <el-table-column label="分析zh" align="center" prop="reasoningZh" />-->
       <!--      </el-table>-->
 
-      <AiCardList :test-ai-result-list="testAiResultList"></AiCardList>
+      <AiCardList :test-ai-result-list="testAiResultList" v-if="testAiResultList.length > 0"></AiCardList>
+      <el-empty v-else></el-empty>
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改AI 操作日志对话框 -->
@@ -119,8 +120,9 @@ const data = reactive<PageData<TestAiResultForm, TestAiResultQuery>>({
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询AI 操作日志列表 */
-const getList = async () => {
+const getList = async (taskId: string) => {
   loading.value = true;
+  queryParams.value.taskId = taskId;
   const res = await listTestAiResult(queryParams.value);
   testAiResultList.value = res.rows;
   total.value = res.total;

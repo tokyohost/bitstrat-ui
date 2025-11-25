@@ -28,30 +28,54 @@
         <!--          </div>-->
         <!--        </el-tooltip>-->
 
+        <!-- 余额 -->
+        <div>
+          <el-popover placement="bottom" trigger="hover" :width="300" :persistent="false">
+            <template #reference>
+              <div class="font-size[14px] flex justify-start">
+                <div class="font-size[16px] mr5">
+                  <el-icon class="hover:cursor-pointer"><Wallet /></el-icon>
+                </div>
+              </div>
+            </template>
+            <template #default>
+              <div class="vip-details">
+                <h3>账户详情</h3>
+                <div class="flex justify-start flex-direction[row] align-center gap-10">
+                  <p>
+                    可用余额：<span class="color-danger-500">{{ balance || 'loading...' }}</span>
+                  </p>
+                  <el-icon class="hover:cursor-pointer" @click="loadBalance"><Refresh /></el-icon>
+                  <el-button @click="goAccountBalance">充值</el-button>
+                </div>
+              </div>
+            </template>
+          </el-popover>
+        </div>
         <!-- VIP标识 -->
-        <el-tooltip :content="isVIP ? '已开通VIP' : '开通VIP'" effect="dark" placement="bottom">
-          <div class="vip-indicator" @click="handleVipClick">
-            <el-popover placement="bottom" trigger="hover" :width="300" :persistent="false" @show="fetchVipDetails">
-              <template #reference>
-                <div class="vip-indicator" @click="handleVipClick">
-                  <img :src="ic_vip" alt="VIP标识" />
-                </div>
-              </template>
-              <template #default>
-                <div v-if="vipDetails" class="vip-details">
-                  <h3>VIP详情</h3>
-                  <p>到期时间：{{ vipDetails.expireTime }}</p>
-                  <p>权益列表：{{ vipDetails.name }}</p>
-                  <ul>
-                    <li v-for="(feature, index) in vipDetails.features" :key="index">{{ feature }}</li>
-                  </ul>
-                  <div v-if="vipDetails.isRenew" class="renew-info">续费ID: {{ vipDetails.renewId }}</div>
-                </div>
-                <div v-else>加载中...</div>
-              </template>
-            </el-popover>
-          </div>
-        </el-tooltip>
+        <!--        <el-tooltip :content="isVIP ? '已开通VIP' : '开通VIP'" effect="dark" placement="bottom">-->
+        <!--          <div class="vip-indicator" @click="handleVipClick">-->
+        <!--            <el-popover placement="bottom" trigger="hover" :width="300" :persistent="false" @show="fetchVipDetails">-->
+        <!--              <template #reference>-->
+        <!--                <div class="vip-indicator" @click="handleVipClick">-->
+        <!--                  <img :src="ic_vip" alt="VIP标识" />-->
+        <!--                </div>-->
+        <!--              </template>-->
+        <!--              <template #default>-->
+        <!--                <div v-if="vipDetails" class="vip-details">-->
+        <!--                  <h3>VIP详情</h3>-->
+        <!--                  <p>到期时间：{{ vipDetails.expireTime }}</p>-->
+        <!--                  <p>权益列表：{{ vipDetails.name }}</p>-->
+        <!--                  <ul>-->
+        <!--                    <li v-for="(feature, index) in vipDetails.features" :key="index">{{ feature }}</li>-->
+        <!--                  </ul>-->
+        <!--                  <div v-if="vipDetails.isRenew" class="renew-info">续费ID: {{ vipDetails.renewId }}</div>-->
+        <!--                </div>-->
+        <!--                <div v-else>加载中...</div>-->
+        <!--              </template>-->
+        <!--            </el-popover>-->
+        <!--          </div>-->
+        <!--        </el-tooltip>-->
         <!-- 消息 -->
         <el-tooltip :content="proxy.$t('navbar.message')" effect="dark" placement="bottom">
           <div>
@@ -95,7 +119,6 @@
         <!--        <el-tooltip :content="proxy.$t('navbar.notifySetting')" effect="dark" placement="bottom">-->
         <!--          <NotifySettingsPopup></NotifySettingsPopup>-->
         <!--        </el-tooltip>-->
-
       </template>
       <div class="avatar-container">
         <el-dropdown class="right-menu-item hover-effect" trigger="click" @command="handleCommand">
@@ -138,10 +161,11 @@ import ApiSettingsPopup from '@/layout/components/ApiSetting/ApiSettingsPopup.vu
 import NotifySettingsPopup from '@/layout/components/NotifySetting/NotifySettingsPopup.vue';
 import SocketStatusPopup from '@/layout/components/SocketStatus/SocketStatusPopup.vue';
 
-import vip_active from '@/assets/icons/png/vip_active.png'
-import vip_inactive from '@/assets/icons/png/vip_inactive.png'
-import ic_vip from '@/assets/icons/png/ic_vip.png'
-import {getUserVipInfo} from "@/api/system/vip/userVip";
+import vip_active from '@/assets/icons/png/vip_active.png';
+import vip_inactive from '@/assets/icons/png/vip_inactive.png';
+import ic_vip from '@/assets/icons/png/ic_vip.png';
+import { getUserVipInfo } from '@/api/system/vip/userVip';
+import { getUserProfile } from '@/api/system/user';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -165,6 +189,15 @@ const openSearchMenu = () => {
   searchMenuRef.value?.openSearch();
 };
 
+const balance = ref(0);
+
+const loadBalance = async () => {
+  const res = await getUserProfile();
+  balance.value = res?.data?.user?.balance;
+};
+const goAccountBalance = async () => {
+  proxy?.$router.push('/account/balance');
+};
 // 动态切换
 const dynamicTenantEvent = async (tenantId: string) => {
   if (companyName.value != null && companyName.value !== '') {
@@ -264,7 +297,7 @@ const vipDetails = ref<{
 const fetchVipDetails = async () => {
   try {
     const response = await getUserVipInfo({
-      userId: userStore.userId, // 使用当前用户的ID
+      userId: userStore.userId // 使用当前用户的ID
     });
     if (response.code === 200) {
       const data = response.data;
@@ -280,7 +313,7 @@ const fetchVipDetails = async () => {
         maxAbAmount: data.maxAbAmount || 0,
         maxActiveTask: data.maxActiveTask || 0,
         price: data.price || 0,
-        avaliableDay: data.avaliableDay || 0,
+        avaliableDay: data.avaliableDay || 0
       };
       isVIP.value = data.status === 1; // 根据状态判断是否为VIP
     } else {
@@ -299,7 +332,9 @@ const handleVipClick = () => {
     console.log('跳转到开通VIP页面');
   } // 调用获取VIP详情的方法
 };
-
+onMounted(() => {
+  loadBalance();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -449,7 +484,8 @@ const handleVipClick = () => {
       margin-bottom: 5px;
     }
   }
-  .renew-info { // 新增样式：续费信息
+  .renew-info {
+    // 新增样式：续费信息
     margin-top: 10px;
     font-size: 12px;
     color: #999;
