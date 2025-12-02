@@ -11,7 +11,7 @@ import { usePermissionStore } from '@/store/modules/permission';
 import { ElMessage } from 'element-plus/es';
 
 NProgress.configure({ showSpinner: false });
-const whiteList = ['/preIndex', '/login', '/register', '/social-callback', '/register*', '/register/*'];
+const whiteList = ['/indexPage', '/preIndex', '/login', '/register', '/social-callback', '/register*', '/register/*'];
 
 const isWhiteList = (path: string) => {
   return whiteList.some((pattern) => isPathMatch(pattern, path));
@@ -59,7 +59,7 @@ router.beforeEach(async (to, from, next) => {
       next();
     } else {
       const redirect = encodeURIComponent(to.fullPath || '/');
-      next(`/login?redirect=${redirect}`); // 否则全部重定向到登录页
+      next(`/indexPage?redirect=${redirect}`); // 否则全部重定向到登录页
       NProgress.done();
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2">
+  <div class="p-0">
     <!--    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">-->
     <!--      <div v-show="showSearch" class="mb-[10px]">-->
     <!--        <el-card shadow="hover">-->

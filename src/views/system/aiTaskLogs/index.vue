@@ -38,7 +38,7 @@
       <LineChart :xData="xDataFreeBalance" :seriesData="seriesDataFreeBalance" title="账户可用余额趋势" tooltipUnit="USDT" height="360px">
       </LineChart>
     </el-card>
-    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="请求日志" name="request">
         <TestAiRequest ref="aiRequestRef"></TestAiRequest>
       </el-tab-pane>

@@ -119,7 +119,7 @@ const registerForm = ref<RegisterForm>({
 });
 
 // 租户开关
-const tenantEnabled = ref(true);
+const tenantEnabled = ref(false);
 
 const equalToPassword = (rule: any, value: string, callback: any) => {
   if (registerForm.value.password !== value) {

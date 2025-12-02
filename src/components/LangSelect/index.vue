@@ -17,6 +17,7 @@
 import { useI18n } from 'vue-i18n';
 import { useAppStore } from '@/store/modules/app';
 import SvgIcon from '@/components/SvgIcon/index.vue';
+import { checkTime } from '@/layout/components/ApiSetting/apiSetting';
 
 const appStore = useAppStore();
 const { locale } = useI18n();
@@ -30,6 +31,8 @@ const handleLanguageChange = (lang: any) => {
   locale.value = lang;
   appStore.changeLanguage(lang);
   ElMessage.success(message[lang] || '切换语言成功！');
+  const check = checkTime();
+  console.log(check);
 };
 </script>
 

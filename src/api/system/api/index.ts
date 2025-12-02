@@ -12,13 +12,19 @@ export const listApi = (query?: ApiQuery): AxiosPromise<ApiVO[]> => {
   return request({
     url: '/system/api/list',
     method: 'get',
-    params: query
+    params: query,
+    headers: {
+      isEncrypt: true
+    }
   });
 };
 export const syncBalance = (): AxiosPromise<ApiVO[]> => {
   return request({
     url: '/system/api/syncBalance',
     method: 'get',
+    headers: {
+      isEncrypt: true
+    }
   });
 };
 
@@ -29,7 +35,10 @@ export const syncBalance = (): AxiosPromise<ApiVO[]> => {
 export const getApi = (id: string | number): AxiosPromise<ApiVO> => {
   return request({
     url: '/system/api/' + id,
-    method: 'get'
+    method: 'get',
+    headers: {
+      isEncrypt: true
+    }
   });
 };
 
@@ -41,7 +50,10 @@ export const addApi = (data: ApiForm) => {
   return request({
     url: '/system/api',
     method: 'post',
-    data: data
+    data: data,
+    headers: {
+      isEncrypt: true
+    }
   });
 };
 
@@ -53,7 +65,10 @@ export const updateApi = (data: ApiForm) => {
   return request({
     url: '/system/api',
     method: 'put',
-    data: data
+    data: data,
+    headers: {
+      isEncrypt: true
+    }
   });
 };
 
@@ -64,6 +79,9 @@ export const updateApi = (data: ApiForm) => {
 export const delApi = (id: string | number | Array<string | number>) => {
   return request({
     url: '/system/api/' + id,
-    method: 'delete'
+    method: 'delete',
+    headers: {
+      isEncrypt: true
+    }
   });
 };

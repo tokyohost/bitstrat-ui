@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2">
+  <div class="p-0">
     <el-card shadow="never">
       <template #header>
         <el-row :gutter="10" class="mb8">

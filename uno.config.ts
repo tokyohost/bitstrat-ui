@@ -23,7 +23,11 @@ export default defineConfig({
   presets: [
     presetUno(),
     presetAttributify(),
-    presetIcons(),
+    presetIcons({
+      // 默认使用 'carbon' 图标集
+      scale: 1.2,
+      warn: true
+    }),
     presetTypography(),
     presetWebFonts({
       fonts: {}

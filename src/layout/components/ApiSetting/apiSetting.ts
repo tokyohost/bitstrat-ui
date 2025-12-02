@@ -5,14 +5,20 @@ import { ApiSettingCheck, ApiSettingDetail, ApiSettingVo, UpdateApiSettingVo } f
 export function getApiSettingStatus(): AxiosPromise<ApiSettingVo[]> {
   return request({
     url: '/coinsUser/getApiSettingStatus',
-    method: 'get'
+    method: 'get',
+    headers: {
+      isEncrypt: true
+    }
   });
 }
 export function getApiSettingDetail(params: any): AxiosPromise<ApiSettingDetail[]> {
   return request({
     url: '/coinsUser/getApiSettingDetail',
     method: 'get',
-    params: params
+    params: params,
+    headers: {
+      isEncrypt: true
+    }
   });
 }
 
@@ -20,7 +26,10 @@ export function setApi(data: UpdateApiSettingVo): AxiosPromise<ApiSettingDetail[
   return request({
     url: '/coinsUser/setApi',
     method: 'post',
-    data: data
+    data: data,
+    headers: {
+      isEncrypt: true
+    }
   });
 }
 
@@ -32,5 +41,11 @@ export function checkApi(data: UpdateApiSettingVo): AxiosPromise<ApiSettingCheck
     headers: {
       isEncrypt: true
     }
+  });
+}
+export function checkTime(): AxiosPromise<ApiSettingCheck> {
+  return request({
+    url: '/time',
+    method: 'get'
   });
 }
