@@ -59,6 +59,7 @@ onBeforeUnmount(() => {
           :position="item"
         ></PositionWidgetItem>
       </div>
+      <el-empty v-if="!positionList || positionList.length == 0" class="h-[100px]" :image-size="50"></el-empty>
     </div>
   </div>
 </template>

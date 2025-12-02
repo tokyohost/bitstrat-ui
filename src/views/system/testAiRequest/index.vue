@@ -41,7 +41,14 @@
       <AiRequestCardList :list="testAiRequestList" @view="handleView" v-if="testAiRequestList.length > 0"></AiRequestCardList>
       <el-empty v-else></el-empty>
 
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination
+        :auto-scroll="false"
+        v-show="total > 0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="loadList"
+      />
     </el-card>
     <!-- 添加或修改AI 用户请求提示词对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="80%" append-to-body>
@@ -121,6 +128,13 @@ const getList = async (taskId: string) => {
   if (taskId) {
     queryParams.value.taskId = taskId;
   }
+  const res = await listTestAiRequest(queryParams.value);
+  testAiRequestList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
+};
+const loadList = async () => {
+  loading.value = true;
   const res = await listTestAiRequest(queryParams.value);
   testAiRequestList.value = res.rows;
   total.value = res.total;

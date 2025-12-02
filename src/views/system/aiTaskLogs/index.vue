@@ -38,6 +38,15 @@
       <LineChart :xData="xDataFreeBalance" :seriesData="seriesDataFreeBalance" title="账户可用余额趋势" tooltipUnit="USDT" height="360px">
       </LineChart>
     </el-card>
+    <el-card shadow="never" title="实时持仓" class="mt-2">
+      <template #header>
+        <el-row :gutter="10" class="mb8">
+          <div>实时持仓</div>
+          <right-toolbar :search="false" @queryTable="refshPosition"></right-toolbar>
+        </el-row>
+      </template>
+      <PositionWidget ref="positionWidget"></PositionWidget>
+    </el-card>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="请求日志" name="request">
         <TestAiRequest ref="aiRequestRef"></TestAiRequest>
@@ -141,13 +150,19 @@ const aiLogsFormRef = ref<ElFormInstance>();
 import type { TabsPaneContext } from 'element-plus';
 import { getAiTask } from '@/api/system/aiTask';
 import { AiTaskVO } from '@/api/system/aiTask/types';
+import PositionWidget from '@/views/components/widgets/PositionWidget.vue';
 const xData = ref([]);
 const seriesData = ref([]);
 const xDataFreeBalance = ref([]);
 const seriesDataFreeBalance = ref([]);
+const positionWidget = useTemplateRef('positionWidget');
 
 const aiResultref = useTemplateRef('aiResultref');
 const aiRequestRef = useTemplateRef('aiRequestRef');
+
+const refshPosition = () => {
+  positionWidget.value.openRefresh();
+};
 
 const dialog = reactive<DialogOption>({
   visible: false,

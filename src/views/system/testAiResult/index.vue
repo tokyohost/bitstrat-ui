@@ -122,7 +122,9 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询AI 操作日志列表 */
 const getList = async (taskId: string) => {
   loading.value = true;
-  queryParams.value.taskId = taskId;
+  if (taskId) {
+    queryParams.value.taskId = taskId;
+  }
   const res = await listTestAiResult(queryParams.value);
   testAiResultList.value = res.rows;
   total.value = res.total;
