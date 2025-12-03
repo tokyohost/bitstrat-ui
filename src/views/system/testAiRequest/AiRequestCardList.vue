@@ -34,12 +34,12 @@
             </div>
 
             <div class="ai-metric">
-              <div class="ai-label">Token 消耗:</div>
+              <div class="ai-label">Token 消耗</div>
               <div class="ai-value font-mono">{{ item.token || 'N/A' }}</div>
             </div>
 
             <div class="ai-metric">
-              <div class="ai-label">预估金额:</div>
+              <div class="ai-label">成本</div>
               <div class="ai-value font-mono text-green-600">{{ item.price || 'N/A' }}</div>
             </div>
           </div>

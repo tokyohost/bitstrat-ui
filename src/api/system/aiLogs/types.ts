@@ -64,4 +64,7 @@ export interface AiLogsQuery extends PageQuery {
   params?: any;
 
   taskId?: string;
+
+  startDate?: string;
+  endDate?: string;
 }

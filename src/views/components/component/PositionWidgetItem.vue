@@ -106,6 +106,6 @@ const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
 <style scoped lang="scss">
 ::v-deep .el-card__body {
   //padding:0 !important;
-  padding: 5px 5px 5px 5px !important;
+  //padding: 5px 5px 5px 5px !important;
 }
 </style>

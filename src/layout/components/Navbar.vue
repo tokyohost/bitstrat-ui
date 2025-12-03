@@ -30,27 +30,7 @@
 
         <!-- 余额 -->
         <div>
-          <el-popover placement="bottom" trigger="hover" :width="300" :persistent="false">
-            <template #reference>
-              <div class="font-size[14px] flex justify-start">
-                <div class="font-size[16px] mr5">
-                  <el-icon class="hover:cursor-pointer"><Wallet /></el-icon>
-                </div>
-              </div>
-            </template>
-            <template #default>
-              <div class="vip-details">
-                <h3>账户详情</h3>
-                <div class="flex justify-start flex-direction[row] align-center gap-10">
-                  <p>
-                    可用余额：<span class="color-danger-500">{{ balance || 'loading...' }}</span>
-                  </p>
-                  <el-icon class="hover:cursor-pointer" @click="loadBalance"><Refresh /></el-icon>
-                  <el-button @click="goAccountBalance">充值</el-button>
-                </div>
-              </div>
-            </template>
-          </el-popover>
+          <BalanceNav :balance="balance" @refresh="loadBalance" @to-recharge="goAccountBalance" @to-account="goAccountBalance"></BalanceNav>
         </div>
         <!-- VIP标识 -->
         <!--        <el-tooltip :content="isVIP ? '已开通VIP' : '开通VIP'" effect="dark" placement="bottom">-->
@@ -166,6 +146,7 @@ import vip_inactive from '@/assets/icons/png/vip_inactive.png';
 import ic_vip from '@/assets/icons/png/ic_vip.png';
 import { getUserVipInfo } from '@/api/system/vip/userVip';
 import { getUserProfile } from '@/api/system/user';
+import BalanceNav from '@/layout/components/balance/BalanceNav.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -195,8 +176,9 @@ const loadBalance = async () => {
   const res = await getUserProfile();
   balance.value = res?.data?.user?.balance;
 };
-const goAccountBalance = async () => {
-  proxy?.$router.push('/account/balance');
+const goAccountBalance = () => {
+  console.log('go account balance');
+  proxy?.$router.push({ path: '/account/balance' });
 };
 // 动态切换
 const dynamicTenantEvent = async (tenantId: string) => {

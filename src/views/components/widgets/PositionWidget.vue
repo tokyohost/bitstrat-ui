@@ -49,7 +49,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex-1 overflow-y-auto p-3 overflow-y-hidden hover:overflow-y-auto">
+  <div class="flex-1 overflow-y-auto overflow-y-hidden hover:overflow-y-auto">
     <div class="flex flex-col gap-y-1">
       <div v-for="(item, index) in positionList">
         <PositionWidgetItem

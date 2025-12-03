@@ -1,247 +1,195 @@
 <template>
-  <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div v-show="showSearch" class="mb-[10px]">
-        <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <!--            <el-form-item label="用户ID" prop="userId">-->
-            <!--              <el-input v-model="queryParams.userId" placeholder="请输入用户ID" clearable @keyup.enter="handleQuery" />-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item label="变动前余额" prop="beforeBalance">-->
-            <!--              <el-input v-model="queryParams.beforeBalance" placeholder="请输入变动前余额" clearable @keyup.enter="handleQuery" />-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item label="变动金额" prop="changeAmount">-->
-            <!--              <el-input v-model="queryParams.changeAmount" placeholder="请输入变动金额" clearable @keyup.enter="handleQuery" />-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item label="变动后余额" prop="afterBalance">-->
-            <!--              <el-input v-model="queryParams.afterBalance" placeholder="请输入变动后余额" clearable @keyup.enter="handleQuery" />-->
-            <!--            </el-form-item>-->
-            <el-form-item class="gap-5">
-              <!--              <el-button type="primary" icon="Plus" @click="handleRecharge">充值</el-button>-->
-              <RechargeDialog v-model:visible="rechargeDialog" @recharge-success="getList" class="mr5" />
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </div>
-    </transition>
+  <div class="p-4 min-h-screen bg-gray-50/50">
+    <div class="mb-6">
+      <el-card shadow="hover" class="border-none bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl overflow-hidden relative">
+        <div class="relative z-10 flex justify-between items-center p-2">
+          <div>
+            <div class="text-blue-100 text-sm font-medium mb-1 flex items-center gap-1">
+              <el-icon><Wallet /></el-icon> 当前可用余额
+            </div>
+            <div class="text-4xl font-bold font-mono tracking-wide color[white]">
+              ¥ <count-to :startVal="0" :endVal="Number(balance)" :duration="1000" :decimals="6"></count-to>
+            </div>
+          </div>
 
-    <el-card shadow="never">
+          <div class="flex items-center gap-4">
+            <el-button
+              color="#fff"
+              class="!text-blue-600 !font-bold !border-none hover:!bg-blue-50 transition-transform hover:scale-105 shadow-lg"
+              size="large"
+              icon="Lightning"
+              @click="handleRecharge"
+            >
+              立即充值
+            </el-button>
+          </div>
+        </div>
+
+        <div class="absolute right-[-20px] top-[-40px] opacity-10 text-white transform rotate-12">
+          <el-icon :size="200"><Money /></el-icon>
+        </div>
+      </el-card>
+    </div>
+
+    <el-card shadow="never" class="rounded-xl border-gray-100">
       <template #header>
-        <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:balanceLog:export']">导出</el-button>
-          </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-        </el-row>
-      </template>
+        <div class="flex flex-wrap justify-between items-center">
+          <div class="flex items-center gap-2 text-lg font-bold text-gray-800">
+            <el-icon class="text-blue-500"><List /></el-icon> 账单明细
+          </div>
 
-      <el-table v-loading="loading" :data="balanceLogList" @selection-change="handleSelectionChange">
-        <!--        <el-table-column type="selection" width="55" align="center" />-->
-        <el-table-column label="ID" align="center" prop="id" v-if="true" />
-        <el-table-column label="变动前余额" align="center" prop="beforeBalance" />
-        <el-table-column label="变动金额" align="center" prop="changeAmount" />
-        <el-table-column label="变动后余额" align="center" prop="afterBalance" />
-        <el-table-column label="类型" align="center" prop="type">
-          <template #default="scope">
-            <dict-tag :options="balance_log_type" :value="scope.row.type"></dict-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="备注" align="center" prop="remark" />
-        <el-table-column label="时间" align="center" prop="createTime" />
-      </el-table>
-
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
-    </el-card>
-    <!-- 添加或修改账户余额变动日志对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="balanceLogFormRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户ID" />
-        </el-form-item>
-        <el-form-item label="变动前余额" prop="beforeBalance">
-          <el-input v-model="form.beforeBalance" placeholder="请输入变动前余额" />
-        </el-form-item>
-        <el-form-item label="变动金额" prop="changeAmount">
-          <el-input v-model="form.changeAmount" placeholder="请输入变动金额" />
-        </el-form-item>
-        <el-form-item label="变动后余额" prop="afterBalance">
-          <el-input v-model="form.afterBalance" placeholder="请输入变动后余额" />
-        </el-form-item>
-        <el-form-item label="备注信息，例如订单号/充值方式" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注信息，例如订单号/充值方式" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <div class="flex items-center gap-3">
+            <el-radio-group v-model="queryParams.type" size="small" @change="handleQuery">
+              <el-radio-button label="">全部</el-radio-button>
+              <el-radio-button label="1">充值</el-radio-button>
+              <el-radio-button label="2">消费</el-radio-button>
+              <el-radio-button label="4">赠送</el-radio-button>
+            </el-radio-group>
+            <el-button circle icon="Refresh" @click="resetQuery" title="刷新列表"></el-button>
+          </div>
         </div>
       </template>
-    </el-dialog>
+
+      <el-table v-loading="loading" :data="balanceLogList" :header-cell-style="{ background: '#f8fafc', color: '#64748b' }" style="width: 100%">
+        <el-table-column label="交易时间" align="left" prop="createTime" min-width="160">
+          <template #default="scope">
+            <div class="flex flex-col">
+              <span class="text-gray-700 font-medium">{{ scope.row.createTime }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="类型" align="center" prop="type" width="120">
+          <template #default="scope">
+            <dict-tag :options="balance_log_type" :value="scope.row.type" />
+          </template>
+        </el-table-column>
+
+        <el-table-column label="金额" align="right" prop="changeAmount" min-width="140">
+          <template #default="{ row }">
+            <span class="font-bold text-lg font-mono" :class="Number(row.changeAmount) > 0 ? 'text-green-500' : 'text-red-500'">
+              {{ Number(row.changeAmount) > 0 ? '+' : '' }}{{ row.changeAmount }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center" prop="type" width="120">
+          <template #default="scope">
+            <div v-if="scope.row.status">
+              <dict-tag :options="balance_status" :value="scope.row.status" />
+            </div>
+            <div v-else>-</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="余额" align="right" prop="afterBalance" min-width="140">
+          <template #default="{ row }">
+            <span class="text-gray-500 font-mono" v-if="row.type != 1">¥ {{ row.afterBalance }}</span>
+            <span class="text-gray-500 font-mono" v-else>-</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="备注" align="left" prop="remark" min-width="200" show-overflow-tooltip>
+          <template #default="{ row }">
+            <div class="text-gray-500 text-sm">{{ row.remark || '-' }}</div>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div class="mt-6 flex justify-end">
+        <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      </div>
+    </el-card>
+
+    <RechargeDialog :show-button="false" v-model:visible="rechargeDialog" @recharge-success="handleRechargeSuccess" />
   </div>
 </template>
 
 <script setup name="BalanceLog" lang="ts">
+import { Wallet, Money, List, Lightning, Refresh } from '@element-plus/icons-vue';
 import RechargeDialog from '@/layout/components/Recharge/RechargeDialog.vue';
-import { listBalanceLog, getBalanceLog, delBalanceLog, addBalanceLog, updateBalanceLog } from '@/api/system/balanceLog';
-import { BalanceLogVO, BalanceLogQuery, BalanceLogForm } from '@/api/system/balanceLog/types';
+import { listBalanceLog } from '@/api/system/balanceLog';
+import { BalanceLogVO, BalanceLogQuery } from '@/api/system/balanceLog/types';
+import { getUserProfile } from '@/api/system/user';
+// 如果您项目中安装了 vue-count-to，可以使用它来实现数字滚动效果，如果没有，请移除 <count-to> 组件改为直接显示
+import { CountTo } from 'vue3-count-to';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
 const { balance_log_type } = toRefs<any>(proxy?.useDict('balance_log_type'));
+const { balance_status } = toRefs<any>(proxy?.useDict('balance_status'));
+
 const balanceLogList = ref<BalanceLogVO[]>([]);
-const buttonLoading = ref(false);
 const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref<Array<string | number>>([]);
-const single = ref(true);
-const multiple = ref(true);
 const total = ref(0);
+const rechargeDialog = ref(false);
+const balance = ref(0);
 
-const queryFormRef = ref<ElFormInstance>();
-const balanceLogFormRef = ref<ElFormInstance>();
-
-const dialog = reactive<DialogOption>({
-  visible: false,
-  title: ''
-});
-
-const initFormData: BalanceLogForm = {
-  id: undefined,
+// 查询参数
+const queryParams = ref<BalanceLogQuery>({
+  pageNum: 1,
+  pageSize: 10,
+  type: '', // 默认查全部
   userId: undefined,
-  beforeBalance: undefined,
-  changeAmount: undefined,
-  afterBalance: undefined,
-  type: undefined,
-  remark: undefined
-};
-const data = reactive<PageData<BalanceLogForm, BalanceLogQuery>>({
-  form: { ...initFormData },
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    userId: undefined,
-    beforeBalance: undefined,
-    changeAmount: undefined,
-    afterBalance: undefined,
-    type: undefined,
-    params: {}
-  },
-  rules: {
-    id: [{ required: true, message: '主键ID不能为空', trigger: 'blur' }],
-    userId: [{ required: true, message: '用户ID不能为空', trigger: 'blur' }],
-    beforeBalance: [{ required: true, message: '变动前余额不能为空', trigger: 'blur' }],
-    changeAmount: [{ required: true, message: '变动金额不能为空', trigger: 'blur' }],
-    afterBalance: [{ required: true, message: '变动后余额不能为空', trigger: 'blur' }],
-    type: [{ required: true, message: '变动类型：1=充值，2=消费，3=退款，4=赠送不能为空', trigger: 'change' }]
-  }
+  params: {}
 });
 
-const { queryParams, form, rules } = toRefs(data);
+/** 加载余额 */
+const loadBalance = async () => {
+  try {
+    const res = await getUserProfile();
+    // 确保取到正确的数据结构
+    balance.value = res?.data?.user?.balance || 0;
+  } catch (e) {
+    console.error('获取余额失败', e);
+  }
+};
 
-/** 查询账户余额变动日志列表 */
+/** 查询日志列表 */
 const getList = async () => {
   loading.value = true;
-  const res = await listBalanceLog(queryParams.value);
-  balanceLogList.value = res.rows;
-  total.value = res.total;
-  loading.value = false;
+  try {
+    const res = await listBalanceLog(queryParams.value);
+    balanceLogList.value = res.rows;
+    total.value = res.total;
+  } finally {
+    loading.value = false;
+  }
 };
 
-/** 取消按钮 */
-const cancel = () => {
-  reset();
-  dialog.visible = false;
-};
-const rechargeDialog = ref(false);
-
+/** 打开充值弹窗 */
 const handleRecharge = () => {
-  reset();
   rechargeDialog.value = true;
 };
 
-/** 表单重置 */
-const reset = () => {
-  form.value = { ...initFormData };
-  balanceLogFormRef.value?.resetFields();
+/** 充值成功回调 */
+const handleRechargeSuccess = () => {
+  // 刷新列表和余额
+  getList();
+  loadBalance();
 };
 
-/** 搜索按钮操作 */
+/** 搜索操作 (切换Tab时触发) */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
 };
 
-/** 重置按钮操作 */
+/** 重置操作 */
 const resetQuery = () => {
-  queryFormRef.value?.resetFields();
+  queryParams.value.type = ''; // 重置为全部
   handleQuery();
-};
-
-/** 多选框选中数据 */
-const handleSelectionChange = (selection: BalanceLogVO[]) => {
-  ids.value = selection.map((item) => item.id);
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
-};
-
-/** 新增按钮操作 */
-const handleAdd = () => {
-  reset();
-  dialog.visible = true;
-  dialog.title = '添加账户余额变动日志';
-};
-
-/** 修改按钮操作 */
-const handleUpdate = async (row?: BalanceLogVO) => {
-  reset();
-  const _id = row?.id || ids.value[0];
-  const res = await getBalanceLog(_id);
-  Object.assign(form.value, res.data);
-  dialog.visible = true;
-  dialog.title = '修改账户余额变动日志';
-};
-
-/** 提交按钮 */
-const submitForm = () => {
-  balanceLogFormRef.value?.validate(async (valid: boolean) => {
-    if (valid) {
-      buttonLoading.value = true;
-      if (form.value.id) {
-        await updateBalanceLog(form.value).finally(() => (buttonLoading.value = false));
-      } else {
-        await addBalanceLog(form.value).finally(() => (buttonLoading.value = false));
-      }
-      proxy?.$modal.msgSuccess('操作成功');
-      dialog.visible = false;
-      await getList();
-    }
-  });
-};
-
-/** 删除按钮操作 */
-const handleDelete = async (row?: BalanceLogVO) => {
-  const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除账户余额变动日志编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
-  await delBalanceLog(_ids);
-  proxy?.$modal.msgSuccess('删除成功');
-  await getList();
-};
-
-/** 导出按钮操作 */
-const handleExport = () => {
-  proxy?.download(
-    'system/balanceLog/export',
-    {
-      ...queryParams.value
-    },
-    `balanceLog_${new Date().getTime()}.xlsx`
-  );
 };
 
 onMounted(() => {
   getList();
+  loadBalance();
 });
 </script>
+
+<style scoped>
+/* * 这里的样式主要依赖 Unocss/Tailwind。
+ * 如果没有安装 vue3-count-to，请手动删除模板中的 <count-to> 标签
+ */
+:deep(.el-table__inner-wrapper::before) {
+  background-color: transparent; /* 去掉表格底部的默认灰线 */
+}
+</style>

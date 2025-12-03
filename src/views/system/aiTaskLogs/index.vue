@@ -24,19 +24,39 @@
     </transition>
 
     <el-card shadow="never">
-      <LineChart
-        :key="taskVo?.startBalance || 0"
-        :xData="xData"
-        :base-line-price="taskVo?.startBalance"
-        :seriesData="seriesData"
-        title="账户资金趋势"
-        tooltipUnit="USDT"
-        height="360px"
-        :center-line="true"
-      >
-      </LineChart>
-      <LineChart :xData="xDataFreeBalance" :seriesData="seriesDataFreeBalance" title="账户可用余额趋势" tooltipUnit="USDT" height="360px">
-      </LineChart>
+      <template #header>
+        <div class="flex flex-col md:flex-row justify-end items-end md:items-center gap-3">
+          <span class="text-sm font-medium text-gray-700">选择查询周期:</span>
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            unlink-panels
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            size="default"
+            :shortcuts="shortcuts"
+            class="chart-date-picker"
+            @change="handleDateChange"
+          />
+          <el-button type="primary" size="default" @click="handleQuery">查询</el-button>
+        </div>
+      </template>
+      <div class="flex flex-col md:flex-row gap-2">
+        <LineChart
+          :key="taskVo?.startBalance || 0"
+          :xData="xData"
+          :base-line-price="taskVo?.startBalance"
+          :seriesData="seriesData"
+          title="账户资金趋势"
+          tooltipUnit="USDT"
+          height="360px"
+          :center-line="true"
+        >
+        </LineChart>
+        <LineChart :xData="xDataFreeBalance" :seriesData="seriesDataFreeBalance" title="账户可用余额趋势" tooltipUnit="USDT" height="360px">
+        </LineChart>
+      </div>
     </el-card>
     <el-card shadow="never" title="实时持仓" class="mt-2">
       <template #header>
@@ -230,15 +250,92 @@ const reset = () => {
   form.value = { ...initFormData };
   aiLogsFormRef.value?.resetFields();
 };
-
+/**
+ * 辅助函数：将 Date 对象格式化为 YYYY-MM-DD 字符串
+ */
+const formatDateToYYYYMMDD = (date: Date): string => {
+  // 确保日期不因时区偏移而改变
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
 /** 搜索按钮操作 */
 const handleQuery = () => {
+  // 1. 检查日期范围是否有效
+  if (!dateRange.value || dateRange.value.length !== 2) {
+    proxy?.$modal.msgWarning('请选择有效的时间范围进行查询。');
+    return;
+  }
+
+  const [rawStartDate, rawEndDate] = dateRange.value;
+
+  // --- 核心国际化时间处理 ---
+
+  // 1. 调整开始日期：确保从当天的 00:00:00 开始
+  //    注意：为了消除本地时区的影响，我们通常使用 Date.UTC() 或直接操作 UTC 属性。
+  const start = new Date(rawStartDate.getFullYear(), rawStartDate.getMonth(), rawStartDate.getDate(), 0, 0, 0);
+  // 转换为 ISO 8601 格式的 UTC 字符串 (e.g., 2025-01-01T00:00:00.000Z)
+  const startDateISO = start.toISOString();
+
+  // 2. 调整结束日期：确保到当天的 23:59:59 结束
+  //    使用 23:59:59.999 或直接将日期设置为下一天的 00:00:00 来实现 "to the end of day" 的查询
+  const end = new Date(rawEndDate.getFullYear(), rawEndDate.getMonth(), rawEndDate.getDate(), 23, 59, 59, 999);
+  // 转换为 ISO 8601 格式的 UTC 字符串 (e.g., 2025-01-03T23:59:59.999Z)
+  const endDateISO = end.toISOString();
+
+  // --- 设置查询参数 ---
+
   queryParams.value.pageNum = 1;
-  getList();
+  // 将完整的 ISO 字符串作为 Date 参数传递给后端
+  queryParams.value.startDate = startDateISO;
+  queryParams.value.endDate = endDateISO;
+  handleLoadChat();
 };
 const handleLoadChat = () => {
   getChat();
   getChatFreeBalance();
+};
+// --- 时间选择逻辑 ---
+const dateRange = ref<[Date, Date] | null>(null);
+
+// 快捷选项配置
+const shortcuts = [
+  {
+    text: '近一周',
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+      return [start, end];
+    }
+  },
+  {
+    text: '近一月',
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+      return [start, end];
+    }
+  },
+  {
+    text: '近三月',
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+      return [start, end];
+    }
+  }
+];
+
+/**
+ * 处理时间选择器值变化
+ */
+const handleDateChange = (val: [Date, Date] | null) => {
+  // 可以在这里进行一些即时的数据验证或格式化
+  console.log('选定的时间范围:', val);
 };
 
 /** 重置按钮操作 */
@@ -317,6 +414,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 const taskId = ref<string>(undefined);
 const taskVo = ref<AiTaskVO>(undefined);
 onMounted(async () => {
+  dateRange.value = shortcuts[0].value();
   const id = useRoute().query.id;
   if (!id) {
     ElMessage.error('参数异常！');
@@ -338,3 +436,10 @@ onMounted(async () => {
   }, 1000 * 10);
 });
 </script>
+<style lang="scss">
+.chart-date-picker {
+  /* 确保 width 生效并覆盖 Element Plus 默认样式 */
+  width: 250px !important;
+  max-width: 250px;
+}
+</style>
