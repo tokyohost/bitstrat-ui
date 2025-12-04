@@ -15,7 +15,11 @@ export default {
     code: '验证码',
     rememberPassword: '记住我',
     switchRegisterPage: '立即注册',
+    switchRegisterPage: '立即注册',
     rule: {
+      agreement:{
+        required:'请阅读并同意用户协议'
+      },
       tenantId: {
         required: '请输入您的租户编号'
       },
@@ -224,5 +228,36 @@ export default {
     sloganSplit1: '您的密钥将使用',
     sloganSplit2: 'PKCS1_OAEP',
     sloganSplit3: '技术进行加密和存储。'
+  },
+  agreement: {
+    "checkbox_text": "我已阅读并同意",
+    "link_text": "《Bitstrat 平台用户免责声明》",
+    "modal_title": "Bitstrat 平台用户免责声明",
+    "last_updated": "最后更新日期：2025-12-4",
+    "intro": "欢迎使用本平台（以下简称“平台”）。在使用平台提供的 AI 技术服务前，请您务必仔细阅读并充分理解本免责声明。若您继续使用平台或提交 API Key，即表示您已知悉并完全同意以下内容：",
+    "section_1_title": "平台性质说明",
+    "section_1_content": "平台仅提供：AI 模型调用与提示词执行能力、API Key 管理工具、策略生成与自动执行接口。平台 不提供投资建议、理财服务或资产管理业务，也不进行代客操作。",
+    "section_2_title": "用户 API Key 权限",
+    "section_2_content": "用户在平台中使用的任何虚拟币交易所 API Key 均由用户自行创建、授权、管理。API Key 的权限、风险、自主控制权完全由用户自行承担。平台不会保存、泄露或滥用用户 API Key，但用户需自行确保 API Key 拥有合理的权限范围（如仅交易权限，无提币权限）。",
+    "section_3_title": "AI 行为及结果说明",
+    "section_3_content": "用户自行编写提示词（Prompt），并由平台的 AI 引擎按提示词执行交易 API 请求。AI 执行的任何行为、交易、订单下达、撤单、调整仓位等操作 均视为用户主动发起。平台不对 AI 的理解偏差、判断错误、通讯异常、交易失败、延迟造成的损失承担责任。",
+    "section_4_title": "交易风险提示",
+    "section_4_content": "数字资产交易具有高度风险，包括但不限于：价格剧烈波动、系统异常、API 失败、策略失效、市场风险等。使用 AI 进行自动交易存在额外不可预测风险，包括：模型输出偏差、策略逻辑错误、提示词歧义、系统识别错误。因上述任何原因导致的账户资产损失、收益减少、订单错误、仓位爆仓等，均由用户自行承担。",
+    "section_5_title": "收费条款",
+    "section_5_content": "平台根据 AI Token 使用量 收取费用，与用户的交易结果无关。平台 不参与分成、不收取交易费用、无成长性收益。用户充值或产生费用后，平台不对 AI 的结果或表现做任何收益保证。",
+    "section_6_title": "合规与使用限制",
+    "section_6_content": "用户不得利用平台进行任何违法活动，包括但不限于洗钱、套现、暗网交易等。用户应确保使用本平台所涉及的交易所 API、策略、行为符合当地法律法规。违反法律或监管要求的账户操作由用户自行承担责任。",
+    "section_7_title": "免责条款",
+    "section_7_list_1": "因 AI 模型输出导致的任何直接或间接损失",
+    "section_7_list_2": "因用户错误配置 API Key 或过度授权造成的风险",
+    "section_7_list_3": "因网络、交易所、服务器、第三方 API 等导致的系统故障",
+    "section_7_list_4": "因用户自身策略、提示词逻辑造成的损失",
+    "section_7_list_5": "因不可抗力导致的交易失败或数据丢失",
+    "section_8_title": "用户承诺",
+    "section_8_content": "用户承诺：对自己的交易承担全部责任、对 AI 模型的输出结果进行独立判断、不将平台服务视为投资建议、保证 API Key 的合法性、安全性、同意平台所有费用策略与调用计费规则。",
+    "section_9_title": "最终解释权",
+    "section_9_content": "本平台保留对本免责声明的最终解释权及随时修改权。",
+    "confirm_button": "我已知悉",
+    "required_error": "请阅读并同意用户协议"
   }
 };
