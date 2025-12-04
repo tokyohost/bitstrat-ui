@@ -2,6 +2,9 @@ export interface PayParams {
   payAmount?: number;
   payType?: string;
 }
+export interface QueryPayParams {
+  outTradeNo?: number | string;
+}
 
 /**
  * @author xuehui_li
@@ -17,4 +20,22 @@ export interface QrPayResponse {
   userId?: number;
 
   qrCodeBase64?: string;
+
+  outTradeNo?: number | string;
+}
+
+/**
+ * @author xuehui_li
+ * @Version 1.0
+ * @date 2025/12/3 19:29
+ * @Content
+ */
+export interface QrPayCallBack {
+  tradeStatus?: string;
+
+  tradeNo?: string;
+
+  errorMsg?: string;
+
+  isSuccess?: boolean;
 }

@@ -150,7 +150,9 @@ import { ref, computed, watch } from 'vue';
 import { Money, Wallet, Select, Loading, RefreshRight } from '@element-plus/icons-vue';
 import { qrPay } from '@/layout/components/Recharge/pay';
 import { PayParams, QrPayResponse } from '@/layout/components/Recharge/types';
+import { usePaymentPolling } from '@/hooks/usePaymentPolling';
 
+const { startPolling, stopPolling } = usePaymentPolling();
 // --- Props & Emits ---
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -216,8 +218,24 @@ const handleCreateOrder = async () => {
   const response = await qrPay(payParams.value);
   if (response.code === 200) {
     // 这里应该是请求后端接口，获取 codeUrl
-    // startPollingPaymentStatus(); // 真实场景：开始轮询支付状态
+    // 真实场景：开始轮询支付状态
     const data = response.data;
+    startPolling(
+      data.outTradeNo,
+      () => {
+        // 成功回调
+        ElMessage.success('支付成功！');
+        showQrCode.value = false;
+        emit('recharge-success');
+        handleClose();
+      },
+      () => {
+        // 失败或超时回调
+        ElMessage.error('支付失败或超时');
+        showQrCode.value = false;
+      }
+    );
+
     payData.value = data;
     qrLoading.value = false;
   } else {
@@ -270,6 +288,10 @@ watch(customAmount, (newVal) => {
     selectedAmount.value = 0;
   }
 });
+
+onUnmounted(()=>{
+  stopPolling()
+})
 </script>
 
 <style scoped>

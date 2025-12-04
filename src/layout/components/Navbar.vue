@@ -30,7 +30,8 @@
 
         <!-- 余额 -->
         <div>
-          <BalanceNav :balance="balance" @refresh="loadBalance" @to-recharge="goAccountBalance" @to-account="goAccountBalance"></BalanceNav>
+          <BalanceNav :balance="balance" @refresh="loadBalance" @to-recharge="toRecharge" @to-account="goAccountBalance"></BalanceNav>
+          <RechargeDialog :show-button="false" v-model:visible="rechargeDialog" @recharge-success="handleRechargeSuccess" />
         </div>
         <!-- VIP标识 -->
         <!--        <el-tooltip :content="isVIP ? '已开通VIP' : '开通VIP'" effect="dark" placement="bottom">-->
@@ -147,6 +148,7 @@ import ic_vip from '@/assets/icons/png/ic_vip.png';
 import { getUserVipInfo } from '@/api/system/vip/userVip';
 import { getUserProfile } from '@/api/system/user';
 import BalanceNav from '@/layout/components/balance/BalanceNav.vue';
+import RechargeDialog from '@/layout/components/Recharge/RechargeDialog.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -179,6 +181,13 @@ const loadBalance = async () => {
 const goAccountBalance = () => {
   console.log('go account balance');
   proxy?.$router.push({ path: '/account/balance' });
+};
+const rechargeDialog = ref(false);
+const toRecharge = () => {
+  rechargeDialog.value = true;
+};
+const handleRechargeSuccess = async () => {
+  await loadBalance();
 };
 // 动态切换
 const dynamicTenantEvent = async (tenantId: string) => {

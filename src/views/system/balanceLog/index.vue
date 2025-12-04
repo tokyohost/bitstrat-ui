@@ -7,8 +7,13 @@
             <div class="text-blue-100 text-sm font-medium mb-1 flex items-center gap-1">
               <el-icon><Wallet /></el-icon> 当前可用余额
             </div>
-            <div class="text-4xl font-bold font-mono tracking-wide color[white]">
-              ¥ <count-to :startVal="0" :endVal="Number(balance)" :duration="1000" :decimals="6"></count-to>
+            <div class="flex flex-row justify-between items-center gap-4">
+              <div class="text-4xl font-bold font-mono tracking-wide color[white]">
+                ¥ <count-to :startVal="0" :endVal="Number(balance)" :duration="1000" :decimals="6"></count-to>
+              </div>
+              <el-icon class="cursor-pointer hover:text-blue-500 transition-all" @click="loadBalance">
+                <Refresh />
+              </el-icon>
             </div>
           </div>
 
@@ -135,6 +140,7 @@ const queryParams = ref<BalanceLogQuery>({
 /** 加载余额 */
 const loadBalance = async () => {
   try {
+    balance.value = 0;
     const res = await getUserProfile();
     // 确保取到正确的数据结构
     balance.value = res?.data?.user?.balance || 0;
