@@ -266,14 +266,27 @@ const handleExport = () => {
     `aiLogs_${new Date().getTime()}.xlsx`
   );
 };
+let timer: any = null;
 
 onMounted(() => {
   getList();
   handleLoadChat();
 
-  setInterval(() => {
-    handleLoadChat();
-    aiResultref.value.getList();
-  }, 1000 * 10);
+  const loop = () => {
+    timer = setTimeout(() => {
+      handleLoadChat();
+      aiResultref.value.getList();
+      loop(); // 继续下一轮
+    }, 1000 * 10);
+  };
+
+  loop();
+});
+
+onUnmounted(() => {
+  if (timer) {
+    clearTimeout(timer);
+    timer = null;
+  }
 });
 </script>

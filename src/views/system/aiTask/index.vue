@@ -21,7 +21,7 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:aiTask:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:aiTask:add']">创建任务</el-button>
           </el-col>
 
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -60,12 +60,12 @@
               <span class="text-emerald-600 font-600">{{ item.startBalance }}</span>
             </div>
 
-            <div class="flex justify-between">
-              <span class="font-600">当前余额：</span>
-              <span :class="item.totalBalance >= item.startBalance ? 'text-green-600 font-600' : 'text-red-500 font-600'">
-                {{ item.totalBalance }}
-              </span>
-            </div>
+            <!--            <div class="flex justify-between">-->
+            <!--              <span class="font-600">当前余额：</span>-->
+            <!--              <span :class="item.totalBalance >= item.startBalance ? 'text-green-600 font-600' : 'text-red-500 font-600'">-->
+            <!--                {{ item.totalBalance }}-->
+            <!--              </span>-->
+            <!--            </div>-->
 
             <div class="flex justify-between">
               <span class="font-600">时间粒度：</span>
@@ -112,10 +112,10 @@
             </el-form-item>
             <el-form-item label="交易所" prop="exchange">
               <el-select v-model="form.exchange" placeholder="请选择交易所" @change="onExchange($event)" prop="exchangeA">
-                <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name" :value="exchange.name" >
+                <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name" :value="exchange.name">
                   <div class="flex justify-between flex-row">
                     <ExchangeLogo :exchange="exchange.name" />
-<!--                    <span>{{exchange.name}}</span>-->
+                    <!--                    <span>{{exchange.name}}</span>-->
                   </div>
                 </el-option>
                 <!-- 正确 label 插槽写法 -->
@@ -126,33 +126,31 @@
             </el-form-item>
             <el-form-item label="币种" prop="symbols">
               <template #label>
-                <el-popover
-                  title="币种"
-                  content="允许AI交易的币种"
-                  placement="top-start"
-                >
+                <el-popover title="币种" content="允许AI交易的币种" placement="top-start">
                   <template #reference>
                     <span>币种</span>
                   </template>
                 </el-popover>
-
               </template>
-              <el-select v-model="symbolsArr" multiple clearable placeholder="请选择币种" style="width: 100%" filterable @focus="onExchange(form.exchange)">
+              <el-select
+                v-model="symbolsArr"
+                multiple
+                clearable
+                placeholder="请选择币种"
+                style="width: 100%"
+                filterable
+                @focus="onExchange(form.exchange)"
+              >
                 <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.coin" :value="symbol.coin" />
               </el-select>
             </el-form-item>
             <el-form-item label="初始资金" prop="startBalance">
               <template #label>
-                <el-popover
-                  title="初始金额"
-                  content="让AI记住他开始交易时的成本线"
-                  placement="top-start"
-                >
+                <el-popover title="初始金额" content="让AI记住他开始交易时的成本线" placement="top-start">
                   <template #reference>
                     <span>初始资金</span>
                   </template>
                 </el-popover>
-
               </template>
               <el-input v-model="form.startBalance" type="number" :step="0.01" :min="10" placeholder="请输入初始资金">
                 <template #append> USDT </template>
@@ -423,8 +421,8 @@ const filteredSymbols = ref<LinerSymbol[]>();
 
 // 处理选择交易所的函数
 const onExchange = async (exchangeName) => {
-  if(!exchangeName){
-    return
+  if (!exchangeName) {
+    return;
   }
   form.value.exchange = exchangeName;
   // 如果没有加载过，则请求后台加载

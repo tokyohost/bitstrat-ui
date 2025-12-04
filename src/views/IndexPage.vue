@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white font-sans">
     <header class="flex justify-between items-center p-6 border-b border-gray-800 backdrop-blur-sm sticky top-0 z-10 bg-gray-900/90">
-      <div class="text-3xl font-extrabold text-teal-400 select-none cursor-pointer">AI-Quant</div>
+      <div class="text-3xl font-extrabold text-teal-400 select-none cursor-pointer">Bitstrat</div>
 
       <div class="flex space-x-4">
         <button
@@ -139,7 +139,7 @@ const goToRegister = () => {
 // 开启免费试用 (可以跳转到功能介绍页或控制台)
 const startFreeTrial = () => {
   // 假设您的控制台路由路径是 '/dashboard'
-  router.push('/dashboard');
+  router.push('/index');
 };
 </script>
 
