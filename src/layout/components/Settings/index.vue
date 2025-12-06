@@ -117,8 +117,10 @@ const isDark = useDark({
 watch(isDark, () => {
   if (isDark.value) {
     settingsStore.sideTheme = SideThemeEnum.DARK;
+    settingsStore.dark = true;
   } else {
     settingsStore.sideTheme = sideTheme.value;
+    settingsStore.dark = false;
   }
 });
 const toggleDark = () => useToggle(isDark);

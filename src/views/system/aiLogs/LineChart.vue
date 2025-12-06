@@ -1,143 +1,188 @@
 <template>
-  <div class="line-chart" :style="{ height: height }" ref="container"></div>
+  <div class="chart-wrapper">
+    <div class="line-chart" :style="{ height: height }" ref="container"></div>
+  </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import * as echarts from 'echarts';
 
 // Props
 const props = defineProps({
-  // x 轴类目数组，例如 ['2025-01-01', '2025-01-02']
-  xData: {
-    type: Array,
-    default: () => []
-  },
-  // series 数组，格式：[{ name: '系列1', data: [..], smooth: true, area: false }]
-  seriesData: {
-    type: Array,
-    default: () => []
-  },
-  // 标题
-  title: {
-    type: String,
-    default: ''
-  },
-  // 是否显示图例
-  showLegend: {
-    type: Boolean,
-    default: true
-  },
-  // 提示：'auto' | 'currency' | 带unit字符串等
-  tooltipUnit: {
-    type: String,
-    default: ''
-  },
-  // 颜色数组
+  xData: { type: Array, default: () => [] },
+  seriesData: { type: Array, default: () => [] },
+  title: { type: String, default: '' },
+  showLegend: { type: Boolean, default: true },
+  tooltipUnit: { type: String, default: '' },
+  // Web3 风格默认色板：青色、紫色、橙色
   colors: {
     type: Array,
-    default: () => ['#5470C6', '#91CC75', '#EE6666', '#FAC858']
+    default: () => ['#00F5FF', '#7B61FF', '#F7931A', '#4ADE80']
   },
-  // 容器高度，支持 '400px' 或 '100%'
-  height: {
-    type: String,
-    default: '360px'
-  },
-  // 是否显示 loading
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  // 是否自适应容器 resize
-  autoResize: {
-    type: Boolean,
-    default: true
-  },
-  // x 轴 文本旋转度数
-  xLabelRotate: {
-    type: Number,
-    default: 0
-  },
-  // 格式化数值回调 (val, seriesName) => string
-  valueFormatter: {
-    type: Function,
-    default: null
-  },
-  centerLine: {
-    type: Boolean,
-    default: false
-  },
-  baseLinePrice: {
-    type: Number,
-    default: 0
-  }
+  height: { type: String, default: '360px' },
+  loading: { type: Boolean, default: false },
+  autoResize: { type: Boolean, default: true },
+  xLabelRotate: { type: Number, default: 0 },
+  valueFormatter: { type: Function, default: null },
+  centerLine: { type: Boolean, default: false },
+  baseLinePrice: { type: Number, default: 0 }
 });
 
 const container = ref(null);
 let chart = null;
 let resizeObserver = null;
 
-// Build echarts series from seriesData prop
+// 创建线性渐变辅助函数
+const createGradient = (color) => {
+  return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    { offset: 0, color: color }, // 顶部颜色
+    { offset: 1, color: 'rgba(0,0,0,0)' } // 底部透明
+  ]);
+};
+
+// 构建 Series
 function buildSeries(seriesData) {
-  return seriesData.map((s) => {
+  return seriesData.map((s, index) => {
+    const color = props.colors[index % props.colors.length];
     const latestIndex = s.data.length - 1;
+
+    // 基础配置
     const base = {
-      name: s.name || 'series',
+      name: s.name || 'Price',
       type: 'line',
       data: s.data || [],
-      smooth: !!s.smooth,
-      symbol: s.symbol ?? 'circle',
-      symbolSize: s.symbolSize ?? 6,
-      // showSymbol: s.showSymbol ?? false,
-      lineStyle: s.lineStyle ?? { width: 2 },
-      // emphasis: { focus: 'series' },
-      itemStyle: {
-        color: (params) => (params.dataIndex === latestIndex ? '#f43f5e' : '#3b82f6')
+      smooth: true, // Web3 风格通常更喜欢平滑曲线
+      showSymbol: false, // 默认隐藏数据点，保持干净
+      symbol: 'circle',
+      symbolSize: 8,
+      yAxisIndex: s.yAxisIndex || 0,
+
+      // 线条样式：加粗并添加发光效果
+      lineStyle: s.lineStyle ?? {
+        width: 3,
+        shadowColor: color, // 发光颜色同线条色
+        shadowBlur: 10, // 光晕模糊度
+        shadowOffsetY: 0
       },
+
+      // 区域填充：渐变色
+      areaStyle: s.area
+        ? {
+            color: createGradient(hexToRgba(color, 0.4)), // 40% 透明度起始
+            opacity: 1
+          }
+        : undefined,
+
+      // 特殊处理最后一个点（当前价格/数值），添加呼吸灯效果
+      markPoint: {
+        symbol: 'circle',
+        symbolSize: 6,
+        itemStyle: {
+          color: '#fff',
+          borderColor: color,
+          borderWidth: 2,
+          shadowColor: color,
+          shadowBlur: 15
+        },
+        label: { show: false },
+        data: [
+          { type: 'max', name: 'Max', symbolSize: 0, label: { show: false } }, // 占位
+          { coord: [latestIndex, s.data[latestIndex]] } // 最后一个点
+        ]
+      },
+
+      // 最后一个点的 Label 单独配置
       label: {
         show: true,
-        position: 'top',
-        color: '#f43f5e',
+        position: 'right',
+        distance: 10,
+        color: color,
         fontWeight: 'bold',
-        formatter: (params) => (params.dataIndex === latestIndex ? params.value : '')
-        // formatter: (params) => params.value
-      },
-      emphasis: { disabled: true }
+        fontFamily: 'Monospace', // 等宽字体更有科技感
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        padding: [4, 8],
+        borderRadius: 4,
+        formatter: (params) => {
+          // 只有最后一个点显示数值
+          return params.dataIndex === latestIndex ? params.value : '';
+        }
+      }
     };
-    if (s.area) {
-      base.areaStyle = s.areaStyle ?? { opacity: 0.15 };
-    }
-    if (s.yAxisIndex) base.yAxisIndex = s.yAxisIndex;
     return base;
   });
 }
 
-// Default option builder
+// 辅助：Hex 转 RGBA
+function hexToRgba(hex, opacity) {
+  let c;
+  if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+    c = hex.substring(1).split('');
+    if (c.length === 3) {
+      c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+    }
+    c = '0x' + c.join('');
+    return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + opacity + ')';
+  }
+  return hex;
+}
+
 function buildOption() {
   const series = buildSeries(props.seriesData);
-  if (props.centerLine) {
-    series.push({
-      type: 'line',
-      markLine: {
-        silent: true,
-        data: [{ yAxis: props.baseLinePrice }],
-        lineStyle: { color: '#FF0000', type: 'dashed' },
-        label: { formatter: props.baseLinePrice + '' }
+
+  // 基准线逻辑（移动到 Series 内部）
+  if (props.centerLine && series.length > 0) {
+    // 我们可以给第一个系列添加 markLine，或者单独 push 一个透明系列
+    if (!series[0].markLine) series[0].markLine = { data: [], symbol: 'none' };
+    series[0].markLine.data.push({
+      yAxis: props.baseLinePrice,
+      label: {
+        formatter: (params) => `Base: ${params.value}`,
+        position: 'end',
+        color: '#FF4D4F',
+        fontSize: 10
+      },
+      lineStyle: {
+        color: '#FF4D4F',
+        type: 'dashed',
+        width: 1,
+        opacity: 0.8
       }
     });
   }
-  series.push();
+
   const option = {
+    // 背景透明，依靠 CSS 控制容器背景
+    backgroundColor: 'transparent',
     color: props.colors,
-    title: props.title ? { text: props.title, left: 'center' } : undefined,
+    title: props.title
+      ? {
+          text: props.title,
+          left: 'left',
+          textStyle: { color: '#E0E0E0', fontSize: 14, fontWeight: 'normal' }
+        }
+      : undefined,
+
+    // Web3 风格 Tooltip
     tooltip: {
       trigger: 'axis',
-      axisPointer: { type: 'cross' },
+      backgroundColor: 'rgba(18, 18, 24, 0.85)', // 深色半透明
+      borderColor: '#333',
+      textStyle: { color: '#eee', fontSize: 12 },
+      padding: [10, 15],
+      backdropFilter: 'blur(4px)', // 玻璃磨砂效果
+      axisPointer: {
+        type: 'line',
+        lineStyle: {
+          color: '#555',
+          type: 'dashed'
+        }
+      },
       formatter: function (params) {
-        // params is array of series points
-        // Build readable tooltip
         const axisLabel = params[0]?.axisValue ?? '';
-        const lines = [`${axisLabel}`];
+        let html = `<div style="font-family: 'Inter', sans-serif; font-size: 12px;">`;
+        html += `<div style="color: #888; margin-bottom: 6px;">${axisLabel}</div>`;
+
         params.forEach((p) => {
           const rawVal = p.data;
           const formatted = props.valueFormatter
@@ -145,88 +190,112 @@ function buildOption() {
             : props.tooltipUnit
               ? `${rawVal} ${props.tooltipUnit}`
               : rawVal;
-          lines.push(
-            `<span style="display:inline-block;margin-right:8px;border-radius:10px;width:10px;height:10px;background-color:${p.color};"></span> ${p.seriesName}: ${formatted}`
-          );
+
+          // 自定义圆点
+          html += `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; min-width: 120px;">
+              <div style="display: flex; align-items: center;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: ${p.color}; box-shadow: 0 0 6px ${p.color}; margin-right: 8px;"></span>
+                <span style="color: #ccc;">${p.seriesName}</span>
+              </div>
+              <span style="font-family: monospace; font-weight: bold; color: #fff; margin-left: 12px;">${formatted}</span>
+            </div>`;
         });
-        return lines.join('<br/>');
+        html += `</div>`;
+        return html;
       }
     },
-    legend: props.showLegend ? { top: 30 } : { show: false },
-    grid: { left: 40, right: 20, top: props.title ? 60 : 40, bottom: 40, containLabel: true },
+
+    legend: props.showLegend
+      ? {
+          top: 0,
+          right: 10,
+          icon: 'circle',
+          textStyle: { color: '#999' },
+          itemWidth: 8,
+          itemHeight: 8
+        }
+      : { show: false },
+
+    grid: {
+      left: 10,
+      right: 50, // 右侧留出空间给 Label
+      top: props.title ? 40 : 20,
+      bottom: 20,
+      containLabel: true,
+      borderColor: '#333'
+    },
+
     xAxis: {
       type: 'category',
       boundaryGap: false,
       data: props.xData,
-      axisLabel: { rotate: props.xLabelRotate, formatter: (v) => v }
+      axisLine: { show: false }, // 隐藏轴线
+      axisTick: { show: false }, // 隐藏刻度
+      axisLabel: {
+        color: '#666',
+        fontSize: 10,
+        rotate: props.xLabelRotate,
+        margin: 14
+      },
+      // 只有 hover 时显示的网格
+      splitLine: { show: false }
     },
+
     yAxis: {
       type: 'value',
+      position: 'right', // 金融图表习惯 Y 轴在右侧
+      axisLine: { show: false },
+      axisTick: { show: false },
       axisLabel: {
+        color: '#666',
+        fontSize: 10,
         formatter: function (v) {
           return props.tooltipUnit ? `${v}` : v;
         }
       },
-      min: (val) => val.min - 2,
-      max: (val) => val.max + 2
+      // 极简网格线
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: '#333', // 深色网格
+          type: 'dashed',
+          width: 0.5
+        }
+      },
+      scale: true, // 自动缩放，不强制从0开始
+      min: (val) => val.min - (val.max - val.min) * 0.05, // 稍微留点余地
+      max: (val) => val.max + (val.max - val.min) * 0.05
     },
     series
   };
 
-  console.log('option', option);
   return option;
-}
-
-function checkCenterLine(option) {
-  if (props.centerLine) {
-    option.markLine = {
-      silent: true,
-      data: [{ yAxis: props.baseLinePrice }],
-      lineStyle: {
-        color: '#FF0000',
-        type: 'dashed'
-      },
-      label: {
-        formatter: 'Baseline: 1000',
-        position: 'end'
-      }
-    };
-  }
 }
 
 function initChart() {
   if (!container.value) return;
-  if (chart) {
-    chart.dispose();
-    chart = null;
-  }
+  if (chart) chart.dispose();
+
   chart = echarts.init(container.value);
   const option = buildOption();
-  checkCenterLine(option);
-  if (props.centerLine) {
-    option.markLine = {
-      silent: true,
-      data: [{ yAxis: props.baseLinePrice }],
-      lineStyle: {
-        color: '#FF0000',
-        type: 'dashed'
-      },
-      label: {
-        formatter: 'Baseline: 1000',
-        position: 'end'
-      }
-    };
-  }
   chart.setOption(option);
-  if (props.loading) chart.showLoading();
+
+  if (props.loading)
+    chart.showLoading({
+      text: '',
+      color: props.colors[0],
+      textColor: '#fff',
+      maskColor: 'rgba(0, 0, 0, 0.2)',
+      zlevel: 0
+    });
   else chart.hideLoading();
 }
 
 function updateChart() {
   if (!chart) return;
   const option = buildOption();
-  checkCenterLine(option);
-  chart.setOption(option, { notMerge: false, lazyUpdate: true });
+  chart.setOption(option, { notMerge: false }); // notMerge: false 允许平滑过渡
   if (props.loading) chart.showLoading();
   else chart.hideLoading();
 }
@@ -234,45 +303,37 @@ function updateChart() {
 onMounted(() => {
   nextTick(() => {
     initChart();
-
-    // auto resize
-    if (props.autoResize && container.value && window.ResizeObserver) {
-      resizeObserver = new ResizeObserver(() => {
-        chart && chart.resize();
-      });
+    if (props.autoResize && container.value) {
+      resizeObserver = new ResizeObserver(() => chart && chart.resize());
       resizeObserver.observe(container.value);
-    } else if (props.autoResize) {
-      window.addEventListener('resize', () => chart && chart.resize());
     }
   });
 });
 
 onBeforeUnmount(() => {
-  if (chart) {
-    chart.dispose();
-    chart = null;
-  }
-  if (resizeObserver && container.value) {
-    resizeObserver.unobserve(container.value);
-    resizeObserver = null;
-  } else {
-    window.removeEventListener('resize', () => chart && chart.resize());
-  }
+  chart?.dispose();
+  resizeObserver?.disconnect();
 });
 
-// watch props changes
-watch(
-  () => [props.xData, props.seriesData, props.title, props.colors, props.loading, props.xLabelRotate],
-  () => {
-    updateChart();
-  },
-  { deep: true }
-);
+watch(() => [props.xData, props.seriesData, props.title, props.colors, props.loading], updateChart, { deep: true });
 </script>
 
 <style scoped>
-.line-chart {
+.chart-wrapper {
   width: 100%;
   position: relative;
+  /* Web3 风格通常是深色的。
+    如果在亮色背景下使用，请移除此背景色，
+    或者在父组件控制背景。
+  */
+  background: #0d0d12;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.line-chart {
+  width: 100%;
 }
 </style>

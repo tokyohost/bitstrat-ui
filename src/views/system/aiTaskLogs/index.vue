@@ -81,7 +81,7 @@
 <script setup name="AiLogs" lang="ts">
 import { listAiLogs, getAiLogs, delAiLogs, addAiLogs, updateAiLogs, loadChartData, loadChartDataFreeBalance } from '@/api/system/aiLogs';
 import { AiLogsVO, AiLogsQuery, AiLogsForm } from '@/api/system/aiLogs/types';
-import LineChart from '@/views/system/aiLogs/LineChart.vue';
+import LineChart from '@/views/system/aiTaskLogs/LineChart.vue';
 import TestAiResult from '@/views/system/testAiResult/index.vue';
 import TestAiRequest from '@/views/system/testAiRequest/index.vue';
 
