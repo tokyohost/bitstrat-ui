@@ -9,9 +9,22 @@ import { syncPosition } from '@/views/components/type';
 
 const positionList = ref<PositionWsData[]>([]);
 
+const props = defineProps({
+  accountId: {
+    type: String,
+    required: false
+  }
+});
+
 function handleWsMessage(data: WebsocketMsgData<PositionWsData[]>) {
   // console.log('收到 position 消息:', data)
   const accountId = data.accountId;
+  if (props.accountId) {
+    if (props.accountId != accountId) {
+      console.log('过滤掉 position 消息:', data);
+      return;
+    }
+  }
   //根据accountId 删除positionList 中的持仓
   const result = positionList.value.filter((item) => item.accountId != accountId);
   // console.log("result", result);

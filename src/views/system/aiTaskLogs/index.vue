@@ -65,7 +65,7 @@
           <right-toolbar :search="false" @queryTable="refshPosition"></right-toolbar>
         </el-row>
       </template>
-      <PositionWidget ref="positionWidget"></PositionWidget>
+      <PositionWidget ref="positionWidget" :accountId="taskVo?.apiId"></PositionWidget>
     </el-card>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="请求日志" name="request">
