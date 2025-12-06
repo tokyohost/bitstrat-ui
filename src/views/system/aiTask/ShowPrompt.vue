@@ -43,7 +43,7 @@ const previewText = computed(() => {
 <template>
   <div class="content-wrapper">
     <pre class="content-block"
-      >{{ previewText }}
+      >{{ previewText || '-' }}
     </pre>
 
     <!-- 展开 / 收起按钮 -->

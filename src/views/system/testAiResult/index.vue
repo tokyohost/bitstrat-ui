@@ -6,59 +6,10 @@
           <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
-
-      <!--      <el-table v-loading="loading" :data="testAiResultList" @selection-change="handleSelectionChange">-->
-      <!--        <el-table-column type="selection" width="55" align="center" />-->
-      <!--        <el-table-column label="id" align="center" prop="id" v-if="true" />-->
-      <!--        <el-table-column label="操作" align="center" prop="action" />-->
-      <!--        <el-table-column label="杠杆" align="center" prop="leverage" />-->
-      <!--        <el-table-column label="数量" align="center" prop="size" />-->
-      <!--        <el-table-column label="币对" align="center" prop="symbol" />-->
-      <!--        <el-table-column label="止盈" align="center" prop="takeProfit" />-->
-      <!--        <el-table-column label="止损" align="center" prop="stopLoss" />-->
-      <!--        <el-table-column label="分析EN" align="center" prop="reasoningEn" />-->
-      <!--        <el-table-column label="分析zh" align="center" prop="reasoningZh" />-->
-      <!--      </el-table>-->
-
       <AiCardList :test-ai-result-list="testAiResultList" v-if="testAiResultList.length > 0"></AiCardList>
       <el-empty v-else></el-empty>
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
-    <!-- 添加或修改AI 操作日志对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="testAiResultFormRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="操作" prop="action">
-          <el-input v-model="form.action" placeholder="请输入操作" />
-        </el-form-item>
-        <el-form-item label="杠杆" prop="leverage">
-          <el-input v-model="form.leverage" placeholder="请输入杠杆" />
-        </el-form-item>
-        <el-form-item label="数量" prop="size">
-          <el-input v-model="form.size" placeholder="请输入数量" />
-        </el-form-item>
-        <el-form-item label="币对" prop="symbol">
-          <el-input v-model="form.symbol" placeholder="请输入币对" />
-        </el-form-item>
-        <el-form-item label="止盈" prop="takeProfit">
-          <el-input v-model="form.takeProfit" placeholder="请输入止盈" />
-        </el-form-item>
-        <el-form-item label="止损" prop="stopLoss">
-          <el-input v-model="form.stopLoss" placeholder="请输入止损" />
-        </el-form-item>
-        <el-form-item label="分析EN" prop="reasoningEn">
-          <el-input v-model="form.reasoningEn" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="分析zh" prop="reasoningZh">
-          <el-input v-model="form.reasoningZh" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 

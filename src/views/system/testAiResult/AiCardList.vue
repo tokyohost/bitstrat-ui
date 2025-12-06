@@ -61,7 +61,7 @@
     </div>
 
     <!-- 详情对话框 -->
-    <el-dialog v-model="detailVisible" width="720px" :append-to-body="true">
+    <el-dialog v-model="detailVisible" width="50%" :append-to-body="true">
       <template #title>
         <div class="flex justify-between items-center">
           <div>
@@ -74,29 +74,25 @@
 
       <div class="space-y-4">
         <div>
+          <div class="text-xs text-gray-500 mb-1">执行结果</div>
+          <ShowPrompt :raw-text="detailItem.result"></ShowPrompt>
+        </div>
+        <div>
           <div class="text-xs text-gray-500 mb-1">分析（EN）</div>
-          <pre class="whitespace-pre-wrap text-sm p-3 bg-slate-50 rounded"
-            >{{ detailItem.reasoningEn }}
-          </pre>
+          <ShowPrompt :raw-text="detailItem.reasoningEn"></ShowPrompt>
         </div>
 
         <div>
           <div class="text-xs text-gray-500 mb-1">分析（ZH）</div>
-          <pre class="whitespace-pre-wrap text-sm p-3 bg-slate-50 rounded"
-            >{{ detailItem.reasoningZh }}
-          </pre>
+          <ShowPrompt :raw-text="detailItem.reasoningZh"></ShowPrompt>
         </div>
         <div>
-          <div class="text-xs text-gray-500 mb-1">Think（ZH）</div>
-          <pre class="whitespace-pre-wrap text-sm p-3 bg-slate-50 rounded"
-            >{{ detailItem.think }}
-          </pre>
+          <div class="text-xs text-gray-500 mb-1">Think</div>
+          <ShowPrompt :raw-text="detailItem.think"></ShowPrompt>
         </div>
         <div>
-          <div class="text-xs text-gray-500 mb-1">system prompt</div>
-          <pre class="whitespace-pre-wrap text-sm p-3 bg-slate-50 rounded"
-            >{{ requestItem.content }}
-          </pre>
+          <div class="text-xs text-gray-500 mb-1">System prompt</div>
+          <ShowPrompt :raw-text="detailItem.content"></ShowPrompt>
         </div>
       </div>
 
@@ -110,10 +106,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getTestAiRequestByKey } from '@/api/system/testAiRequest';
+import ShowPrompt from '@/views/system/aiTask/ShowPrompt.vue';
 
 const props = defineProps({
   testAiResultList: {
@@ -124,7 +121,6 @@ const props = defineProps({
 
 const list = computed(() => props.testAiResultList || []);
 const checkedMap = ref({});
-const selectedIds = computed(() => Object.keys(checkedMap.value).filter((id) => checkedMap.value[id]));
 
 const detailVisible = ref(false);
 const detailItem = ref({});
@@ -157,18 +153,6 @@ function onCheckChange(item) {
   if (!(item.id in checkedMap.value)) checkedMap.value[item.id] = true;
 }
 
-function selectAll() {
-  list.value.forEach((i) => (checkedMap.value[i.id] = true));
-}
-
-function clearSelection() {
-  checkedMap.value = {};
-}
-
-function batchAction() {
-  ElMessage.info(`批量操作: ${selectedIds.value.join(',')}`);
-}
-
 async function openDetail(item) {
   console.log('!11111');
   detailItem.value = { ...item };
@@ -177,11 +161,6 @@ async function openDetail(item) {
   requestItem.value = { ...res.data };
   detailVisible.value = true;
   console.log('!2222');
-}
-
-function confirmFromDialog() {
-  ElMessage.success('确认操作成功');
-  detailVisible.value = false;
 }
 
 function execute(item) {
