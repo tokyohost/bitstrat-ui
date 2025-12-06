@@ -5,7 +5,7 @@
         <!--        <img :src="item.imgUrl" class="ai-icon" />-->
         <imagePreviewOss :src="item.imgUrl" :width="80" :height="80"></imagePreviewOss>
         <div class="ai-name">{{ item.flowName }}</div>
-        <div class="">{{ item.price }}RMB/100M Token</div>
+        <div class="">{{ item.price }}RMB/M Token</div>
       </div>
     </div>
   </div>

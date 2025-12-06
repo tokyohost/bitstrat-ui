@@ -55,7 +55,7 @@
             止盈: <span class="text-green-600 font-medium">{{ item.takeProfit || '-' }}</span> · 止损:
             <span class="text-red-500 font-medium">{{ item.stopLoss || '-' }}</span>
           </div>
-          <div>#{{ item.id }}</div>
+          <div>#{{ item.taskId }}</div>
         </div>
       </el-card>
     </div>
@@ -91,8 +91,12 @@
           <ShowPrompt :raw-text="detailItem.think"></ShowPrompt>
         </div>
         <div>
+          <div class="text-xs text-gray-500 mb-1">User prompt</div>
+          <ShowPrompt :raw-text="requestItem.content"></ShowPrompt>
+        </div>
+        <div>
           <div class="text-xs text-gray-500 mb-1">System prompt</div>
-          <ShowPrompt :raw-text="detailItem.content"></ShowPrompt>
+          <ShowPrompt :raw-text="requestItem.sysContent"></ShowPrompt>
         </div>
       </div>
 

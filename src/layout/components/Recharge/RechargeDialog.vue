@@ -138,7 +138,7 @@
             立即支付 ¥{{ finalAmount.toFixed(2) }}
           </el-button>
 
-          <el-button v-else type="success" @click="simulateSuccess" :loading="checkingStatus"> 模拟支付成功 (测试用) </el-button>
+          <!--          <el-button v-else type="success" @click="simulateSuccess" :loading="checkingStatus"> 模拟支付成功 (测试用) </el-button>-->
         </div>
       </div>
     </template>
@@ -289,9 +289,9 @@ watch(customAmount, (newVal) => {
   }
 });
 
-onUnmounted(()=>{
-  stopPolling()
-})
+onUnmounted(() => {
+  stopPolling();
+});
 </script>
 
 <style scoped>

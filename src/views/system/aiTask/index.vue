@@ -205,16 +205,23 @@
           </el-tab-pane>
           <el-tab-pane name="system" label="系统提示词">
             <el-form-item label-width="0" prop="systemPrompt">
-              <el-input v-model="form.systemPrompt" type="textarea" placeholder="请输入系统提示词" :autosize="{ minRows: 24 }" />
+              <el-input
+                v-model="form.systemPrompt"
+                type="textarea"
+                placeholder="请输入系统提示词,您可以在此要求AI执行的规则、交易逻辑、交易纪律等等,一切取决于您，期待您的完美策略"
+                :autosize="{ minRows: 24 }"
+                :maxlength="20000"
+                :show-word-limit
+              />
               <div>
                 <el-button @click="replaceSystemPrompt('system1')">预设提示词1</el-button>
                 <el-button @click="replaceSystemPrompt('system2')">预设提示词2</el-button>
               </div>
             </el-form-item>
-            <div>
-              <div>以下提示词作为系统执行中的数据约束以及正常运转，不支持修改:</div>
-              <div><SystemPromptDefault></SystemPromptDefault></div>
-            </div>
+            <!--            <div>-->
+            <!--              <div>以下提示词作为系统执行中的数据约束以及正常运转，不支持修改:</div>-->
+            <!--              <div><SystemPromptDefault></SystemPromptDefault></div>-->
+            <!--            </div>-->
           </el-tab-pane>
           <el-tab-pane name="user" label="用户提示词">
             <el-form-item prop="userPrompt" label-width="0">
@@ -223,6 +230,8 @@
                 type="textarea"
                 placeholder="请输入您的交易想法，将添加到每次调用API时用户提示词最前"
                 :autosize="{ minRows: 24 }"
+                :maxlength="5000"
+                :show-word-limit
               />
               <div>
                 <div>以下示例内容作为提供给AI的行情数据、当前仓位数据、历史成绩等数据，暂不支持修改，您的交易想法将拼接在示例内容之前:</div>
@@ -491,7 +500,7 @@ const handleSelectionChange = (selection: AiTaskVO[]) => {
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = '添加AI任务';
+  dialog.title = '创建任务';
 };
 
 /** 修改按钮操作 */
@@ -501,7 +510,7 @@ const handleUpdate = async (row?: AiTaskVO) => {
   const res = await getAiTask(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = '修改AI任务';
+  dialog.title = '修改任务';
 };
 /** 修改按钮操作 */
 const handleStop = async (row?: AiTaskVO) => {
