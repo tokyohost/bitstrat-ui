@@ -45,7 +45,7 @@
             </div>
           </div>
 
-          <ImagePreviewOss v-if="item.aiConfig && item.aiConfig.imgUrl" :src="item.aiConfig.imgUrl" class="w-10 h-10 rounded-lg flex-shrink-0" />
+          <ImagePreviewOss v-if="item.aiConfig && item.aiConfig.imgUrl" :src="item.aiConfig.imgUrl" class="w-15 h-10 rounded-lg flex-shrink-0" />
 
           <el-button type="primary" :icon="Tickets" link :disabled="item.status === 1" @click="emit('view', item)"> 详情 </el-button>
         </div>
