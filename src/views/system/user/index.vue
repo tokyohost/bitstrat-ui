@@ -104,6 +104,7 @@
                 <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
               </template>
             </el-table-column>
+            <el-table-column key="deptName" label="余额" align="right" prop="balance" :show-overflow-tooltip="true" />
 
             <el-table-column v-if="columns[6].visible" label="创建时间" align="center" prop="createTime" width="160">
               <template #default="scope">
@@ -498,7 +499,7 @@ const handleDelete = async (row?: UserVO) => {
 
 /** 用户状态修改  */
 const handleStatusChange = async (row: UserVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?');
     await api.changeUserStatus(row.userId, row.status);

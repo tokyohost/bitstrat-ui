@@ -34,6 +34,7 @@ export interface TestAiRequestForm extends BaseEntity {
   sysContent?: string;
 
   result?: string;
+  errorMsg?: string;
 
   exchange?: string;
 }

@@ -35,6 +35,8 @@ const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
             ></TradePairTag>
             <el-tag type="danger" size="small" disable-transitions>{{ props.position.leverage }}x</el-tag>
             <el-tag type="warning" size="small" disable-transitions>{{ props.position.marginType }}</el-tag>
+            <el-tag type="success" size="small" disable-transitions>TP:{{ props.position.takeProfit || '-' }}</el-tag>
+            <el-tag type="danger" size="small" disable-transitions>SL:{{ props.position.stopLoss || '-' }}</el-tag>
           </div>
 
           <div>{{ props.position.accountName }}</div>

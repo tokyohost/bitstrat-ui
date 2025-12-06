@@ -35,7 +35,13 @@
           <!--          <el-col :span="1.5">-->
           <!--            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:testAiRequest:export']">导出</el-button>-->
           <!--          </el-col>-->
-          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="getList"></right-toolbar>
+          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="getList">
+            <template #btn>
+              <el-tooltip class="item" effect="dark" content="立即发起请求" placement="top" v-hasPermi="['system:aiTask:invoke']">
+                <el-button circle icon="CaretRight" @click="invokeRequest()" />
+              </el-tooltip>
+            </template>
+          </right-toolbar>
         </el-row>
       </template>
       <AiRequestCardList :list="testAiRequestList" @view="handleView" v-if="testAiRequestList.length > 0"></AiRequestCardList>
@@ -65,6 +71,9 @@
         <el-form-item label="响应">
           <ShowPrompt :raw-text="form.result"></ShowPrompt>
         </el-form-item>
+        <el-form-item label="异常" v-if="form.errorMsg">
+          <ShowPrompt :raw-text="form.errorMsg"></ShowPrompt>
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -81,6 +90,7 @@ import { listTestAiRequest, getTestAiRequest, delTestAiRequest, addTestAiRequest
 import { TestAiRequestVO, TestAiRequestQuery, TestAiRequestForm } from '@/api/system/testAiRequest/types';
 import ShowPrompt from '@/views/system/aiTask/ShowPrompt.vue';
 import AiRequestCardList from '@/views/system/testAiRequest/AiRequestCardList.vue';
+import { invokeAiTask } from '@/api/system/aiTask';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -122,11 +132,19 @@ const data = reactive<PageData<TestAiRequestForm, TestAiRequestQuery>>({
 });
 const { queryParams, form, rules } = toRefs(data);
 
+const props = defineProps({
+  taskId: {
+    type: String,
+    required: false
+  }
+});
 /** 查询AI 用户请求提示词列表 */
 const getList = async (taskId: string) => {
   loading.value = true;
   if (taskId) {
     queryParams.value.taskId = taskId;
+  } else {
+    queryParams.value.taskId = props.taskId;
   }
   const res = await listTestAiRequest(queryParams.value);
   testAiRequestList.value = res.rows;
@@ -200,6 +218,30 @@ const handleView = async (row?: TestAiRequestVO) => {
   dialog.disabled = true;
   dialog.title = '查看详情';
 };
+const invokeRequest = async () => {
+  if (!props.taskId) {
+    ElMessage.error('参数缺失');
+    return;
+  }
+  buttonLoading.value = true;
+  try {
+    const data = {
+      id: props.taskId
+    };
+    const res = await invokeAiTask(data);
+    if (res.code === 200) {
+      ElMessage.success('请求已发起请稍后刷新');
+    } else {
+      ElMessage.error(res.msg);
+    }
+
+    await getList(props.taskId);
+  } catch (error) {
+    console.error('请求失败:', error);
+  } finally {
+    buttonLoading.value = false;
+  }
+};
 
 /** 提交按钮 */
 const submitForm = () => {
@@ -224,7 +266,7 @@ const handleDelete = async (row?: TestAiRequestVO) => {
   await proxy?.$modal.confirm('是否确认删除AI 用户请求提示词编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
   await delTestAiRequest(_ids);
   proxy?.$modal.msgSuccess('删除成功');
-  await getList();
+  await getList(null);
 };
 
 /** 导出按钮操作 */
@@ -239,7 +281,7 @@ const handleExport = () => {
 };
 
 onMounted(() => {
-  getList();
+  getList(null);
 });
 defineExpose({
   getList

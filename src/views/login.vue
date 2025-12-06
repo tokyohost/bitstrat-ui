@@ -45,7 +45,7 @@
           <img :src="codeUrl" class="login-code-img" @click="getCode" />
         </div>
       </el-form-item>
-<!--      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0; color: white">{{ proxy.$t('login.rememberPassword') }}</el-checkbox>-->
+      <!--      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0; color: white">{{ proxy.$t('login.rememberPassword') }}</el-checkbox>-->
       <!--      <el-form-item style="float: right">-->
       <!--        <el-button circle :title="proxy.$t('login.social.wechat')" @click="doSocialLogin('wechat')">-->
       <!--          <svg-icon icon-class="wechat" />-->
@@ -106,7 +106,7 @@ const loginForm = ref<LoginData>({
   rememberMe: false,
   code: '',
   uuid: '',
-  isAgreed:false
+  isAgreed: false
 } as LoginData);
 
 const loginRules: ElFormRules = {
@@ -242,7 +242,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .login {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
 
   height: 100%;
@@ -324,9 +324,9 @@ onMounted(() => {
   color: white;
 
   //display: flex;
-  //justify-content: center;
-  //align-items: center;
-  //gap: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
   //border-radius: 10px;
   backdrop-filter: blur(5px);
   background-color: rgba(0, 191, 255, 0.075);
@@ -334,7 +334,7 @@ onMounted(() => {
   border: 2px rgba(255, 255, 255, 0.4) solid;
   border-bottom: 2px rgba(40, 40, 40, 0.35) solid;
   border-right: 2px rgba(40, 40, 40, 0.35) solid;
-  margin-right: 20rem;
+  //margin-right: 20rem;
 }
 ::v-deep .el-input__wrapper {
   background-color: rgba(0, 191, 255, 0.075) !important;

@@ -51,6 +51,14 @@ export const addAiTask = (data: AiTaskForm) => {
   });
 };
 
+export const invokeAiTask = (data: AiTaskForm) => {
+  return request({
+    url: '/system/aiTask/invokeAiTask',
+    method: 'post',
+    data: data
+  });
+};
+
 /**
  * 修改AI任务
  * @param data

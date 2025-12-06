@@ -127,6 +127,8 @@ export interface PositionWsData {
   accountId?: number;
 
   showFlag?: number;
+  stopLoss?: number;
+  takeProfit?: number;
 }
 
 export interface WebsocketMsgData<T> {
