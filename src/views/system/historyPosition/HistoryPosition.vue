@@ -76,6 +76,14 @@ const fetchData = async (isAppend: boolean = false) => {
         data.value = list;
       }
 
+      // --- 根据 positionId 去重 ---
+      const seen = new Set();
+      data.value = data.value.filter((item) => {
+        if (seen.has(item.utime)) return false;
+        seen.add(item.utime);
+        return true;
+      });
+
       // 更新分页游标
       const last = list[list.length - 1];
       idLessThan.value = last.idLessThan || null;
@@ -135,9 +143,9 @@ onMounted(() => {
           </template>
         </el-table-column>
 
-        <el-table-column label="平仓数量 (张)" prop="closeTotalPos" width="120" align="right" />
+        <el-table-column label="平仓数量" prop="closeTotalPos" width="120" align="right" />
 
-        <el-table-column label="价格 (USDT)" min-width="180" align="right">
+        <el-table-column label="价格" min-width="180" align="right">
           <template #default="{ row }">
             <div class="price-row">
               <span class="label">开:</span>
@@ -150,7 +158,7 @@ onMounted(() => {
           </template>
         </el-table-column>
 
-        <el-table-column label="已实现盈亏 (USDT)" min-width="160" align="right" prop="netProfit">
+        <el-table-column label="已实现盈亏" min-width="160" align="right" prop="netProfit">
           <template #default="{ row }">
             <div :class="['pnl-value', Number(row.netProfit) > 0 ? 'text-success' : 'text-danger']">
               {{ Number(row.netProfit) > 0 ? '+' : '' }}{{ formatNumber(row.netProfit, 4) }}
