@@ -27,6 +27,7 @@
                 <div class="flex justify-center">
                   <dict-tag :options="socket_status" :value="item.status" :i18n-profilx="'setting.api'" />
                   <el-tag type="success" class="ml-1" v-if="item.status == 'active'">{{ item.dely ?? '0' }}ms</el-tag>
+                  <el-tag type="success" class="ml-1" v-if="item.status == 'active'">{{ item.nodeName ?? '-' }}</el-tag>
                 </div>
               </div>
             </div>

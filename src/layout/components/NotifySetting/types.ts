@@ -30,6 +30,7 @@ export interface WebsocketStatus {
   status?: string;
 
   dely?: number;
+  nodeName?: string;
 
   apiId?: number;
   apiName?: string;
