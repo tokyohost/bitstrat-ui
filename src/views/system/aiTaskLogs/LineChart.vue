@@ -310,15 +310,15 @@ function buildOption() {
         }
       },
       scale: true,
-      min: (val) => val.min - (val.max - val.min) * 0.05,
-      max: (val) => val.max + (val.max - val.min) * 0.05
+      min: (val) => fix3(val.min - (val.max - val.min) * 0.05),
+      max: (val) => fix3(val.max + (val.max - val.min) * 0.05)
     },
     series
   };
 
   return option;
 }
-
+const fix3 = (n: number) => Number(n.toFixed(3));
 // --- Lifecycle & Watchers ---
 
 function initChart() {

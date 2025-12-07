@@ -46,7 +46,6 @@
         <LineChart
           :key="taskVo?.startBalance || 0"
           :xData="xData"
-          :base-line-price="taskVo?.startBalance"
           :seriesData="seriesData"
           title="账户资金趋势"
           tooltipUnit="USDT"

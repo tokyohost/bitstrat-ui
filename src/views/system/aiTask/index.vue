@@ -179,6 +179,11 @@
                 </el-radio-group>
               </div>
             </el-form-item>
+            <el-form-item label="杠杆范围" prop="leverage">
+              <div style="width: 50%">
+                <el-slider v-model="leverageValue" range :marks="marks" :min="1" :max="20" />
+              </div>
+            </el-form-item>
           </el-tab-pane>
           <el-tab-pane name="account" label="账号选择">
             <el-form-item label="" label-width="0" prop="apiId">
@@ -337,6 +342,9 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
     createUserId: undefined,
     status: undefined,
     interval: undefined,
+    leverage: [1, 3],
+    leverageMin: undefined,
+    leverageMax: undefined,
     params: {}
   },
   rules: {
@@ -347,6 +355,7 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
     interval: [{ required: true, message: '请选择时间粒度', trigger: 'blur' }],
     apiId: [{ required: true, message: '请选择API账号', trigger: 'blur' }],
     systemPrompt: [{ required: true, message: '系统提示词不允许为空', trigger: 'blur' }],
+    leverage: [{ required: true, message: '杠杆范围必须选择', trigger: 'blur' }],
     startBalance: [
       { required: true, message: '初始资金必须填写', trigger: 'blur' },
       {
@@ -364,6 +373,25 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
 });
 const tabPosition = ref<TabsInstance['tabPosition']>('left');
 const { queryParams, form, rules } = toRefs(data);
+
+const marks = reactive<Marks>({
+  1: '1x',
+  3: '3x',
+  5: '5x',
+  10: {
+    style: {
+      color: '#E6A23C'
+    },
+    label: '10x'
+  },
+  20: {
+    style: {
+      color: '#F56C6C'
+    },
+    label: '20x'
+  }
+});
+
 const selectAccount = (account: ApiVO) => {
   console.log(account);
   const deSecAccount = {
@@ -394,6 +422,19 @@ const symbolsArr = computed({
   },
   set(val) {
     form.value.symbols = val.join(','); // 选中时拼接
+  }
+});
+const leverageValue = computed({
+  get() {
+    if (!form.value.leverageMin && !form.value.leverageMax) return [3, 20];
+    return [form.value.leverageMin, form.value.leverageMax]; // 回显
+  },
+  set(val) {
+    if (val && val.length == 2) {
+      form.value.leverageMin = val[0];
+      form.value.leverageMax = val[1];
+      form.value.leverage = val;
+    }
   }
 });
 // 交易所列表

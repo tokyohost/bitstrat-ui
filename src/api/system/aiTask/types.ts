@@ -119,6 +119,10 @@ export interface AiTaskForm extends BaseEntity {
   exchange?: string;
   apiId?: string | number;
   account?: ApiVO;
+
+  leverage: Array<number>;
+  leverageMin: undefined;
+  leverageMax: undefined;
 }
 
 export interface AiTaskQuery extends PageQuery {
