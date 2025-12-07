@@ -1,9 +1,9 @@
 <template>
   <div class="p-0">
-    <el-card shadow="never">
+    <el-card shadow="never" v-loading="loading">
       <template #header>
         <el-row :gutter="10" class="mb8">
-          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="getList"></right-toolbar>
+          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="handleQuery"></right-toolbar>
         </el-row>
       </template>
       <AiCardList :test-ai-result-list="testAiResultList" v-if="testAiResultList.length > 0"></AiCardList>
@@ -22,7 +22,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const testAiResultList = ref<TestAiResultVO[]>([]);
 const buttonLoading = ref(false);
-const loading = ref(true);
+const loading = ref(false);
 const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
 const single = ref(true);
@@ -70,16 +70,25 @@ const data = reactive<PageData<TestAiResultForm, TestAiResultQuery>>({
 
 const { queryParams, form, rules } = toRefs(data);
 
+const handleQuery = () => {
+  loading.value = true;
+  try {
+    queryParams.value.pageNum = 1;
+    getList();
+  } finally {
+    loading.value = false;
+  }
+};
 /** 查询AI 操作日志列表 */
 const getList = async (taskId: string) => {
-  loading.value = true;
+  // loading.value = true;
   if (taskId) {
     queryParams.value.taskId = taskId;
   }
   const res = await listTestAiResult(queryParams.value);
   testAiResultList.value = res.rows;
   total.value = res.total;
-  loading.value = false;
+  // loading.value = false;
 };
 
 /** 取消按钮 */
@@ -92,12 +101,6 @@ const cancel = () => {
 const reset = () => {
   form.value = { ...initFormData };
   testAiResultFormRef.value?.resetFields();
-};
-
-/** 搜索按钮操作 */
-const handleQuery = () => {
-  queryParams.value.pageNum = 1;
-  getList();
 };
 
 /** 重置按钮操作 */

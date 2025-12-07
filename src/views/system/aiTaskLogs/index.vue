@@ -74,6 +74,9 @@
       <el-tab-pane label="操作日志" name="log">
         <TestAiResult ref="aiResultref"></TestAiResult>
       </el-tab-pane>
+      <el-tab-pane label="历史仓位" name="history">
+        <HistoryPosition :task="taskVo"></HistoryPosition>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -102,6 +105,7 @@ import type { TabsPaneContext } from 'element-plus';
 import { getAiTask } from '@/api/system/aiTask';
 import { AiTaskVO } from '@/api/system/aiTask/types';
 import PositionWidget from '@/views/components/widgets/PositionWidget.vue';
+import HistoryPosition from '@/views/system/historyPosition/HistoryPosition.vue';
 const xData = ref([]);
 const seriesData = ref([]);
 const xDataFreeBalance = ref([]);
