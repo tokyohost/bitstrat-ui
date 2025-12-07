@@ -12,7 +12,12 @@
 
     <!-- 卡片列表（每条占整行） -->
     <div class="space-y-4">
-      <el-card v-for="item in list" :key="item.id" class="p-4 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all">
+      <el-card
+        v-for="item in list"
+        :shadow="'never'"
+        :key="item.id"
+        class="p-4 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all"
+      >
         <!-- 头部：基本信息 -->
         <div class="flex justify-between items-start">
           <div class="flex items-start gap-3">
