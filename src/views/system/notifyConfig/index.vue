@@ -25,15 +25,15 @@
           <el-col :span="1.5">
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:notifyConfig:add']">新增</el-button>
           </el-col>
-<!--          <el-col :span="1.5">-->
-<!--            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:notifyConfig:edit']">修改</el-button>-->
-<!--          </el-col>-->
-<!--          <el-col :span="1.5">-->
-<!--            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:notifyConfig:remove']">删除</el-button>-->
-<!--          </el-col>-->
-<!--          <el-col :span="1.5">-->
-<!--            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:notifyConfig:export']">导出</el-button>-->
-<!--          </el-col>-->
+          <!--          <el-col :span="1.5">-->
+          <!--            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:notifyConfig:edit']">修改</el-button>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="1.5">-->
+          <!--            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:notifyConfig:remove']">删除</el-button>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="1.5">-->
+          <!--            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:notifyConfig:export']">导出</el-button>-->
+          <!--          </el-col>-->
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
@@ -118,10 +118,10 @@ const initFormData: NotifyConfigForm = {
   type: undefined,
   dingToken: undefined,
   dingSecret: undefined,
-  telegramChatId: undefined,
-}
+  telegramChatId: undefined
+};
 const data = reactive<PageData<NotifyConfigForm, NotifyConfigQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -132,15 +132,9 @@ const data = reactive<PageData<NotifyConfigForm, NotifyConfigQuery>>({
     params: {}
   },
   rules: {
-    type: [
-      { required: true, message: "配置类型不能为空", trigger: "change" }
-    ],
-    dingToken: [
-      { required: true, message: "钉钉 token不能为空", trigger: "blur" }
-    ],
-    telegramChatId: [
-      { required: true, message: "tg chart id不能为空", trigger: "blur" }
-    ]
+    type: [{ required: true, message: '配置类型不能为空', trigger: 'change' }],
+    dingToken: [{ required: true, message: '钉钉 token不能为空', trigger: 'blur' }],
+    telegramChatId: [{ required: true, message: 'tg chart id不能为空', trigger: 'blur' }]
   }
 });
 
@@ -153,50 +147,50 @@ const getList = async () => {
   notifyConfigList.value = res.rows;
   total.value = res.total;
   loading.value = false;
-}
+};
 
 /** 取消按钮 */
 const cancel = () => {
   reset();
   dialog.visible = false;
-}
+};
 
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
+  form.value = { ...initFormData };
   notifyConfigFormRef.value?.resetFields();
-}
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: NotifyConfigVO[]) => {
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-}
+};
 
 /** 新增按钮操作 */
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = "添加用户通知设置";
-}
+  dialog.title = '创建通知配置';
+};
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: NotifyConfigVO) => {
   reset();
-  const _id = row?.id || ids.value[0]
+  const _id = row?.id || ids.value[0];
   const res = await getNotifyConfig(_id);
   Object.assign(form.value, res.data);
   // 将 type 转换为数字类型
@@ -209,8 +203,8 @@ const handleUpdate = async (row?: NotifyConfigVO) => {
     form.value.telegramChatId = res.data.telegramChatId;
   }
   dialog.visible = true;
-  dialog.title = "修改用户通知设置";
-}
+  dialog.title = '编辑通知配置';
+};
 
 /** 提交按钮 */
 const submitForm = () => {
@@ -218,39 +212,43 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateNotifyConfig(form.value).finally(() =>  buttonLoading.value = false);
+        await updateNotifyConfig(form.value).finally(() => (buttonLoading.value = false));
       } else {
-        await addNotifyConfig(form.value).finally(() =>  buttonLoading.value = false);
+        await addNotifyConfig(form.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess("操作成功");
+      proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();
     }
   });
-}
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: NotifyConfigVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除选中的数据项？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认删除选中的数据项？').finally(() => (loading.value = false));
   await delNotifyConfig(_ids);
-  proxy?.$modal.msgSuccess("删除成功");
+  proxy?.$modal.msgSuccess('删除成功');
   await getList();
-}
+};
 
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/notifyConfig/export', {
-    ...queryParams.value
-  }, `notifyConfig_${new Date().getTime()}.xlsx`)
-}
+  proxy?.download(
+    'system/notifyConfig/export',
+    {
+      ...queryParams.value
+    },
+    `notifyConfig_${new Date().getTime()}.xlsx`
+  );
+};
 
 /** 配置类型变化处理 */
 const handleTypeChange = (value: number) => {
   form.value.dingToken = undefined;
   form.value.dingSecret = undefined;
   form.value.telegramChatId = undefined;
-}
+};
 
 onMounted(() => {
   getList();

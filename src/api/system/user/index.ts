@@ -2,7 +2,7 @@ import { DeptTreeVO, DeptVO } from './../dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { UserForm, UserQuery, UserVO, UserInfoVO } from './types';
+import { UserForm, UserQuery, UserVO, UserInfoVO, SysUserAddBalanceBo } from './types';
 import { parseStrEmpty } from '@/utils/ruoyi';
 
 /**
@@ -45,6 +45,13 @@ export const getUser = (userId?: string | number): AxiosPromise<UserInfoVO> => {
 export const addUser = (data: UserForm) => {
   return request({
     url: '/system/user',
+    method: 'post',
+    data: data
+  });
+};
+export const addBalance = (data: SysUserAddBalanceBo) => {
+  return request({
+    url: '/system/user/addBalance',
     method: 'post',
     data: data
   });
@@ -224,6 +231,7 @@ export default {
   getUser,
   optionSelect,
   addUser,
+  addBalance,
   updateUser,
   delUser,
   resetUserPwd,

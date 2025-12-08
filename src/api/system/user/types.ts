@@ -85,3 +85,19 @@ export interface ResetPwdForm {
   newPassword: string;
   confirmPassword: string;
 }
+
+/**
+ * @author xuehui_li
+ * @Version 1.0
+ * @date 2025/12/8 16:16
+ * @Content
+ */
+export interface SysUserAddBalanceBo {
+  userId?: number;
+
+  balance?: number;
+
+  type?: number;
+
+  remark?: string;
+}

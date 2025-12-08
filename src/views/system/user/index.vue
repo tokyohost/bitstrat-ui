@@ -128,6 +128,15 @@
                 <el-tooltip v-if="scope.row.userId !== 1" content="分配角色" placement="top">
                   <el-button v-hasPermi="['system:user:edit']" link type="primary" icon="CircleCheck" @click="handleAuthRole(scope.row)"></el-button>
                 </el-tooltip>
+                <el-tooltip v-if="scope.row.userId !== 1" content="充值" placement="top">
+                  <el-button
+                    v-has-permi="['system:user:addBalance']"
+                    type="primary"
+                    link
+                    icon="Plus"
+                    @click="handleAddBalance(scope.row)"
+                  ></el-button>
+                </el-tooltip>
               </template>
             </el-table-column>
           </el-table>
@@ -283,12 +292,34 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="addbalanceVisible" title="充值">
+      <el-form :model="addBalanceForm" ref="addBalanceFormRef" :rules="addBalanceRules">
+        <el-form-item label="充值类型" prop="type">
+          <el-select v-model="addBalanceForm.type" placeholder="请选择充值类型">
+            <el-option v-for="dict in balance_log_type" :key="dict.value" :label="dict.label" :value="dict.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="充值金额" prop="balance">
+          <el-input type="number" :min="1" :step="0.01" placeholder="请输入充值金额" v-model="addBalanceForm.balance"></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input type="textarea" placeholder="remark" v-model="addBalanceForm.remark"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitAddBalance">确 定</el-button>
+          <el-button @click="addbalanceVisible = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="User" lang="ts">
 import api from '@/api/system/user';
-import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
+import { SysUserAddBalanceBo, UserForm, UserQuery, UserVO } from '@/api/system/user/types';
 import { DeptTreeVO, DeptVO } from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostQuery, PostVO } from '@/api/system/post/types';
@@ -301,6 +332,7 @@ import { checkPermi } from '@/utils/permission';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { balance_log_type } = toRefs<any>(proxy?.useDict('balance_log_type'));
 const { sys_normal_disable, sys_user_sex } = toRefs<any>(proxy?.useDict('sys_normal_disable', 'sys_user_sex'));
 const userList = ref<UserVO[]>();
 const loading = ref(true);
@@ -367,6 +399,40 @@ const initFormData: UserForm = {
   postIds: [],
   roleIds: []
 };
+
+const addBalanceRules = reactive<any>({
+  type: [{ required: true, message: '充值类型不能为空', trigger: 'blur' }],
+  balance: [
+    { required: true, message: '充值金额不能为空', trigger: 'blur' },
+    {
+      pattern: /^(0|[1-9]\d*)(\.\d{1,2})?$/,
+      message: '请输入正确的金额，最多两位小数',
+      trigger: 'blur'
+    },
+    {
+      // 自定义验证器
+      validator: (rule, value, callback) => {
+        // 将输入值转换为数字
+        const balance = Number(value);
+        const minAmount = 1.0; // 最小限制金额
+
+        // 检查值是否为有效数字且不小于最小金额
+        if (isNaN(balance)) {
+          // 如果前面通过了 pattern 验证，理论上不会触发这里
+          callback();
+        } else if (balance < minAmount) {
+          // 验证失败：金额小于最小限制
+          callback(new Error(`充值金额不能低于 ${minAmount.toFixed(2)}`));
+        } else {
+          // 验证通过
+          callback();
+        }
+      },
+      // 确保在 blur 或 change 时触发验证
+      trigger: ['blur', 'change']
+    }
+  ]
+});
 
 const initData: PageData<UserForm, UserQuery> = {
   form: { ...initFormData },
@@ -603,6 +669,29 @@ const handleAdd = async () => {
   postOptions.value = data.posts;
   roleOptions.value = data.roles;
   form.value.password = initPassword.value.toString();
+};
+const addBalanceFormRef = useTemplateRef('addBalanceFormRef');
+
+const addBalanceForm = ref<SysUserAddBalanceBo>({} as SysUserAddBalanceBo);
+const addbalanceVisible = ref(false);
+const handleAddBalance = (item: UserVO) => {
+  addBalanceForm.value = {
+    userId: item.userId,
+    userName: item.userName,
+    balance: 0
+  } as SysUserAddBalanceBo;
+  addbalanceVisible.value = true;
+};
+
+const submitAddBalance = async () => {
+  addBalanceFormRef.value.validate(async (value) => {
+    if (value) {
+      await api.addBalance(addBalanceForm.value);
+      proxy?.$modal.msgSuccess('充值成功');
+      addbalanceVisible.value = false;
+      await getList();
+    }
+  });
 };
 
 /** 修改按钮操作 */
