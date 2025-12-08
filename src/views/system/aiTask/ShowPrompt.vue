@@ -56,11 +56,12 @@ const previewText = computed(() => {
 <style scoped lang="scss">
 .content-wrapper {
   margin-bottom: 8px;
+  color: var(--el-text-color);
 }
 
 .content-block {
   white-space: pre-wrap;
-  background: #f7f7f8;
+  background: var(--el-bg-color);
   border-radius: 8px;
   padding: 16px;
   font-size: 14px;
@@ -68,6 +69,7 @@ const previewText = computed(() => {
   font-family: 'JetBrains Mono', Consolas, monospace;
   overflow-x: auto;
   transition: max-height 0.3s ease;
+  border: 1px solid var(--el-border-color-light);
 }
 
 .toggle-btn {

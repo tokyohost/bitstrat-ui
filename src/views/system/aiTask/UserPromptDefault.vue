@@ -17,12 +17,14 @@ const formattedText = computed(() => {
 <style scoped lang="scss">
 .content-block {
   white-space: pre-wrap; /* 保留换行，并自动换行 */
-  background: #f7f7f8;
+  background: var(--el-bg-color);
   border-radius: 8px;
   padding: 16px;
   font-size: 14px;
   line-height: 1.6;
   font-family: 'JetBrains Mono', Consolas, monospace;
   overflow-x: auto; /* 横向可滚动 */
+  color: var(--el-text-color-secondary);
+  border: 1px solid var(--el-border-color-light);
 }
 </style>

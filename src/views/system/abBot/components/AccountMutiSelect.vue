@@ -2,47 +2,33 @@
   <div class="p-2 w-full">
     <el-button type="primary" @click="dialog.visible = true">选择账户</el-button>
     <el-card shadow="never">
-      <el-table
-        class="w-full"
-        v-loading="loading"
-        :data="selectedApis"
-        :row-key="row => row.id"
-      >
+      <el-table class="w-full" v-loading="loading" :data="selectedApis" :row-key="(row) => row.id">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="交易所" align="center" prop="exchangeName" />
         <el-table-column label="名称" align="center" prop="name" />
-        <el-table-column label="API Key" align="center" prop="apiKey" >
+        <el-table-column label="API Key" align="center" prop="apiKey">
           <template #default="scope">
             <el-tooltip class="item" effect="dark" trigger="click" :content="scope.row.apiKey" placement="top">
               <div class="truncate w-full max-w-[180px] hover:cursor-pointer">{{ scope.row.apiKey }}</div>
             </el-tooltip>
           </template>
-          </el-table-column>
-        <el-table-column label="总余额" align="center" prop="balance" >
-          <template #default="scope">
-            {{scope.row.balance ?? "-"}} USDT
-          </template>
         </el-table-column>
-        <el-table-column label="可用额度" align="center" prop="freeBalance" >
-          <template #default="scope">
-            {{scope.row.balance ?? "-"}} USDT
-          </template>
+        <el-table-column label="总余额" align="center" prop="balance">
+          <template #default="scope"> {{ scope.row.balance ?? '-' }} USDT </template>
+        </el-table-column>
+        <el-table-column label="可用额度" align="center" prop="freeBalance">
+          <template #default="scope"> {{ scope.row.balance ?? '-' }} USDT </template>
         </el-table-column>
         <el-table-column label="余额更新时间" align="center" prop="balanceUpdate" />
         <el-table-column label="创建时间" align="center" prop="createTime" />
       </el-table>
     </el-card>
 
-    <el-dialog
-      v-model="dialog.visible"
-      title="选择 API"
-      width="1000px"
-      @click.stop
-    >
+    <el-dialog v-model="dialog.visible" title="选择 API" @click.stop>
       <transition>
         <div v-show="showSearch" class="mb-[10px]">
           <el-card shadow="hover">
-            <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="100">
+            <el-form ref="queryFormRef" :model="queryParams" label-position="top" :inline="true">
               <el-form-item label="api key" prop="apiKey">
                 <el-input v-model="queryParams.apiKey" placeholder="请输入api key" clearable @keyup.enter="handleQuery" />
               </el-form-item>
@@ -63,28 +49,24 @@
         v-loading="loading"
         :data="apiList"
         @selection-change="handleSelectionChange"
-        :row-key="row => row.id"
+        :row-key="(row) => row.id"
         :default-selection="selectedApis"
       >
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="交易所" align="center" prop="exchangeName" />
         <el-table-column label="名称" align="center" prop="name" />
-        <el-table-column label="API Key" align="center" prop="apiKey" >
+        <el-table-column label="API Key" align="center" prop="apiKey">
           <template #default="scope">
             <el-tooltip class="item" trigger="click" effect="dark" :content="scope.row.apiKey" placement="top">
               <div class="truncate w-full max-w-[180px] hover:cursor-pointer">{{ scope.row.apiKey }}</div>
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="总余额" align="center" prop="balance" >
-          <template #default="scope">
-            {{scope.row.balance ?? "-"}} USDT
-          </template>
+        <el-table-column label="总余额" align="center" prop="balance">
+          <template #default="scope"> {{ scope.row.balance ?? '-' }} USDT </template>
         </el-table-column>
-        <el-table-column label="可用额度" align="center" prop="freeBalance" >
-          <template #default="scope">
-            {{scope.row.balance ?? "-"}} USDT
-          </template>
+        <el-table-column label="可用额度" align="center" prop="freeBalance">
+          <template #default="scope"> {{ scope.row.balance ?? '-' }} USDT </template>
         </el-table-column>
         <el-table-column label="余额更新时间" align="center" prop="balanceUpdate" />
         <el-table-column label="创建时间" align="center" prop="createTime" />
@@ -154,10 +136,10 @@ const resetQuery = () => {
 };
 const syncBalanceBtn = async () => {
   loading.value = true;
-  let axiosResponse = await syncBalance();
-  ElMessage.success(axiosResponse.msg)
+  const axiosResponse = await syncBalance();
+  ElMessage.success(axiosResponse.msg);
   loading.value = false;
-}
+};
 /** 提交选择 */
 const submitSelection = () => {
   emit('update:modelValue', selectedApis.value);

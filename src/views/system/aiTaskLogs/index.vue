@@ -1,45 +1,31 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div v-show="showSearch" class="mb-[10px]">
-        <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <!--            <el-form-item label="金额" prop="equity">-->
-            <!--              <el-input v-model="queryParams.equity" placeholder="请输入金额" clearable @keyup.enter="handleQuery" />-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item label="可用" prop="freeBalance">-->
-            <!--              <el-input v-model="queryParams.freeBalance" placeholder="请输入可用" clearable @keyup.enter="handleQuery" />-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item label="时间戳" prop="time">-->
-            <!--              <el-date-picker clearable v-model="queryParams.time" type="date" value-format="YYYY-MM-DD" placeholder="请选择时间戳" />-->
-            <!--            </el-form-item>-->
-            <el-form-item>
-              <!--              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>-->
-              <el-button type="primary" icon="Search" @click="getChat">刷新图表</el-button>
-              <!--              <el-button icon="Refresh" @click="resetQuery">重置</el-button>-->
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </div>
-    </transition>
-
     <el-card shadow="never">
       <template #header>
-        <div class="flex flex-col md:flex-row justify-end items-end md:items-center gap-3">
-          <span class="text-sm font-medium text-gray-700">选择查询周期:</span>
-          <el-date-picker
-            v-model="dateRange"
-            type="daterange"
-            unlink-panels
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            size="default"
-            :shortcuts="shortcuts"
-            class="chart-date-picker"
-            @change="handleDateChange"
-          />
-          <el-button type="primary" size="default" @click="handleQuery">查询</el-button>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center w-full">
+          <div class="font-bold text-lg mb-3 md:mb-0">
+            {{ taskVo?.name || '-' }}
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
+            <el-date-picker
+              v-model="dateRange"
+              type="daterange"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              size="default"
+              :shortcuts="shortcuts"
+              @change="handleDateChange"
+              class="chart-date-picker w-full"
+            />
+
+            <div class="flex w-full md:w-auto gap-3">
+              <el-button type="primary" size="default" @click="handleQuery" class="flex-grow md:w-auto"> 查询 </el-button>
+              <el-button circle icon="Refresh" @click="getChat" class="flex-shrink-0" />
+            </div>
+          </div>
         </div>
       </template>
       <div class="flex flex-col md:flex-row gap-2">

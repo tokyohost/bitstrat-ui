@@ -1,14 +1,45 @@
 <template>
   <div>
-    <!-- 图标按钮 -->
-    <el-popover placement="bottom-end" trigger="click" width="300">
-      <template #reference>
-        <el-icon :size="22" class="api-setting ml-1 mr-1" style="cursor: pointer">
-          <Connection />
-        </el-icon>
-      </template>
+    <div v-if="popover">
+      <!-- 图标按钮 -->
+      <el-popover placement="bottom-end" trigger="click" width="300">
+        <template #reference>
+          <el-icon :size="22" class="api-setting ml-1 mr-1" style="cursor: pointer">
+            <Connection />
+          </el-icon>
+        </template>
 
-      <!-- API 设置项列表 -->
+        <!-- API 设置项列表 -->
+        <div class="exchange-list" v-loading="loading">
+          <div class="flex justify-between">
+            <p style="margin-top: 0">{{ proxy.$t('navbar.socketStatus') }}</p>
+            <el-icon class="hover:cursor-pointer" @click="refresh"><RefreshLeft /></el-icon>
+          </div>
+          <el-collapse accordion>
+            <el-collapse-item :title="data.exchangeName" v-for="data in exchangeList" :key="data.exchangeName">
+              <template v-slot:title>
+                <ExchangeLogo :exchange="data.exchangeName"></ExchangeLogo>
+              </template>
+              <div class="exchange-item" v-for="item in data.datas">
+                <div class="api-seting-item" @click="exchangeConnect(item)">
+                  <div>
+                    {{ item.apiName ?? '-' }}
+                  </div>
+                  <div class="flex justify-center">
+                    <dict-tag :options="socket_status" :value="item.status" :i18n-profilx="'setting.api'" />
+                    <el-tooltip effect="dark" :content="item.nodeName ?? '-'" placement="top-end">
+                      <el-tag type="success" class="ml-1" v-if="item.status == 'active'">{{ item.dely ?? '0' }}ms</el-tag>
+                    </el-tooltip>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+      </el-popover>
+    </div>
+
+    <div v-else>
       <div class="exchange-list" v-loading="loading">
         <div class="flex justify-between">
           <p style="margin-top: 0">{{ proxy.$t('navbar.socketStatus') }}</p>
@@ -35,7 +66,7 @@
           </el-collapse-item>
         </el-collapse>
       </div>
-    </el-popover>
+    </div>
   </div>
 </template>
 
@@ -52,6 +83,13 @@ import { checkWebsocketStatus, checkWebsocketStatusByAccountId } from '@/views/s
 import { websocketExAccount } from '@/views/system/crossExchangeArbitrageTask/components/type';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { socket_status } = toRefs<any>(proxy?.useDict('socket_status'));
+
+const props = defineProps({
+  popover: {
+    type: Boolean,
+    default: true
+  }
+});
 
 // 交易所列表
 const exchangeList = ref<WebsocketExStatus[]>([

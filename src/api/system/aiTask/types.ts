@@ -58,6 +58,12 @@ export interface AiTaskVO {
 
   exchange?: string;
   apiId?: string | number;
+
+  leverage: Array<number>;
+  leverageMin: undefined;
+  leverageMax: undefined;
+  shortTermInterval: string;
+  longTermInterval: string;
 }
 
 export interface AiTaskForm extends BaseEntity {
@@ -123,6 +129,8 @@ export interface AiTaskForm extends BaseEntity {
   leverage: Array<number>;
   leverageMin: undefined;
   leverageMax: undefined;
+  shortTermInterval: string;
+  longTermInterval: string;
 }
 
 export interface AiTaskQuery extends PageQuery {

@@ -3,17 +3,19 @@
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="100">
-            <el-form-item label="api key" prop="apiKey">
-              <el-input v-model="queryParams.apiKey" placeholder="请输入api key" clearable @keyup.enter="handleQuery" />
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-position="left">
+            <el-form-item label="APIKey" prop="apiKey">
+              <el-input v-model="queryParams.apiKey" placeholder="请输入API KEY" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="名称" prop="name">
               <el-input v-model="queryParams.name" placeholder="请输入API名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-              <el-button icon="Refresh" @click="syncBalanceBtn">更新账户余额</el-button>
+              <div class="flex">
+                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+                <el-button icon="Refresh" @click="syncBalanceBtn">更新余额</el-button>
+              </div>
             </el-form-item>
           </el-form>
         </el-card>
@@ -21,6 +23,11 @@
     </transition>
 
     <el-card shadow="never">
+      <template #header>
+        <el-row :gutter="10" class="mb8">
+          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="getList"></right-toolbar>
+        </el-row>
+      </template>
       <el-table v-loading="loading" :data="apiList" @selection-change="handleSelectionChange">
         <!--        <el-table-column type="selection" width="55" align="center" />-->
         <el-table-column label="交易所" align="center" prop="exchangeName" />

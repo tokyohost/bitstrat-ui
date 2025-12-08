@@ -6,20 +6,20 @@
 
     <div class="right-menu flex align-center">
       <template v-if="appStore.device !== 'mobile'">
-        <el-select
-          v-if="userId === 1 && tenantEnabled"
-          v-model="companyName"
-          class="min-w-244px"
-          clearable
-          filterable
-          reserve-keyword
-          :placeholder="proxy.$t('navbar.selectTenant')"
-          @change="dynamicTenantEvent"
-          @clear="dynamicClearEvent"
-        >
-          <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"> </el-option>
-          <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
-        </el-select>
+        <!--        <el-select-->
+        <!--          v-if="userId === 1 && tenantEnabled"-->
+        <!--          v-model="companyName"-->
+        <!--          class="min-w-244px"-->
+        <!--          clearable-->
+        <!--          filterable-->
+        <!--          reserve-keyword-->
+        <!--          :placeholder="proxy.$t('navbar.selectTenant')"-->
+        <!--          @change="dynamicTenantEvent"-->
+        <!--          @clear="dynamicClearEvent"-->
+        <!--        >-->
+        <!--          <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"> </el-option>-->
+        <!--          <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>-->
+        <!--        </el-select>-->
 
         <search-menu ref="searchMenuRef" />
         <!--        <el-tooltip content="搜索" effect="dark" placement="bottom">-->
@@ -29,10 +29,7 @@
         <!--        </el-tooltip>-->
 
         <!-- 余额 -->
-        <div>
-          <BalanceNav :balance="balance" @refresh="loadBalance" @to-recharge="toRecharge" @to-account="goAccountBalance"></BalanceNav>
-          <RechargeDialog :show-button="false" v-model:visible="rechargeDialog" @recharge-success="handleRechargeSuccess" />
-        </div>
+
         <!-- VIP标识 -->
         <!--        <el-tooltip :content="isVIP ? '已开通VIP' : '开通VIP'" effect="dark" placement="bottom">-->
         <!--          <div class="vip-indicator" @click="handleVipClick">-->
@@ -84,10 +81,6 @@
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip :content="proxy.$t('navbar.language')" effect="dark" placement="bottom">
-          <lang-select id="lang-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
-
         <el-tooltip :content="proxy.$t('navbar.layoutSize')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
@@ -101,6 +94,13 @@
         <!--          <NotifySettingsPopup></NotifySettingsPopup>-->
         <!--        </el-tooltip>-->
       </template>
+      <el-tooltip :content="proxy.$t('navbar.language')" effect="dark" placement="bottom">
+        <lang-select id="lang-select" class="right-menu-item hover-effect" />
+      </el-tooltip>
+      <div>
+        <BalanceNav :balance="balance" @refresh="loadBalance" @to-recharge="toRecharge" @to-account="goAccountBalance"></BalanceNav>
+        <RechargeDialog :show-button="false" v-model:visible="rechargeDialog" @recharge-success="handleRechargeSuccess" />
+      </div>
       <div class="avatar-container">
         <el-dropdown class="right-menu-item hover-effect" trigger="click" @command="handleCommand">
           <div class="avatar-wrapper">
@@ -115,6 +115,12 @@
               <el-dropdown-item v-if="settingsStore.showSettings" command="setLayout">
                 <span>{{ proxy.$t('navbar.layoutSetting') }}</span>
               </el-dropdown-item>
+              <el-dropdown-item command="socketStatus">
+                <span>{{ proxy.$t('navbar.socketStatus') }}</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="apiSetting">
+                <span>{{ proxy.$t('navbar.apiSetting') }}</span>
+              </el-dropdown-item>
               <el-dropdown-item divided command="logout">
                 <span>{{ proxy.$t('navbar.logout') }}</span>
               </el-dropdown-item>
@@ -123,6 +129,14 @@
         </el-dropdown>
       </div>
     </div>
+    <el-dialog v-model="showDialog">
+      <div v-if="comoponeDetails === 'socketStatus'">
+        <SocketStatusPopup :popover="false" />
+      </div>
+      <div v-if="comoponeDetails === 'apiSetting'">
+        <ApiSettingsPopup :popover="false"></ApiSettingsPopup>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -242,13 +256,27 @@ const logout = async () => {
 };
 
 const emits = defineEmits(['setLayout']);
+
 const setLayout = () => {
   emits('setLayout');
+};
+const showDialog = ref(false);
+const comoponeDetails = ref<string>(null);
+
+const socketStatus = () => {
+  comoponeDetails.value = 'socketStatus';
+  showDialog.value = true;
+};
+const apiSetting = () => {
+  comoponeDetails.value = 'apiSetting';
+  showDialog.value = true;
 };
 // 定义Command方法对象 通过key直接调用方法
 const commandMap: { [key: string]: any } = {
   setLayout,
-  logout
+  logout,
+  socketStatus,
+  apiSetting
 };
 const handleCommand = (command: string) => {
   // 判断是否存在该方法

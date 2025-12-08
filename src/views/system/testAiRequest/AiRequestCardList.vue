@@ -7,8 +7,8 @@
       :shadow="item.status === 1 ? 'always' : 'hover'"
       :class="[statusClasses(item.status), cardThemeClasses]"
     >
-      <div class="flex items-center justify-between p-8">
-        <div class="flex items-center space-x-6 min-w-0">
+      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between p-4 md:p-8">
+        <div class="flex items-center space-x-4 md:space-x-6 min-w-0 mb-3 md:mb-0">
           <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full" :class="statusIndicatorClasses(item.status)">
             <el-icon v-if="item.status === 2" class="text-white"><Check /></el-icon>
             <el-icon v-else-if="item.status === 3" class="text-white"><Warning /></el-icon>
@@ -21,33 +21,35 @@
 
             <div class="ai-sub text-sm text-gray-500 flex items-center space-x-1 mt-1">
               <el-icon><Clock /></el-icon>
-              <span>发起于: {{ item.createTime }}</span>
+              <span class="text-xs md:text-sm">发起于: {{ item.createTime.split(' ')[0] }}...</span>
               <el-tag v-if="![1, 2, 3].includes(item.status)" type="danger" size="small" class="ml-2">状态异常</el-tag>
             </div>
           </div>
         </div>
 
-        <div class="flex items-center space-x-6 flex-shrink-0">
-          <div class="hidden md:flex space-x-6 text-sm">
-            <div v-if="item.status === 2" class="ai-metric">
-              <div class="ai-label">响应时间:</div>
+        <div class="flex flex-col md:flex-row items-stretch md:items-center space-y-3 md:space-y-0 md:space-x-6 flex-shrink-0 w-full md:w-auto">
+          <div class="flex justify-between md:space-x-6 text-sm w-full md:w-auto">
+            <div v-if="item.status === 2" class="ai-metric w-1/3 md:w-auto text-center md:text-left">
+              <div class="ai-label text-gray-500">响应:</div>
               <div class="ai-value font-mono text-blue-600">{{ item.responseTime || 'N/A' }}</div>
             </div>
 
-            <div class="ai-metric">
-              <div class="ai-label">Token 消耗</div>
+            <div class="ai-metric w-1/3 md:w-auto text-center md:text-left">
+              <div class="ai-label text-gray-500">Token:</div>
               <div class="ai-value font-mono">{{ item.token || 'N/A' }}</div>
             </div>
 
-            <div class="ai-metric">
-              <div class="ai-label">成本</div>
+            <div class="ai-metric w-1/3 md:w-auto text-center md:text-left">
+              <div class="ai-label text-gray-500">成本:</div>
               <div class="ai-value font-mono text-green-600">{{ item.price || 'N/A' }}</div>
             </div>
           </div>
 
-          <ImagePreviewOss v-if="item.aiConfig && item.aiConfig.imgUrl" :src="item.aiConfig.imgUrl" class="w-15 h-10 rounded-lg flex-shrink-0" />
+          <div class="flex justify-between items-center w-full md:w-auto mt-2 md:mt-0 pt-2 border-t md:border-t-0">
+            <ImagePreviewOss v-if="item.aiConfig && item.aiConfig.imgUrl" :src="item.aiConfig.imgUrl" class="w-10 h-10 rounded-lg flex-shrink-0" />
 
-          <el-button type="primary" :icon="Tickets" link :disabled="item.status === 1" @click="emit('view', item)"> 详情 </el-button>
+            <el-button type="primary" :icon="Tickets" link :disabled="item.status === 1" @click="emit('view', item)"> 详情 </el-button>
+          </div>
         </div>
       </div>
 

@@ -29,7 +29,7 @@
       </template>
 
       <!-- 卡片列表 -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" :style="{ color: 'var(--el-text-color)' }">
         <el-card
           v-for="item in aiTaskList"
           :key="item.id"
@@ -38,7 +38,7 @@
           <!-- 顶部：标题 + 状态 -->
           <div class="flex justify-between items-center mb-3">
             <div class="flex justify-start gap-2">
-              <div class="text-lg font-bold text-gray-900">{{ item.name }}</div>
+              <div class="text-lg font-bold text-gray-900" :style="{ color: 'var(--el-text-color)' }">{{ item.name }}</div>
               <ExchangeLogo :exchange="item.exchange"></ExchangeLogo>
             </div>
 
@@ -52,7 +52,7 @@
           <div class="space-y-2 text-sm text-gray-600 leading-normal">
             <div class="flex justify-between">
               <span class="font-600">币种：</span>
-              <span class="text-gray-800">{{ item.symbols }}</span>
+              <span class="text-gray-800" :style="{ color: 'var(--el-text-color)' }">{{ item.symbols }}</span>
             </div>
 
             <div class="flex justify-between">
@@ -103,8 +103,8 @@
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改AI任务对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="50%" append-to-body>
-      <el-form ref="aiTaskFormRef" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="dialog.title" v-model="dialog.visible" append-to-body custom-class="mobile-dialog">
+      <el-form ref="aiTaskFormRef" :model="form" :rules="rules" label-width="80px" label-position="top">
         <el-tabs v-model="activeTab" :tab-position="tabPosition" style="width: 100%" class="demo-tabs">
           <el-tab-pane name="basic" label="基本配置">
             <el-form-item label="任务名称" prop="name">
@@ -146,7 +146,11 @@
             </el-form-item>
             <el-form-item label="初始资金" prop="startBalance">
               <template #label>
-                <el-popover title="初始金额" content="让AI记住他开始交易时的成本线" placement="top-start">
+                <el-popover
+                  title="初始金额"
+                  content="让AI记住他开始交易时的成本线(尽量填写账户/子账户余额,获取余额时获取整个账户的USDT余额)"
+                  placement="top-start"
+                >
                   <template #reference>
                     <span>初始资金</span>
                   </template>
@@ -161,6 +165,17 @@
               <AiConfigSelector v-model="form.aiWorkflowId"></AiConfigSelector>
             </el-form-item>
             <el-form-item label="时间粒度" prop="interval">
+              <template #label>
+                <el-popover
+                  title="时间粒度"
+                  content="系统每隔多久将行情数据提供给AI并等待AI做出交易决策（选择时不易过短，需要将ai思考时间考虑在内）"
+                  placement="top-start"
+                >
+                  <template #reference>
+                    <span>时间粒度</span>
+                  </template>
+                </el-popover>
+              </template>
               <div class="interval-scroll flex items-center gap-1">
                 <el-radio-group v-model="form.interval" size="small">
                   <div class="inline-flex gap-0">
@@ -184,6 +199,49 @@
                 <el-slider v-model="leverageValue" range :marks="marks" :min="1" :max="20" />
               </div>
             </el-form-item>
+            <!--  1m/3m/5m/15m/30m/1H/4H/6H/12H/1D/3D/1W/1M-->
+            <div class="mt-5 pt-5">
+              <el-form-item label="短期指标" prop="shortTermInterval">
+                <template #label>
+                  <el-popover title="短期指标" content="每次调用AI时获取多长时间的K线数据作为短期指标EMA/MACD/RSI 等的数据源" placement="top-start">
+                    <template #reference>
+                      <span>短期指标</span>
+                    </template>
+                  </el-popover>
+                </template>
+                <div class="interval-scroll flex items-center gap-1">
+                  <el-radio-group v-model="form.shortTermInterval" size="small">
+                    <div class="inline-flex gap-0">
+                      <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
+                        {{ item.name }}
+                      </el-radio>
+                    </div>
+                  </el-radio-group>
+                </div>
+              </el-form-item>
+              <el-form-item label="长期指标" prop="longTermInterval">
+                <template #label>
+                  <el-popover
+                    title="长期指标"
+                    content="每次调用AI时获取多长时间的K线数据作为长期指标EMA/MACD/RSI 等的数据源,注意!!长期指标必须比短期指标更长时!!"
+                    placement="top-start"
+                  >
+                    <template #reference>
+                      <span>长期指标</span>
+                    </template>
+                  </el-popover>
+                </template>
+                <div class="interval-scroll flex items-center gap-1">
+                  <el-radio-group v-model="form.longTermInterval" size="small">
+                    <div class="inline-flex gap-0">
+                      <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
+                        {{ item.name }}
+                      </el-radio>
+                    </div>
+                  </el-radio-group>
+                </div>
+              </el-form-item>
+            </div>
           </el-tab-pane>
           <el-tab-pane name="account" label="账号选择">
             <el-form-item label="" label-width="0" prop="apiId">
@@ -216,7 +274,7 @@
                 placeholder="请输入系统提示词,您可以在此要求AI执行的规则、交易逻辑、交易纪律等等,一切取决于您，期待您的完美策略"
                 :autosize="{ minRows: 24 }"
                 :maxlength="20000"
-                :show-word-limit
+                show-word-limit
               />
               <div>
                 <el-button @click="replaceSystemPrompt('system1')">预设提示词1</el-button>
@@ -236,7 +294,7 @@
                 placeholder="请输入您的交易想法，将添加到每次调用API时用户提示词最前"
                 :autosize="{ minRows: 24 }"
                 :maxlength="5000"
-                :show-word-limit
+                show-word-limit
               />
               <div>
                 <div>以下示例内容作为提供给AI的行情数据、当前仓位数据、历史成绩等数据，暂不支持修改，您的交易想法将拼接在示例内容之前:</div>
@@ -269,7 +327,7 @@ import { ExchangeVo } from '@/api/system/common/types';
 import AccountSelectDialog from '@/views/system/analysis/components/AccountSelectDialog.vue';
 import { ApiVO } from '@/api/system/api/types';
 import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
-import SystemPromptDefault from '@/views/system/aiTask/SystemPromptDefault.vue';
+import { isLongTermGreater, isShortTermSmaller, termIntervalList } from '@/views/system/aiTask/default';
 import { loadDefaultTemplate } from '@/views/system/aiTask/default';
 import UserPromptDefault from '@/views/system/aiTask/UserPromptDefault.vue';
 
@@ -293,7 +351,21 @@ const dialog = reactive<DialogOption>({
   title: ''
 });
 import { useRouter } from 'vue-router';
-
+import { CSSProperties } from 'vue';
+const checkLongInterval = (rule, value, callback) => {
+  if (!isLongTermGreater(form.value.shortTermInterval, form.value.longTermInterval)) {
+    callback(new Error('长期周期必须大于短周期'));
+  } else {
+    callback();
+  }
+};
+const checkShortInterval = (rule, value, callback) => {
+  if (!isShortTermSmaller(form.value.shortTermInterval, form.value.longTermInterval)) {
+    callback(new Error('短周期必须小于长期周期'));
+  } else {
+    callback();
+  }
+};
 const router = useRouter();
 const fieldTabMap: Record<string, string> = {
   name: 'basic',
@@ -309,7 +381,6 @@ const fieldTabMap: Record<string, string> = {
 
   userPrompt: 'user'
 };
-
 const steps = ['basic', 'account', 'system', 'user'];
 const initFormData: AiTaskForm = {
   id: undefined,
@@ -325,7 +396,12 @@ const initFormData: AiTaskForm = {
   createUserId: undefined,
   status: undefined,
   interval: undefined,
-  account: undefined
+  account: undefined,
+  leverage: [1, 3],
+  leverageMin: undefined,
+  leverageMax: undefined,
+  shortTermInterval: '1m',
+  longTermInterval: '4H'
 };
 const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
   form: { ...initFormData },
@@ -342,9 +418,7 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
     createUserId: undefined,
     status: undefined,
     interval: undefined,
-    leverage: [1, 3],
-    leverageMin: undefined,
-    leverageMax: undefined,
+
     params: {}
   },
   rules: {
@@ -356,6 +430,8 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
     apiId: [{ required: true, message: '请选择API账号', trigger: 'blur' }],
     systemPrompt: [{ required: true, message: '系统提示词不允许为空', trigger: 'blur' }],
     leverage: [{ required: true, message: '杠杆范围必须选择', trigger: 'blur' }],
+    longTermInterval: [{ required: true, validator: checkLongInterval, trigger: 'change' }],
+    shortTermInterval: [{ required: true, validator: checkShortInterval, trigger: 'change' }],
     startBalance: [
       { required: true, message: '初始资金必须填写', trigger: 'blur' },
       {
@@ -371,9 +447,14 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
     ]
   }
 });
-const tabPosition = ref<TabsInstance['tabPosition']>('left');
-const { queryParams, form, rules } = toRefs(data);
 
+const tabPosition = ref<TabsInstance['tabPosition']>('top');
+const { queryParams, form, rules } = toRefs(data);
+interface Mark {
+  style: CSSProperties;
+  label: string;
+}
+type Marks = Record<number, Mark | string>;
 const marks = reactive<Marks>({
   1: '1x',
   3: '3x',
@@ -501,11 +582,6 @@ const fetchExchangeData = async (exchangeName) => {
   return response.data;
 };
 
-const symbolChange = (selectedSymbol, symbolType) => {
-  const selectedSymbolObj = filteredSymbols.value.find((symbol) => symbol.symbol == selectedSymbol);
-  form.value[symbolType] = selectedSymbolObj.coin;
-};
-
 /** 取消按钮 */
 const cancel = () => {
   reset();
@@ -589,18 +665,19 @@ const submitForm = () => {
       proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();
+    } else {
+      // 获取第一个报错的字段名
+      const firstField = Object.keys(fields)[0];
+
+      // 判断该字段位于哪个 tab 中
+      const tabName = fieldTabMap[firstField];
+
+      if (tabName) {
+        activeTab.value = tabName; // 自动切换 tab
+      }
+
+      console.warn('校验失败字段:', firstField, '所属Tab:', tabName);
     }
-    // 获取第一个报错的字段名
-    const firstField = Object.keys(fields)[0];
-
-    // 判断该字段位于哪个 tab 中
-    const tabName = fieldTabMap[firstField];
-
-    if (tabName) {
-      activeTab.value = tabName; // 自动切换 tab
-    }
-
-    console.warn('校验失败字段:', firstField, '所属Tab:', tabName);
   });
 };
 

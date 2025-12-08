@@ -1,14 +1,30 @@
 <template>
   <div>
-    <!-- 图标按钮 -->
-    <el-popover placement="bottom-end" trigger="click" width="300">
-      <template #reference>
-        <el-icon :size="22" class="api-setting" style="cursor: pointer">
-          <Setting />
-        </el-icon>
-      </template>
+    <div v-if="popover">
+      <!-- 图标按钮 -->
+      <el-popover placement="bottom-end" trigger="click" width="300">
+        <template #reference>
+          <el-icon :size="22" class="api-setting" style="cursor: pointer">
+            <Setting />
+          </el-icon>
+        </template>
 
-      <!-- API 设置项列表 -->
+        <!-- API 设置项列表 -->
+        <div class="exchange-list">
+          <div class="flex justify-between">
+            <p style="margin-top: 0">{{ proxy.$t('navbar.apiSetting') }}</p>
+            <el-icon class="hover:cursor-pointer" @click="showConfigList(null)"><Setting /></el-icon>
+          </div>
+          <div class="exchange-item" v-for="item in exchangeList" :key="item.exchangeName" @click="showConfigList(item)">
+            <div class="api-seting-item">
+              <ExchangeLogo :exchange="item.exchangeName"></ExchangeLogo>
+              <dict-tag :options="api_setting_status" :value="item.status" :i18n-profilx="'setting.api'" />
+            </div>
+          </div>
+        </div>
+      </el-popover>
+    </div>
+    <div v-else>
       <div class="exchange-list">
         <div class="flex justify-between">
           <p style="margin-top: 0">{{ proxy.$t('navbar.apiSetting') }}</p>
@@ -21,7 +37,7 @@
           </div>
         </div>
       </div>
-    </el-popover>
+    </div>
     <ApiListDialog v-model:visible="visible"></ApiListDialog>
     <!-- 配置弹窗 -->
     <el-dialog
@@ -67,6 +83,12 @@ const exchangeList = ref<ApiSettingVo[]>([
     status: undefined
   }
 ]);
+const props = defineProps({
+  popover: {
+    type: Boolean,
+    default: true
+  }
+});
 
 // 当前选中的交易所
 const currentExchange = ref<ApiSettingVo | (typeof exchangeList)[0]>(null);

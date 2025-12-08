@@ -282,3 +282,33 @@ h6 {
 .top-right-btn {
   margin-left: auto;
 }
+
+
+
+@media screen and (max-width: 768px) {
+  /* 覆盖遮罩层的定位，使其在底部显示 */
+  .el-dialog {
+    /* **关键：定位到屏幕底部** */
+    position: fixed;
+    bottom: 0;
+    top: 0 !important; /* 忽略默认的 top 50% */
+    left: 0 !important; /* 忽略默认的 left 50% */
+    transform: none !important; /* 忽略默认的 transform translate */
+
+    /* 占据全宽，固定高度 */
+    width: 100% !important;
+    max-width: 100%;
+    height: 100%; /* 占据屏幕高度的 80% */
+    margin: 0 !important; /* 移除所有默认边距 */
+
+    /* 样式美化 */
+    border-radius: 12px 12px 0 0; /* 顶部圆角，底部直角 */
+  }
+
+  /* 调整对话框内部的 body 区域，让内容可滚动 */
+  .el-dialog .el-dialog__body {
+    max-height: calc(100%); /* 减去 header/footer 的高度 */
+    overflow-y: auto;
+  }
+
+}

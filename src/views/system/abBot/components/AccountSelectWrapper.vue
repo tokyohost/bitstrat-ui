@@ -2,13 +2,7 @@
   <div>
     <!-- 显示已选账户 -->
     <div v-if="modelValue.length">
-      <el-tag
-        v-for="item in modelValue"
-        :key="item.id"
-        class="mr-2 mb-2"
-        closable
-        @close="remove(item)"
-      >
+      <el-tag v-for="item in modelValue" :key="item.id" class="mr-2 mb-2" closable @close="remove(item)">
         {{ item.name || item.apiKey }}
       </el-tag>
       <el-button type="primary" text @click="dialogVisible = true">修改账户</el-button>
@@ -20,17 +14,11 @@
     </div>
 
     <!-- 弹窗选择组件 -->
-    <AccountMutiSelect
-      v-model="tempValue"
-      :exchange-name="exchangeName"
-    />
+    <AccountMutiSelect v-model="tempValue" :exchange-name="exchangeName" />
 
     <!-- 控制弹窗显示 -->
-    <el-dialog v-model="dialogVisible" title="选择账户" width="900px" @close="reset">
-      <AccountMutiSelect
-        v-model="tempValue"
-        :exchange-name="exchangeName"
-      />
+    <el-dialog v-model="dialogVisible" title="选择账户" @close="reset" append-to-body>
+      <AccountMutiSelect v-model="tempValue" :exchange-name="exchangeName" />
 
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -75,7 +63,7 @@ const reset = () => {
 };
 
 const remove = (item: ApiVO) => {
-  const list = props.modelValue.filter(i => i.id !== item.id);
+  const list = props.modelValue.filter((i) => i.id !== item.id);
   emit('update:modelValue', list);
 };
 </script>

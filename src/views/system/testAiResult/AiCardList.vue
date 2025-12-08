@@ -1,15 +1,5 @@
 <template>
   <div>
-    <!-- 操作栏 -->
-    <!--    <div class="flex items-center justify-between mb-4">-->
-    <!--      <div class="flex items-center gap-2">-->
-    <!--        <el-button type="primary" size="small" @click="selectAll">全选</el-button>-->
-    <!--        <el-button type="danger" size="small" @click="clearSelection">清除</el-button>-->
-    <!--        <el-button :disabled="!selectedIds.length" size="small" @click="batchAction"> 批量操作（示例） </el-button>-->
-    <!--      </div>-->
-    <!--      <div class="text-sm text-gray-500">共 {{ list.length }} 条</div>-->
-    <!--    </div>-->
-
     <!-- 卡片列表（每条占整行） -->
     <div class="space-y-4">
       <el-card
@@ -21,9 +11,8 @@
         <!-- 头部：基本信息 -->
         <div class="flex justify-between items-start">
           <div class="flex items-start gap-3">
-            <el-checkbox v-model="checkedMap[item.id]" @change="onCheckChange(item)" />
             <div>
-              <div class="font-semibold text-lg text-gray-800">
+              <div class="font-semibold text-lg text-gray-800" style="color: var(--el-text-color)">
                 {{ item.symbol || '-' }}
                 <el-tag size="small" :type="getActionType(item.action)" class="ml-2">{{ item.action }}</el-tag>
               </div>
@@ -33,8 +22,7 @@
             </div>
           </div>
           <div class="flex gap-2">
-            <el-button size="mini" @click="openDetail(item)">详情</el-button>
-            <!--            <el-button size="mini" type="primary" @click="execute(item)">下单</el-button>-->
+            <el-button size="small" @click="openDetail(item)">详情</el-button>
           </div>
         </div>
 
@@ -42,25 +30,33 @@
         <div class="mt-3 space-y-2">
           <div>
             <div class="text-xs text-gray-500 mb-1">分析（EN）</div>
-            <div class="text-sm text-gray-700 line-clamp-3">
+            <div class="text-sm text-gray-700 line-clamp-3" style="color: var(--el-text-color)">
               {{ item.reasoningEn || '—' }}
             </div>
           </div>
           <div>
             <div class="text-xs text-gray-500 mb-1">分析（ZH）</div>
-            <div class="text-sm text-gray-700 line-clamp-3">
+            <div class="text-sm text-gray-700 line-clamp-3" style="color: var(--el-text-color)">
               {{ item.reasoningZh || '—' }}
             </div>
           </div>
         </div>
 
         <!-- 底部：止盈止损 -->
-        <div class="mt-3 flex items-center justify-between text-xs text-gray-500 border-t pt-2">
-          <div>
-            止盈: <span class="text-green-600 font-medium">{{ item.takeProfit || '-' }}</span> · 止损:
-            <span class="text-red-500 font-medium">{{ item.stopLoss || '-' }}</span>
+        <div class="mt-2 md:mt-3 flex items-center justify-between text-xs md:text-sm text-gray-500 border-t pt-2 md:pt-2">
+          <div class="flex items-center space-x-2">
+            <span class="whitespace-nowrap">
+              止盈: <span class="text-green-600 font-medium">{{ item.takeProfit || '-' }}</span>
+            </span>
+
+            <span class="text-gray-400">·</span>
+
+            <span class="whitespace-nowrap">
+              止损: <span class="text-red-500 font-medium">{{ item.stopLoss || '-' }}</span>
+            </span>
           </div>
-          <div>#{{ item.taskId }}</div>
+
+          <div class="text-gray-400 font-mono flex-shrink-0 ml-4">#{{ item.taskId }}</div>
         </div>
       </el-card>
     </div>
