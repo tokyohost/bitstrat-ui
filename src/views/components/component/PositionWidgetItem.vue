@@ -53,7 +53,7 @@ const syncTpsl = async () => {
           <el-tag type="warning" size="small" disable-transitions>{{ props.position.marginType }}</el-tag>
           <el-tag type="success" size="small" disable-transitions>TP:{{ props.position.takeProfit || '-' }}</el-tag>
           <el-tag type="danger" size="small" disable-transitions>SL:{{ props.position.stopLoss || '-' }}</el-tag>
-          <el-button type="primary" link size="small" disable-transitions @click="syncTpsl">SYNC TPSL</el-button>
+          <el-button type="primary" link size="small" disable-transitions @click="syncTpsl">TPSL ORDER</el-button>
         </div>
 
         <div class="text-right text-xs md:text-sm text-gray-500 font-medium flex-shrink-0">
