@@ -2,9 +2,12 @@
 import { OrderVO } from '@/api/system/order/types';
 import TradePairTag from '@/views/system/analysis/components/TradePairTag.vue';
 import { PositionWsData } from '@/views/components/type/type';
+import { queryPositionTpslBySymbol } from '@/views/system/historyPosition';
+import { HistoryPositionTpslQuery, TpSlOrder } from '@/views/system/historyPosition/type';
 
 const props = defineProps<{
   position: PositionWsData;
+  accountId: string | number;
 }>();
 
 const customColor = computed(() => {
@@ -18,6 +21,19 @@ const customColor = computed(() => {
 });
 
 const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
+const showTpslTable = ref(false);
+const tpslOrders = ref<TpSlOrder[]>([]);
+
+const syncTpsl = async () => {
+  const data = {
+    exchange: props.position.exchange,
+    symbol: props.position.symbol,
+    apiId: props.accountId
+  } as HistoryPositionTpslQuery;
+  const res = await queryPositionTpslBySymbol(data);
+  tpslOrders.value = res.data;
+  showTpslTable.value = true;
+};
 </script>
 
 <template>
@@ -37,6 +53,7 @@ const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
           <el-tag type="warning" size="small" disable-transitions>{{ props.position.marginType }}</el-tag>
           <el-tag type="success" size="small" disable-transitions>TP:{{ props.position.takeProfit || '-' }}</el-tag>
           <el-tag type="danger" size="small" disable-transitions>SL:{{ props.position.stopLoss || '-' }}</el-tag>
+          <el-button type="primary" link size="small" disable-transitions @click="syncTpsl">SYNC TPSL</el-button>
         </div>
 
         <div class="text-right text-xs md:text-sm text-gray-500 font-medium flex-shrink-0">
@@ -104,6 +121,33 @@ const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
         <div class="text-left md:text-right">仓位变更时间: {{ props.position.updateTime }}</div>
       </div>
     </el-card>
+    <el-dialog v-model="showTpslTable">
+      <template #title>
+        <span class="font-bold text-lg">止盈止损订单列表 (TPSL)</span>
+      </template>
+
+      <el-table :data="tpslOrders" border stripe max-height="400">
+        <el-table-column prop="symbol" label="交易对" width="120" fixed />
+
+        <el-table-column prop="takeProfitPrice" label="止盈价格 (TP)" min-width="150">
+          <template #default="{ row }">
+            <span :class="{ 'text-green-600 font-medium': row.takeProfitPrice }">
+              {{ row.takeProfitPrice || '-' }}
+            </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="stopLossPrice" label="止损价格 (SL)" min-width="150">
+          <template #default="{ row }">
+            <span :class="{ 'text-red-600 font-medium': row.stopLossPrice }">
+              {{ row.stopLossPrice || '-' }}
+            </span>
+          </template>
+        </el-table-column>
+
+        <template v-if="tpslOrders && tpslOrders.length === 0" #empty> 暂无止盈止损订单 </template>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 

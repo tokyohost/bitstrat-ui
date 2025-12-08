@@ -55,3 +55,25 @@ export interface HistoryPosition {
 
   idLessThan?: string;
 }
+
+export interface HistoryPositionTpslQuery {
+  exchange: string;
+
+  apiId: number;
+
+  symbol?: string;
+}
+
+/**
+ * @author xuehui_li
+ * @Version 1.0
+ * @date 2025/10/27 17:18
+ * @Content
+ */
+export interface TpSlOrder {
+  symbol?: string;
+
+  takeProfitPrice?: string;
+
+  stopLossPrice?: string;
+}

@@ -64,12 +64,13 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex-1 overflow-y-auto overflow-y-hidden hover:overflow-y-auto">
     <div class="flex flex-col gap-y-1">
-      <div v-for="(item, index) in positionList">
+      <div v-for="(item, index) in positionList" :key="index">
         <PositionWidgetItem
           v-if="item.showFlag != 10"
           :key="new Date().getTime() + index"
           class="hover:cursor-pointer"
           :position="item"
+          :accountId="accountId"
         ></PositionWidgetItem>
       </div>
       <el-empty v-if="!positionList || positionList.length == 0" class="h-[100px]" :image-size="50"></el-empty>
