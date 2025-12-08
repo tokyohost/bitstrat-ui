@@ -124,71 +124,132 @@ onMounted(() => {
     <el-card shadow="never">
       <template #header>
         <el-row :gutter="10" class="mb8">
-          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="handleQuery"></right-toolbar>
+          <right-toolbar :showSearch="false" :search="false" @queryTable="handleQuery"></right-toolbar>
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="data" style="width: 100%" :header-cell-style="{ background: 'var(--el-fill-color-light)' }">
-        <el-table-column label="交易对 / 方向" min-width="160">
+      <el-table
+        v-loading="loading"
+        :data="data"
+        style="width: 100%"
+        :header-cell-style="{ background: 'var(--el-fill-color-light)' }"
+        :show-header="false"
+        class="mobile-list-view"
+      >
+        <el-table-column label="交易详情" min-width="100%" :show-overflow-tooltip="false">
           <template #default="{ row }">
-            <div class="symbol-col">
-              <div class="symbol-row">
-                <span class="symbol">{{ row.symbol }}</span>
-                <el-tag size="small" :type="row.holdSide === 'long' ? 'success' : 'danger'" effect="dark" class="side-tag">
-                  {{ row.holdSide === 'long' ? '多' : '空' }}
-                </el-tag>
-              </div>
-              <div class="margin-info">{{ row.marginCoin }} · {{ row.marginMode === 'crossed' ? '全仓' : '逐仓' }}</div>
-            </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="平仓数量" prop="closeTotalPos" width="120" align="right" />
-
-        <el-table-column label="价格" min-width="180" align="right">
-          <template #default="{ row }">
-            <div class="price-row">
-              <span class="label">开:</span>
-              <span class="value">{{ formatNumber(row.openAvgPrice) }}</span>
-            </div>
-            <div class="price-row">
-              <span class="label">平:</span>
-              <span class="value">{{ formatNumber(row.closeAvgPrice) }}</span>
-            </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="已实现盈亏" min-width="160" align="right" prop="netProfit">
-          <template #default="{ row }">
-            <div :class="['pnl-value', Number(row.netProfit) > 0 ? 'text-success' : 'text-danger']">
-              {{ Number(row.netProfit) > 0 ? '+' : '' }}{{ formatNumber(row.netProfit, 4) }}
-            </div>
-
-            <el-tooltip effect="dark" placement="top">
-              <template #content>
-                <div class="tooltip-content">
-                  <div>P&L (未扣费): {{ formatNumber(row.pnl, 4) }}</div>
-                  <div>开仓手续费: {{ formatNumber(row.openFee, 4) }}</div>
-                  <div>平仓手续费: {{ formatNumber(row.closeFee, 4) }}</div>
-                  <div>资金费用: {{ formatNumber(row.totalFunding, 4) }}</div>
+            <div class="flex flex-col gap-2 p-3 border rounded-lg md:hidden shadow-sm" style="background: var(--el-bg-color)">
+              <div class="flex justify-between items-center pb-2 border-b">
+                <div class="flex items-center space-x-2">
+                  <span class="symbol font-bold text-base">{{ row.symbol }}</span>
+                  <el-tag size="default" :type="row.holdSide === 'long' ? 'success' : 'danger'" effect="dark" class="side-tag">
+                    {{ row.holdSide === 'long' ? '多' : '空' }}
+                  </el-tag>
                 </div>
-              </template>
-              <span class="detail-link">费用明细</span>
-            </el-tooltip>
-          </template>
-        </el-table-column>
+                <div class="margin-info text-xs text-gray-500">{{ row.marginCoin }} · {{ row.marginMode === 'crossed' ? '全仓' : '逐仓' }}</div>
+              </div>
 
-        <el-table-column label="费用总计" width="120" align="right">
-          <template #default="{ row }">
-            {{ formatNumber(Number(row.openFee) + Number(row.closeFee) + Number(row.totalFunding), 4) }}
-          </template>
-        </el-table-column>
+              <div class="flex justify-between items-center">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-500">已实现盈亏</span>
+                  <div :class="['pnl-value', Number(row.netProfit) > 0 ? 'text-green-600' : 'text-red-600', 'font-bold', 'text-lg']">
+                    {{ Number(row.netProfit) > 0 ? '+' : '' }}{{ formatNumber(row.netProfit, 4) }}
+                  </div>
+                  <el-tooltip effect="dark" placement="bottom">
+                    <template #content>
+                      <div class="tooltip-content text-xs">
+                        <div>P&L (未扣费): {{ formatNumber(row.pnl, 4) }}</div>
+                        <div>开仓手续费: {{ formatNumber(row.openFee, 4) }}</div>
+                        <div>平仓手续费: {{ formatNumber(row.closeFee, 4) }}</div>
+                        <div>资金费用: {{ formatNumber(row.totalFunding, 4) }}</div>
+                      </div>
+                    </template>
+                    <span class="detail-link text-blue-500 text-xs mt-1 cursor-pointer">费用明细</span>
+                  </el-tooltip>
+                </div>
 
-        <el-table-column label="时间" width="180" align="right">
-          <template #default="{ row }">
-            <div class="time-col">
-              <div class="main-time">{{ formatTimestamp(row.utime) }} (平)</div>
-              <div class="sub-time">{{ formatTimestamp(row.ctime) }} (开)</div>
+                <div class="flex flex-col items-end">
+                  <span class="text-xs text-gray-500">平仓数量</span>
+                  <span class="text-base font-medium">{{ row.closeTotalPos }}</span>
+                </div>
+              </div>
+
+              <div class="flex justify-between text-sm pt-2 border-t mt-1">
+                <div class="flex flex-col">
+                  <span class="label text-gray-500">开仓均价:</span>
+                  <span class="value font-mono">{{ formatNumber(row.openAvgPrice) }}</span>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="label text-gray-500">平仓均价:</span>
+                  <span class="value font-mono">{{ formatNumber(row.closeAvgPrice) }}</span>
+                </div>
+              </div>
+
+              <div class="flex justify-between text-xs text-gray-500 pt-2 border-t">
+                <div class="flex flex-col">
+                  <span class="text-gray-400">平仓: {{ formatTimestamp(row.utime) }}</span>
+                  <span class="text-gray-400">开仓: {{ formatTimestamp(row.ctime) }}</span>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-gray-500">总费用:</span>
+                  <span class="text-gray-600 font-medium">{{
+                    formatNumber(Number(row.openFee) + Number(row.closeFee) + Number(row.totalFunding), 4)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hidden md:flex justify-between items-center w-full">
+              <div class="flex-1 min-w-[160px]">
+                <div class="symbol-col">
+                  <div class="symbol-row">
+                    <span class="symbol font-bold">{{ row.symbol }}</span>
+                    <el-tag size="small" :type="row.holdSide === 'long' ? 'success' : 'danger'" effect="dark" class="side-tag ml-1">
+                      {{ row.holdSide === 'long' ? '多' : '空' }}
+                    </el-tag>
+                  </div>
+                  <div class="margin-info text-xs text-gray-500">{{ row.marginCoin }} · {{ row.marginMode === 'crossed' ? '全仓' : '逐仓' }}</div>
+                </div>
+              </div>
+
+              <div class="flex-1 text-right min-w-[120px]">{{ row.closeTotalPos }}</div>
+
+              <div class="flex-1 text-right min-w-[180px]">
+                <div class="price-row">
+                  <span class="label text-gray-500">开:</span>
+                  <span class="value font-mono ml-1">{{ formatNumber(row.openAvgPrice) }}</span>
+                </div>
+                <div class="price-row">
+                  <span class="label text-gray-500">平:</span>
+                  <span class="value font-mono ml-1">{{ formatNumber(row.closeAvgPrice) }}</span>
+                </div>
+              </div>
+
+              <div class="flex-1 text-right min-w-[160px]">
+                <div :class="['pnl-value', Number(row.netProfit) > 0 ? 'text-green-600' : 'text-red-600', 'font-bold']">
+                  {{ Number(row.netProfit) > 0 ? '+' : '' }}{{ formatNumber(row.netProfit, 4) }}
+                </div>
+                <el-tooltip effect="dark" placement="top">
+                  <template #content>
+                    <div class="tooltip-content text-xs">
+                      <div>P&L (未扣费): {{ formatNumber(row.pnl, 4) }}</div>
+                      <div>开仓手续费: {{ formatNumber(row.openFee, 4) }}</div>
+                      <div>平仓手续费: {{ formatNumber(row.closeFee, 4) }}</div>
+                      <div>资金费用: {{ formatNumber(row.totalFunding, 4) }}</div>
+                    </div>
+                  </template>
+                  <span class="detail-link text-blue-500 text-xs cursor-pointer">费用明细</span>
+                </el-tooltip>
+              </div>
+
+              <div class="flex-1 text-right min-w-[120px]">
+                {{ formatNumber(Number(row.openFee) + Number(row.closeFee) + Number(row.totalFunding), 4) }}
+              </div>
+
+              <div class="flex-1 text-right min-w-[180px]">
+                <div class="main-time">{{ formatTimestamp(row.utime) }} (平)</div>
+                <div class="sub-time text-gray-500 text-xs">{{ formatTimestamp(row.ctime) }} (开)</div>
+              </div>
             </div>
           </template>
         </el-table-column>
