@@ -357,7 +357,6 @@ async function send() {
 
   const userMessage = form.value.content.trim();
   messages.push({ id: uid(), role: 'user', text: userMessage });
-  form.value.content = '';
 
   const assistantId = uid();
   messages.push({ id: assistantId, role: 'assistant', text: '' });
@@ -387,6 +386,7 @@ async function send() {
                 isStreaming.value = false;
                 text = obj.msg || 'AI 发生错误。';
                 ElMessage.error(text);
+                return;
               } else if (obj.type === 'text_chunk') {
                 const data = obj.data;
                 if (data && data.text) {
@@ -403,7 +403,9 @@ async function send() {
             } else {
               continue;
             }
-          } catch {}
+          } catch {
+            continue;
+          }
         } else {
           continue;
         }

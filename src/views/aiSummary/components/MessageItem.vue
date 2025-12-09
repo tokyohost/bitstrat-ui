@@ -14,7 +14,7 @@
         class="ai-msg p-3 rounded-lg bg-gradient-to-r from-slate-50 to-white border"
         style="background: var(--el-bg-color); color: var(--el-text-color)"
       >
-        <div v-if="rawHtml" v-html="rawHtml" class="prose prose-sm"></div>
+        <div v-if="rawHtml" v-html="renderedMarkdown" class="prose prose-sm"></div>
         <pre v-else class="whitespace-pre-wrap text-sm" v-text="text"></pre>
       </div>
     </div>
@@ -23,13 +23,23 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import MarkdownIt from 'markdown-it';
 
 const props = defineProps<{
   text: string;
   isUser?: boolean;
   rawHtml?: string | null;
 }>();
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true
+});
 
+const renderedMarkdown = computed(() => {
+  if (!props.rawHtml) return '';
+  return md.render(props.rawHtml);
+});
 const isUser = computed(() => !!props.isUser);
 </script>
 
