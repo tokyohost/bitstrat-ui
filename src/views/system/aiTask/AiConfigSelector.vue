@@ -12,18 +12,24 @@
 
 <script lang="ts" setup>
 import { defineProps, defineEmits } from 'vue';
-import type { AiConfigVO } from '@/api/system/aiConfig/types';
+import { AiConfigQuery, AiConfigVO } from '@/api/system/aiConfig/types';
 import { ref, onMounted } from 'vue';
 import { listAiConfig } from '@/api/system/aiConfig';
 import imagePreviewOss from '@/components/ImagePreviewOss/index.vue';
 
-const props = defineProps<{ modelValue: string | number | null }>();
+const props = defineProps<{ modelValue: string | number | null; type: number }>();
 const emit = defineEmits(['update:modelValue']);
 
 const list = ref<AiConfigVO[]>([]);
 
 onMounted(async () => {
-  const res = await listAiConfig();
+  const data = {} as AiConfigQuery;
+  if (props.type) {
+    data.type = props.type;
+  } else {
+    data.type = 1;
+  }
+  const res = await listAiConfig(data);
   list.value = res.rows || [];
 });
 

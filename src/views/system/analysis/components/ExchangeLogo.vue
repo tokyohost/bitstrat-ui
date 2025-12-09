@@ -2,7 +2,7 @@
   <div class="exchange-info">
     <img v-if="logoUrl" :src="logoUrl" :alt="exchange" class="exchange-logo" @error="onError" />
     {{ exchange ? exchange.toUpperCase() : '' }}
-    <slot name="default"></slot>
+    <slot name="default" style="color: var(--el-text-color)"></slot>
   </div>
 </template>
 

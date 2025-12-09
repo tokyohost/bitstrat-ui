@@ -89,6 +89,18 @@
         <el-form-item label="图片" prop="imgUrl">
           <image-upload v-model:model-value="form.imgUrl" :file-size="1" :compress-support="false"></image-upload>
         </el-form-item>
+        <el-form-item label="callback" prop="callback">
+          <el-input v-model="form.callback" placeholder="请输入callback" />
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择类型">
+            <el-option v-for="item in ai_config_type" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="interval" prop="interval">
+          <!--          <el-input type="textarea" v-model="form.interval" placeholder="请输入callback" />-->
+          <JsonEditorVue v-model:json="form.interval" :options="options" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -105,7 +117,7 @@ import { listAiConfig, getAiConfig, delAiConfig, addAiConfig, updateAiConfig } f
 import { AiConfigVO, AiConfigQuery, AiConfigForm } from '@/api/system/aiConfig/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
+const { ai_config_type } = toRefs<any>(proxy?.useDict('ai_config_type'));
 const aiConfigList = ref<AiConfigVO[]>([]);
 const buttonLoading = ref(false);
 const loading = ref(true);
@@ -114,9 +126,16 @@ const ids = ref<Array<string | number>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
-
+import JsonEditorVue from 'json-editor-vue3';
+import 'jsoneditor';
 const queryFormRef = ref<ElFormInstance>();
 const aiConfigFormRef = ref<ElFormInstance>();
+const options = {
+  mode: 'code', // 默认模式：'code' (代码) 或 'tree' (树形)
+  mainMenuBar: true, // 显示主菜单栏
+  enableSort: false,
+  enableTransform: false
+};
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -140,7 +159,9 @@ const data = reactive<PageData<AiConfigForm, AiConfigQuery>>({
     params: {}
   },
   rules: {
-    id: [{ required: true, message: 'id不能为空', trigger: 'blur' }]
+    id: [{ required: true, message: 'id不能为空', trigger: 'blur' }],
+    callback: [{ required: true, message: 'callback不能为空', trigger: 'blur' }],
+    type: [{ required: true, message: 'type不能为空', trigger: 'blur' }]
   }
 });
 

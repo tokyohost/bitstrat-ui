@@ -42,8 +42,12 @@ export interface AiConfigForm extends BaseEntity {
    * token
    */
   token?: string;
+  price?: string | number;
 
   imgUrl?: string;
+  callback?: string;
+  interval?: string;
+  type?: string;
 }
 
 export interface AiConfigQuery extends PageQuery {
@@ -56,6 +60,7 @@ export interface AiConfigQuery extends PageQuery {
    * api地址
    */
   url?: string;
+  type?: string | number;
 
   /**
    * token

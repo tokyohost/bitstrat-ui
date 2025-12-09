@@ -33,7 +33,6 @@ export interface BalanceLogVO {
    * 备注信息，例如订单号/充值方式
    */
   remark: string;
-
 }
 
 export interface BalanceLogForm extends BaseEntity {
@@ -71,11 +70,9 @@ export interface BalanceLogForm extends BaseEntity {
    * 备注信息，例如订单号/充值方式
    */
   remark?: string;
-
 }
 
 export interface BalanceLogQuery extends PageQuery {
-
   /**
    * 用户ID
    */
@@ -99,13 +96,10 @@ export interface BalanceLogQuery extends PageQuery {
   /**
    * 变动类型：1=充值，2=消费，3=退款，4=赠送
    */
-  type?: number;
+  type?: number | string;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
-
-
-

@@ -132,6 +132,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/system/aiTaskLogs/index.vue'),
         name: 'aiTaskLog',
         meta: { title: 'AI任务监控', icon: 'vip' }
+      },
+      {
+        path: 'ai-summary',
+        component: () => import('@/views/aiSummary/aiSummary.vue'),
+        name: 'aiSummary',
+        meta: { title: 'AI智能分析', icon: 'vip' }
       }
     ]
   },
