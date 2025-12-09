@@ -320,7 +320,7 @@ const form = ref<AiStreamQuery>({
   accountId: undefined,
   apiId: undefined,
   content: '',
-  positionFlag: undefined,
+  positionFlag: '1',
   shortTermInterval: '3m',
   longTermInterval: '4h'
 });
