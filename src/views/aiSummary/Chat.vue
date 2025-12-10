@@ -1,161 +1,9 @@
 <template>
-  <div>
+  <div class="relative">
     <div
       class="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors"
       v-if="checkPermi(['system:home:aiSummary'])"
     >
-      <header class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-colors">
-        <div class="max-w-4xl mx-auto px-4 md:px-6 py-4">
-          <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700">
-            <div class="flex items-center gap-2 font-bold text-indigo-600 dark:text-indigo-400">
-              <h2 class="tracking-wide">配置</h2>
-            </div>
-
-            <button
-              @click.stop="toggleHeader"
-              class="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
-            >
-              <span class="mr-1 hidden sm:inline">{{ headerCollapsed ? '展开' : '收起' }}</span>
-
-              <svg
-                class="w-6 h-6 transition-transform duration-300 transform"
-                :class="{ 'rotate-180': headerCollapsed }"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-              </svg>
-            </button>
-          </div>
-
-          <div class="header-content-wrapper" :class="{ 'collapsed': headerCollapsed }" ref="headerContentRef">
-            <el-form ref="aiTaskFormRef" :model="form" :rules="rules" label-width="auto" label-position="top">
-              <el-row :gutter="16">
-                <el-col :span="24" :md="12">
-                  <el-form-item label="交易所" prop="exchange">
-                    <el-select v-model="form.exchange" placeholder="请选择交易所" @change="onExchange($event)" prop="exchangeA">
-                      <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name" :value="exchange.name">
-                        <div class="flex justify-between flex-row">
-                          <ExchangeLogo :exchange="exchange.name" />
-                        </div>
-                      </el-option>
-                      <template #label="{ value }">
-                        <ExchangeLogo :exchange="value" />
-                      </template>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="24" :md="12">
-                  <el-form-item label="币种" prop="symbol" class="mb-3 md:mb-4">
-                    <template #label>
-                      <el-popover placement="top-start" :width="150" trigger="hover" content="允许AI分析的币种">
-                        <template #reference>
-                          <span class="cursor-pointer">币种</span>
-                        </template>
-                      </el-popover>
-                    </template>
-                    <el-select
-                      v-model="form.symbol"
-                      clearable
-                      placeholder="请选择币种"
-                      style="width: 100%"
-                      filterable
-                      @focus="onExchange(form.exchange)"
-                    >
-                      <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.coin" :value="symbol.coin" />
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="24" :md="12">
-                  <el-form-item label="AI智能体" prop="apiId" class="mb-3 md:mb-4">
-                    <AiConfigSelect v-model="form.apiId" :type="2"></AiConfigSelect>
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="24" :md="12">
-                  <el-form-item label="账户" label-width="0" prop="apiId">
-                    <el-card title="A" class="w-full" shadow="hover">
-                      <div class="flex justify-between w-full">
-                        <div class="flex gap-x-2 flex-col">
-                          <ExchangeLogo :exchange="form.exchange" :key="form.exchange"> </ExchangeLogo>
-                          <div><dict-tag :value="form.account?.type" :options="exchange_api_type" /></div>
-                        </div>
-                        <div class="flex justify-end hover:cursor-pointer text-xs" @click="openAccountSelect">
-                          <div>{{ form.account?.name || '-' }}</div>
-
-                          <img src="@/assets/icons/png/switch.png" height="18" width="18" v-if="form.account" />
-                          <div class="color-#409EFF" v-else>选择账户</div>
-                          <AccountSelectDialog
-                            v-model:visible="showAccountSelect"
-                            :exchange-name="form.exchange"
-                            @select="selectAccount($event)"
-                          ></AccountSelectDialog>
-                        </div>
-                      </div>
-                    </el-card>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-
-              <el-row :gutter="16">
-                <el-col :span="24">
-                  <el-form-item label="短期指标" prop="shortTermInterval">
-                    <template #label>
-                      <el-popover
-                        title="短期指标"
-                        content="每次调用AI时获取多长时间的K线数据作为短期指标EMA/MACD/RSI 等的数据源"
-                        placement="top-start"
-                      >
-                        <template #reference>
-                          <span>短期指标</span>
-                        </template>
-                      </el-popover>
-                    </template>
-                    <div class="interval-scroll flex items-center gap-1">
-                      <el-radio-group v-model="form.shortTermInterval" size="small">
-                        <div class="inline-flex gap-0">
-                          <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
-                            {{ item.name }}
-                          </el-radio>
-                        </div>
-                      </el-radio-group>
-                    </div>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="24">
-                  <el-form-item label="长期指标" prop="longTermInterval">
-                    <template #label>
-                      <el-popover
-                        title="长期指标"
-                        content="每次调用AI时获取多长时间的K线数据作为长期指标EMA/MACD/RSI 等的数据源,注意!!长期指标必须比短期指标更长时!!"
-                        placement="top-start"
-                      >
-                        <template #reference>
-                          <span>长期指标</span>
-                        </template>
-                      </el-popover>
-                    </template>
-                    <div class="interval-scroll flex items-center gap-1">
-                      <el-radio-group v-model="form.longTermInterval" size="small">
-                        <div class="inline-flex gap-0">
-                          <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
-                            {{ item.name }}
-                          </el-radio>
-                        </div>
-                      </el-radio-group>
-                    </div>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-form>
-          </div>
-        </div>
-      </header>
-
       <main class="flex-1 overflow-hidden">
         <div ref="scrollWrap" class="h-full overflow-auto p-4 md:p-6 custom-scrollbar">
           <div class="max-w-3xl mx-auto flex flex-col gap-5">
@@ -212,11 +60,153 @@
     <div v-else>
       <el-empty :description="'Not Allow Page'"></el-empty>
     </div>
+
+    <button
+      ref="floatButtonRef"
+      @click="showConfigDialog = true"
+      @mousedown.prevent="startDrag"
+      @touchstart.prevent="startDrag"
+      class="float-config-button fixed w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors duration-200 z-50 flex items-center justify-center p-2 cursor-pointer"
+      title="配置 AI 参数"
+      v-if="checkPermi(['system:home:aiSummary'])"
+      :style="{ left: `${buttonPosition.x}px`, top: `${buttonPosition.y}px` }"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.568.344 1.34.254 1.84.073z"
+        ></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+    </button>
+
+    <el-dialog v-model="showConfigDialog" title="参数配置">
+      <div class="p-4 pt-0">
+        <el-form ref="aiTaskFormRef" :model="form" :rules="rules" label-width="auto" label-position="top">
+          <el-row :gutter="16">
+            <el-col :span="24" :md="12">
+              <el-form-item label="交易所" prop="exchange">
+                <el-select v-model="form.exchange" placeholder="请选择交易所" @change="onExchange($event)" prop="exchangeA">
+                  <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name" :value="exchange.name">
+                    <div class="flex justify-between flex-row">
+                      <ExchangeLogo :exchange="exchange.name" />
+                    </div>
+                  </el-option>
+                  <template #label="{ value }">
+                    <ExchangeLogo :exchange="value" />
+                  </template>
+                </el-select>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="24" :md="12">
+              <el-form-item label="币种" prop="symbol" class="mb-3 md:mb-4">
+                <template #label>
+                  <el-popover placement="top-start" :width="150" trigger="hover" content="允许AI分析的币种">
+                    <template #reference>
+                      <span class="cursor-pointer">币种</span>
+                    </template>
+                  </el-popover>
+                </template>
+                <el-select v-model="form.symbol" clearable placeholder="请选择币种" style="width: 100%" filterable @focus="onExchange(form.exchange)">
+                  <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.coin" :value="symbol.coin" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="24" :md="12">
+              <el-form-item label="AI智能体" prop="apiId" class="mb-3 md:mb-4">
+                <AiConfigSelect v-model="form.apiId" :type="2"></AiConfigSelect>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="24" :md="12">
+              <el-form-item label="账户" label-width="0" prop="apiId">
+                <el-card title="A" class="w-full" shadow="hover">
+                  <div class="flex justify-between w-full">
+                    <div class="flex gap-x-2 flex-col">
+                      <ExchangeLogo :exchange="form.exchange" :key="form.exchange"> </ExchangeLogo>
+                      <div><dict-tag :value="form.account?.type" :options="exchange_api_type" /></div>
+                    </div>
+                    <div class="flex justify-end hover:cursor-pointer text-xs" @click="openAccountSelect">
+                      <div>{{ form.account?.name || '-' }}</div>
+
+                      <img src="@/assets/icons/png/switch.png" height="18" width="18" v-if="form.account" />
+                      <div class="color-#409EFF" v-else>选择账户</div>
+                      <AccountSelectDialog
+                        v-model:visible="showAccountSelect"
+                        :exchange-name="form.exchange"
+                        @select="selectAccount($event)"
+                      ></AccountSelectDialog>
+                    </div>
+                  </div>
+                </el-card>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="16" class="mt-4">
+            <el-col :span="24">
+              <el-form-item label="短期指标" prop="shortTermInterval">
+                <template #label>
+                  <el-popover title="短期指标" content="每次调用AI时获取多长时间的K线数据作为短期指标EMA/MACD/RSI 等的数据源" placement="top-start">
+                    <template #reference>
+                      <span>短期指标</span>
+                    </template>
+                  </el-popover>
+                </template>
+                <div class="interval-scroll flex items-center gap-1">
+                  <el-radio-group v-model="form.shortTermInterval" size="small">
+                    <div class="inline-flex gap-0">
+                      <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
+                        {{ item.name }}
+                      </el-radio>
+                    </div>
+                  </el-radio-group>
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="长期指标" prop="longTermInterval">
+                <template #label>
+                  <el-popover
+                    title="长期指标"
+                    content="每次调用AI时获取多长时间的K线数据作为长期指标EMA/MACD/RSI 等的数据源,注意!!长期指标必须比短期指标更长时!!"
+                    placement="top-start"
+                  >
+                    <template #reference>
+                      <span>长期指标</span>
+                    </template>
+                  </el-popover>
+                </template>
+                <div class="interval-scroll flex items-center gap-1">
+                  <el-radio-group v-model="form.longTermInterval" size="small">
+                    <div class="inline-flex gap-0">
+                      <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
+                        {{ item.name }}
+                      </el-radio>
+                    </div>
+                  </el-radio-group>
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="flex justify-end space-x-2">
+          <el-button @click="showConfigDialog = false">关闭</el-button>
+          <el-button type="primary" @click="checkConfig">确认配置</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick, getCurrentInstance, toRefs } from 'vue';
+import { ref, reactive, onMounted, nextTick, getCurrentInstance, toRefs, onUnmounted } from 'vue';
 import { marked } from 'marked';
 import { streamAIPost } from '@/views/aiSummary/index';
 import { AiStreamQuery } from '@/views/aiSummary/type';
@@ -244,25 +234,172 @@ const textarea = ref<HTMLTextAreaElement | null>(null);
 const scrollWrap = ref<HTMLElement | null>(null);
 const aiTaskFormRef = ref();
 
-// --- Header 折叠逻辑 ---
-const headerCollapsed = ref(false); // 默认展开
-const headerContentRef = ref<HTMLElement | null>(null);
+// ------------------------------------------------------------------
+// ⭐ 新增：Dialog 和 浮动按钮拖拽逻辑
+// ------------------------------------------------------------------
+const showConfigDialog = ref(false);
+const floatButtonRef = ref<HTMLButtonElement | null>(null);
+const checkConfig = () => {
+  aiTaskFormRef.value.validate((valid) => {
+    if (valid) {
+      showConfigDialog.value = false;
+    } else {
+      ElMessage.error('请完善参数配置');
+    }
+  });
+};
+// 按钮初始位置 (使用 CSS top/left 定位)
+const PADDING = 16; // 边缘吸附的留白
+const buttonPosition = reactive({
+  // 默认位置：右下角 (需要 onMounted 后才能计算，这里先给默认值)
+  x: window.innerWidth - 48 - PADDING, // 48px 是按钮宽度/高度
+  y: window.innerHeight - 48 - 60 // 60 是底部 footer 的大致高度
+});
 
-const toggleHeader = () => {
-  headerCollapsed.value = !headerCollapsed.value;
-  // 确保在状态变化后执行 autoResize，避免输入框高度错误
-  if (!headerCollapsed.value) {
-    nextTick(() => autoResize());
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+let offsetX = 0;
+let offsetY = 0;
+
+/**
+ * 拖拽开始
+ */
+const startDrag = (e: MouseEvent | TouchEvent) => {
+  if (!floatButtonRef.value) return;
+
+  // 如果是点击 (没有移动)，则不执行拖拽逻辑，直接打开 Dialog
+  if (e instanceof MouseEvent && e.button !== 0) return; // 只响应左键
+
+  // 避免点击事件和拖拽事件冲突，点击打开 Dialog
+  // 在拖拽结束时判断是否移动过，如果移动过则阻止点击事件的默认行为
+
+  isDragging = true;
+  floatButtonRef.value.style.transition = 'none'; // 拖拽时禁用过渡效果
+
+  const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  const clientY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+
+  // 计算鼠标在按钮内部的偏移量
+  const rect = floatButtonRef.value.getBoundingClientRect();
+  offsetX = clientX - rect.left;
+  offsetY = clientY - rect.top;
+
+  startX = clientX;
+  startY = clientY;
+
+  // 监听全局事件，避免拖出按钮范围
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchmove', onDrag);
+  document.addEventListener('touchend', endDrag);
+};
+
+/**
+ * 拖拽进行中 (修正版)
+ */
+const onDrag = (e: MouseEvent | TouchEvent) => {
+  if (!isDragging) return;
+
+  // 阻止默认行为，防止移动端滚动页面
+  e.preventDefault();
+
+  // 获取当前的 X 和 Y 坐标
+  const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  // 修正了之前的错误，直接访问第一个触摸点的 clientY
+  const clientY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+
+  // 计算新的按钮位置 (减去鼠标在按钮上的偏移量)
+  const newX = clientX - offsetX;
+  const newY = clientY - offsetY;
+
+  // 更新位置 (CSS 样式由 :style 绑定)
+  buttonPosition.x = newX;
+  buttonPosition.y = newY;
+};
+
+/**
+ * 拖拽结束：实现边缘吸附
+ */
+const endDrag = (e: MouseEvent | TouchEvent) => {
+  if (!isDragging || !floatButtonRef.value) return;
+
+  isDragging = false;
+
+  const btnWidth = floatButtonRef.value.offsetWidth;
+  const btnHeight = floatButtonRef.value.offsetHeight;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // 当前按钮的中心点位置
+  const currentCenterX = buttonPosition.x + btnWidth / 2;
+  const currentCenterY = buttonPosition.y + btnHeight / 2;
+
+  // 自动吸附到最近的垂直边缘 (左或右)
+  if (currentCenterX < viewportWidth / 2) {
+    // 靠近左边
+    buttonPosition.x = PADDING;
+  } else {
+    // 靠近右边
+    buttonPosition.x = viewportWidth - btnWidth - PADDING;
+  }
+
+  // 约束 Y 轴位置，防止超出上下边界
+  buttonPosition.y = Math.max(PADDING, Math.min(buttonPosition.y, viewportHeight - btnHeight - PADDING));
+
+  floatButtonRef.value.style.transition = 'all 0.3s ease-out'; // 恢复过渡效果，让吸附过程更平滑
+
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', endDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('touchend', endDrag);
+
+  // 检查是否为纯粹的点击（没有移动）
+  const finalClientX = e instanceof MouseEvent ? e.clientX : (e as TouchEvent).changedTouches[0].clientX;
+  const finalClientY = e instanceof MouseEvent ? e.clientY : (e as TouchEvent).changedTouches[0].clientY;
+
+  const movedDistance = Math.sqrt(Math.pow(finalClientX - startX, 2) + Math.pow(finalClientY - startY, 2));
+
+  // 如果移动距离小于一个阈值（例如 5px），则认为它是点击事件
+  if (movedDistance < 5) {
+    // 允许默认的点击事件继续执行 (即打开 Dialog)
+  } else {
+    // 阻止点击事件（因为它是一个拖拽操作）
+    e.preventDefault();
+    e.stopPropagation();
+    // 由于我们已经在 @click 上绑定了打开 Dialog 的逻辑，
+    // 如果是拖拽，则应该避免在这里重复打开 Dialog。
+    // 注意：由于我们在 template 中使用了 @click，纯粹的拖拽操作（移动距离大于5）
+    // 会触发 endDrag 但不应该触发 @click。
+    // 如果 endDrag 阻止了事件，@click 通常不会被触发。
+    // 如果您发现拖拽后 Dialog 依然打开，可能需要在 click 事件中使用一个 isDragging 标志来判断。
+    // 为了安全，如果拖拽发生，手动关闭 Dialog 以防误触
+    showConfigDialog.value = false;
   }
 };
-// -----------------------
 
-// --- 新增：预设提示词逻辑 ---
+/**
+ * 初始化按钮位置，确保在 DOM 渲染后计算正确位置
+ */
+const initButtonPosition = () => {
+  const btnWidth = 48; // 按钮的 Tailwind w-12/h-12 对应 48px
+  const footerHeight = 60; // 假设 footer 大致高度为 60px
+
+  // 初始设置到右下角，避开 footer
+  buttonPosition.x = window.innerWidth - btnWidth - PADDING;
+  buttonPosition.y = window.innerHeight - btnWidth - PADDING - footerHeight;
+};
+
+// ------------------------------------------------------------------
+// ⭐ 结束：Dialog 和 浮动按钮拖拽逻辑
+// ------------------------------------------------------------------
+
+// --- 新增：预设提示词逻辑 (保持不变) ---
 const presetPrompts = ref([
   { id: 1, text: '分析当前币种实时 K 线', value: '分析当前选定币种实时 K 线数据，给出交易建议。' },
   { id: 2, text: '分析我现在的持仓以及行情数据', value: '分析我现在的持仓以及行情数据，给出你的建议。' },
   { id: 3, text: '总结账户持仓盈亏', value: '总结我当前选定账户最近的所有持仓和浮动盈亏情况。' },
-  { id: 4, text: '市场情绪分析', value: '分析今日加密货币市场的整体情绪和波动性。' }
+  { id: 4, text: '市场情绪分析', value: '分析当前选定币种的整体情绪和波动性。' }
 ]);
 
 /**
@@ -490,6 +627,15 @@ function clear() {
 onMounted(() => {
   autoResize();
   loadExchange();
+  initButtonPosition();
+});
+
+onUnmounted(() => {
+  // 组件销毁时移除全局监听，防止内存泄漏
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', endDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('touchend', endDrag);
 });
 </script>
 
@@ -514,23 +660,12 @@ onMounted(() => {
 }
 
 /* ---------------------------------------------------- */
-/* Header 折叠/收缩样式 */
+/* 新增：浮动按钮的样式 */
 /* ---------------------------------------------------- */
-
-.header-content-wrapper {
-  /* 关键：使用 max-height 实现平滑过渡 */
-  max-height: 500px; /* 设置一个足够大的初始值 */
-  overflow: hidden;
-  transition: max-height 0.3s ease-out;
-  /* 确保表单项之间的间距在过渡时不会被压缩 */
-  padding-bottom: 1px;
-}
-
-.header-content-wrapper.collapsed {
-  /* 收起状态：max-height 设为 0，内容隐藏 */
-  max-height: 0;
-  /* 移除底部的 padding，使其完全收缩 */
-  padding-bottom: 0;
+.float-config-button {
+  /* 确保按钮在吸附时有过渡效果 */
+  transition: all 0.3s ease-out;
+  touch-action: none; /* 禁用移动端默认的触摸行为，防止滚动冲突 */
 }
 
 /* ---------------------------------------------------- */
@@ -580,7 +715,7 @@ onMounted(() => {
   border-color: var(--el-color-primary, #409eff);
 }
 
-/* 滚动条美化 (保持不变) */
+/* 滚动条美化 */
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
   height: 8px;
