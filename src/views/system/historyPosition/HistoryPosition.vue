@@ -69,6 +69,9 @@ const fetchData = async (isAppend: boolean = false) => {
       hasMore.value = false;
       if (isAppend) ElMessage.warning('没有更多数据了');
     } else {
+      // 更新分页游标
+      const last = list[list.length - 1];
+      idLessThan.value = last.idLessThan || null;
       // 如果是追加模式，合并数组；否则直接赋值
       if (isAppend) {
         data.value = [...data.value, ...list];
@@ -79,14 +82,11 @@ const fetchData = async (isAppend: boolean = false) => {
       // --- 根据 positionId 去重 ---
       const seen = new Set();
       data.value = data.value.filter((item) => {
-        if (seen.has(item.utime)) return false;
-        seen.add(item.utime);
+        if (seen.has(String(item.utime))) return false;
+        seen.add(String(item.utime));
         return true;
       });
 
-      // 更新分页游标
-      const last = list[list.length - 1];
-      idLessThan.value = last.idLessThan || null;
       hasMore.value = true;
     }
   } catch (error) {
@@ -158,7 +158,7 @@ onMounted(() => {
                   <el-tooltip effect="dark" placement="bottom">
                     <template #content>
                       <div class="tooltip-content text-xs">
-                        <div>P&L (未扣费): {{ formatNumber(row.pnl, 4) }}</div>
+                        <div>P&L: {{ formatNumber(row.pnl, 4) }}</div>
                         <div>开仓手续费: {{ formatNumber(row.openFee, 4) }}</div>
                         <div>平仓手续费: {{ formatNumber(row.closeFee, 4) }}</div>
                         <div>资金费用: {{ formatNumber(row.totalFunding, 4) }}</div>

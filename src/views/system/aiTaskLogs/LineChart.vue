@@ -297,6 +297,7 @@ function buildOption() {
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
+        show: false,
         color: t.textSecondary,
         fontSize: 10,
         formatter: (v) => (props.tooltipUnit ? `${v}` : v)
