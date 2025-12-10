@@ -26,6 +26,8 @@ function handleWsMessage(data: WebsocketMsgData<PositionWsData[]>) {
       console.log('过滤掉 position 消息:', data);
       return;
     }
+  } else {
+    return;
   }
   //根据accountId 删除positionList 中的持仓
   const result = positionList.value.filter((item) => item.accountId != accountId);
