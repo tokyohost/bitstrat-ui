@@ -19,21 +19,12 @@ const customColor = computed(() => {
   }
   return '#f56c6c';
 });
-
-const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
-const showTpslTable = ref(false);
-const tpslOrders = ref<TpSlOrder[]>([]);
-
-const syncTpsl = async () => {
-  const data = {
-    exchange: props.position.exchange,
-    symbol: props.position.symbol,
-    apiId: props.accountId
-  } as HistoryPositionTpslQuery;
-  const res = await queryPositionTpslBySymbol(data);
-  tpslOrders.value = res.data;
-  showTpslTable.value = true;
+const syncTpsl = () => {
+  emits('showTpsl', props.position);
 };
+const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
+
+const emits = defineEmits(['showTpsl']);
 </script>
 
 <template>
@@ -121,33 +112,6 @@ const syncTpsl = async () => {
         <div class="text-left md:text-right">仓位变更时间: {{ props.position.updateTime }}</div>
       </div>
     </el-card>
-    <el-dialog v-model="showTpslTable" append-to-body>
-      <template #title>
-        <span class="font-bold text-lg">止盈止损订单列表 (TPSL)</span>
-      </template>
-
-      <el-table :data="tpslOrders" border stripe max-height="400">
-        <el-table-column prop="symbol" label="交易对" width="120" fixed />
-
-        <el-table-column prop="takeProfitPrice" label="止盈价格 (TP)" min-width="150">
-          <template #default="{ row }">
-            <span :class="{ 'text-green-600 font-medium': row.takeProfitPrice }">
-              {{ row.takeProfitPrice || '-' }}
-            </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="stopLossPrice" label="止损价格 (SL)" min-width="150">
-          <template #default="{ row }">
-            <span :class="{ 'text-red-600 font-medium': row.stopLossPrice }">
-              {{ row.stopLossPrice || '-' }}
-            </span>
-          </template>
-        </el-table-column>
-
-        <template v-if="tpslOrders && tpslOrders.length === 0" #empty> 暂无止盈止损订单 </template>
-      </el-table>
-    </el-dialog>
   </div>
 </template>
 
