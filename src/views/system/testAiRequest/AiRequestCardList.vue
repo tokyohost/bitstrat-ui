@@ -21,7 +21,7 @@
 
             <div class="ai-sub text-sm text-gray-500 flex items-center space-x-1 mt-1">
               <el-icon><Clock /></el-icon>
-              <span class="text-xs md:text-sm">发起于: {{ item.createTime.split(' ')[0] }}...</span>
+              <span class="text-xs md:text-sm">{{ item.createTime }}</span>
               <el-tag v-if="![1, 2, 3].includes(item.status)" type="danger" size="small" class="ml-2">状态异常</el-tag>
             </div>
           </div>
