@@ -316,13 +316,13 @@ function scrollToBottom() {
 }
 const form = ref<AiStreamQuery>({
   exchange: '',
-  symbol: 'ETH',
+  symbol: '',
   accountId: undefined,
   apiId: undefined,
   content: '',
   positionFlag: '1',
   shortTermInterval: '3m',
-  longTermInterval: '4h'
+  longTermInterval: '4H'
 });
 const checkLongInterval = (rule, value, callback) => {
   if (!isLongTermGreater(form.value.shortTermInterval, form.value.longTermInterval)) {

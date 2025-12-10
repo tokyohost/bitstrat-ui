@@ -121,7 +121,7 @@ const syncTpsl = async () => {
         <div class="text-left md:text-right">仓位变更时间: {{ props.position.updateTime }}</div>
       </div>
     </el-card>
-    <el-dialog v-model="showTpslTable">
+    <el-dialog v-model="showTpslTable" append-to-body>
       <template #title>
         <span class="font-bold text-lg">止盈止损订单列表 (TPSL)</span>
       </template>

@@ -162,7 +162,7 @@
             </el-form-item>
             <el-form-item label="AI智能体" prop="aiWorkflowId">
               <!--          <el-input v-model="form.aiWorkflowId" placeholder="请输入ai 流水线id" />-->
-              <AiConfigSelector v-model="form.aiWorkflowId" :type="2"></AiConfigSelector>
+              <AiConfigSelector v-model="form.aiWorkflowId" :type="1"></AiConfigSelector>
             </el-form-item>
             <el-form-item label="时间粒度" prop="interval">
               <template #label>
