@@ -262,7 +262,7 @@ export default {
       'The Platform only provides: AI model calling and prompt execution capabilities, API Key management tools, strategy generation, and automated execution interfaces. The Platform does not provide investment advice, financial services, or asset management business, nor does it conduct operations on behalf of clients.',
     'section_2_title': '2. User API Key Authorization',
     'section_2_content':
-      "Any virtual currency exchange API Key used by the user on the Platform is created, authorized, and managed by the user. The permissions, risks, and independent control of the API Key are entirely borne by the user. The Platform will not save, disclose, or misuse the user's API Key, but the user must ensure that the API Key has a reasonable scope of permissions (such as trading-only permission, without withdrawal permission).",
+      "Any virtual currency exchange API Key used by the user on the Platform is created, authorized, and managed by the user. The permissions, risks, and independent control of the API Key are entirely borne by the user. The Platform will not save, disclose, or misuse the user's API Key, but the user must ensure that the API Key has a reasonable scope of permissions (such as trading-only permission, without withdrawal permission)).",
     'section_3_title': '3. AI Behavior and Results',
     'section_3_content':
       "The user writes the prompt (Prompt) and the Platform's AI engine executes the trading API request according to the prompt. Any actions, transactions, order placements, cancellations, position adjustments, etc., executed by the AI are considered to be initiated by the user. The Platform is not responsible for losses caused by AI's misunderstanding, judgment errors, communication anomalies, transaction failures, or delays.",
@@ -288,5 +288,37 @@ export default {
     'section_9_content': 'The Platform reserves the right of final interpretation and the right to modify this Disclaimer at any time.',
     'confirm_button': 'I Acknowledge',
     'required_error': 'Please read and agree to the user agreement'
+  },
+  accountSelect: {
+    form: {
+      apiKey: 'API Key',
+      name: 'Name',
+      exchange: 'Exchange'
+    },
+    placeholder: {
+      apiKey: 'Please enter API KEY',
+      name: 'Please enter API name',
+      exchange: 'Please select exchange'
+    },
+    table: {
+      exchange: 'Exchange',
+      name: 'Name',
+      apiKey: 'API Key',
+      balance: 'Total Balance',
+      freeBalance: 'Free Balance',
+      type: 'Type',
+      createTime: 'Created Time'
+    },
+    action: {
+      syncBalance: 'Update Balance',
+      select: 'Select',
+      save: 'Save'
+    }
+  },
+  accountSelectDialog: {
+    title: 'Configure API',
+    action: {
+      close: 'Close'
+    }
   }
 };

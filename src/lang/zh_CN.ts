@@ -286,5 +286,37 @@ export default {
     'section_9_content': '本平台保留对本免责声明的最终解释权及随时修改权。',
     'confirm_button': '我已知悉',
     'required_error': '请阅读并同意用户协议'
+  },
+  accountSelect: {
+    form: {
+      apiKey: 'APIKey',
+      name: '名称',
+      exchange: '交易所'
+    },
+    placeholder: {
+      apiKey: '请输入API KEY',
+      name: '请输入API名称',
+      exchange: '请选择交易所'
+    },
+    table: {
+      exchange: '交易所',
+      name: '名称',
+      apiKey: 'API Key',
+      balance: '总余额',
+      freeBalance: '可用余额',
+      type: '类型',
+      createTime: '创建时间'
+    },
+    action: {
+      syncBalance: '更新余额',
+      select: '选择',
+      save: '保存'
+    }
+  },
+  accountSelectDialog: {
+    title: '配置API',
+    action: {
+      close: '关闭'
+    }
   }
 };

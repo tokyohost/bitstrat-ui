@@ -286,5 +286,37 @@ export default {
     'section_9_content': '본 플랫폼은 본 면책 조항에 대한 최종 해석 권한 및 언제든지 수정할 권한을 보유합니다.',
     'confirm_button': '인지하였습니다',
     'required_error': '사용자 약관을 읽고 동의하십시오'
+  },
+  accountSelect: {
+    form: {
+      apiKey: 'API 키',
+      name: '이름',
+      exchange: '거래소'
+    },
+    placeholder: {
+      apiKey: 'API 키를 입력하세요',
+      name: 'API 이름을 입력하세요',
+      exchange: '거래소를 선택하세요'
+    },
+    table: {
+      exchange: '거래소',
+      name: '이름',
+      apiKey: 'API 키',
+      balance: '총 잔액',
+      freeBalance: '사용 가능한 잔액',
+      type: '유형',
+      createTime: '생성 시간'
+    },
+    action: {
+      syncBalance: '잔액 업데이트',
+      select: '선택',
+      save: '저장'
+    }
+  },
+  accountSelectDialog: {
+    title: 'API 구성',
+    action: {
+      close: '닫기'
+    }
   }
 };

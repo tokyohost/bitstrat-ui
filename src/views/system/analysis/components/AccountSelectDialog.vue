@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import AccountSelect from '@/views/system/api/AccountSelect.vue';
 import { ApiVO } from '@/api/system/api/types';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   visible: boolean;
@@ -23,11 +26,11 @@ const selected = (account: ApiVO) => {
 
 <template>
   <div>
-    <el-dialog v-model="props.visible" title="config api" width="1200px" append-to-body>
+    <el-dialog v-model="props.visible" :title="t('accountSelectDialog.title')" width="1200px" append-to-body>
       <AccountSelect :exchange-name="props.exchangeName" @select="selected"></AccountSelect>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="close">关闭</el-button>
+          <el-button @click="close">{{ t('accountSelectDialog.action.close') }}</el-button>
         </div>
       </template>
     </el-dialog>

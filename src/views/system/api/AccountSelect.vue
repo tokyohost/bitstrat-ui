@@ -4,17 +4,17 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-position="left">
-            <el-form-item label="APIKey" prop="apiKey">
-              <el-input v-model="queryParams.apiKey" placeholder="请输入API KEY" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('accountSelect.form.apiKey')" prop="apiKey">
+              <el-input v-model="queryParams.apiKey" :placeholder="t('accountSelect.placeholder.apiKey')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="queryParams.name" placeholder="请输入API名称" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('accountSelect.form.name')" prop="name">
+              <el-input v-model="queryParams.name" :placeholder="t('accountSelect.placeholder.name')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <div class="flex">
-                <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-                <el-button icon="Refresh" @click="syncBalanceBtn">更新余额</el-button>
+                <el-button type="primary" icon="Search" @click="handleQuery">{{ t('common.opt.search') }}</el-button>
+                <el-button icon="Refresh" @click="resetQuery">{{ t('common.opt.reset') }}</el-button>
+                <el-button icon="Refresh" @click="syncBalanceBtn">{{ t('accountSelect.action.syncBalance') }}</el-button>
               </div>
             </el-form-item>
           </el-form>
@@ -30,27 +30,29 @@
       </template>
       <el-table v-loading="loading" :data="apiList" @selection-change="handleSelectionChange">
         <!--        <el-table-column type="selection" width="55" align="center" />-->
-        <el-table-column label="交易所" align="center" prop="exchangeName" />
-        <el-table-column label="名称" align="center" prop="name" />
+        <el-table-column :label="t('accountSelect.table.exchange')" align="center" prop="exchangeName" />
+        <el-table-column :label="t('accountSelect.table.name')" align="center" prop="name" />
 
-        <el-table-column label="API Key" align="center" prop="apiKey">
+        <el-table-column :label="t('accountSelect.table.apiKey')" align="center" prop="apiKey">
           <template #default="scope">
             <el-tooltip class="item" effect="dark" trigger="click" :content="scope.row.apiKey" placement="top">
               <div class="truncate w-full max-w-[180px] hover:cursor-pointer">{{ scope.row.apiKey }}</div>
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="总余额" align="center" prop="balance" />
-        <el-table-column label="可用余额" align="center" prop="freeBalance" />
-        <el-table-column label="类型" align="center" prop="type">
+        <el-table-column :label="t('accountSelect.table.balance')" align="center" prop="balance" />
+        <el-table-column :label="t('accountSelect.table.freeBalance')" align="center" prop="freeBalance" />
+        <el-table-column :label="t('accountSelect.table.type')" align="center" prop="type">
           <template #default="scope">
             <dict-tag :value="scope.row.type" :options="exchange_api_type"></dict-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" align="center" prop="createTime" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column :label="t('accountSelect.table.createTime')" align="center" prop="createTime" />
+        <el-table-column :label="t('common.opt.opt')" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-button link type="primary" @click="handleSelect(scope.row)" v-hasPermi="['system:api:edit']">选择</el-button>
+            <el-button link type="primary" @click="handleSelect(scope.row)" v-hasPermi="['system:api:edit']">{{
+              t('accountSelect.action.select')
+            }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -59,32 +61,32 @@
     </el-card>
     <el-dialog
       v-model="dialog.visible"
-      :title="(configForm.exchangeName ? configForm.exchangeName : '') + proxy.$t('setting.apiSettingForm.title')"
+      :title="(configForm.exchangeName ? configForm.exchangeName : '') + t('setting.apiSettingForm.title')"
       width="500px"
       @click.stop
     >
       <el-form label-position="top" label-width="100px" ref="apiConfigRef" :model="configForm" :rules="rules">
-        <el-form-item :label="'交易所'" prop="exchangeName">
-          <!--              <el-input v-model="form.symbol" placeholder="请输入币种" />-->
-          <el-select v-model="configForm.exchangeName" :placeholder="'请选择交易所'" :filterable="true">
+        <el-form-item :label="t('accountSelect.form.exchange')" prop="exchangeName">
+          <el-select v-model="configForm.exchangeName" :placeholder="t('accountSelect.placeholder.exchange')" :filterable="true">
             <el-option :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="configForm.name" placeholder="请输入名称" />
+        <el-form-item :label="t('accountSelect.form.name')" prop="name">
+          <el-input v-model="configForm.name" :placeholder="t('accountSelect.placeholder.name')" />
         </el-form-item>
         <ApiConfigForm :fields="currentFields" :model-value="configForm" i18n-prefix="setting.apiSettingForm"></ApiConfigForm>
       </el-form>
 
       <template #footer>
-        <el-button @click="dialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm">保存</el-button>
+        <el-button @click="dialog.visible = false">{{ t('common.dialog.cancel') }}</el-button>
+        <el-button type="primary" @click="submitForm">{{ t('accountSelect.action.save') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup name="AccountSelect" lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useApiConfig } from '@/constants/useApiConfig';
 import { listApi, getApi, delApi, addApi, updateApi, syncBalance } from '@/api/system/api';
 import { ApiVO, ApiQuery, ApiForm } from '@/api/system/api/types';
@@ -95,6 +97,7 @@ import ApiConfigForm from '@/layout/components/ApiSetting/components/ApiConfigFo
 import { ref } from 'vue';
 import { ApiSettingVo } from '@/layout/components/ApiSetting/types';
 
+const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { exchange_api_type } = toRefs<any>(proxy?.useDict('exchange_api_type'));
 const apiList = ref<ApiVO[]>([]);
@@ -119,18 +122,17 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'select', value: ApiVO): void;
 }>();
-// 交易所列表
+
 const exchangeList = ref<ApiSettingVo[]>([
   {
     exchangeName: undefined,
     status: undefined
   }
 ]);
-// 当前选中的交易所
+
 const currentExchange = ref<ApiSettingVo | (typeof exchangeList)[0]>(null);
 const { configForm, fieldConfigs } = useApiConfig();
 
-// 计算当前配置的字段
 const currentFields = computed(() => {
   if (configForm.value.exchangeName) {
     return fieldConfigs[configForm.value?.exchangeName.toLowerCase() as keyof typeof fieldConfigs] || [];
@@ -138,6 +140,7 @@ const currentFields = computed(() => {
     return [];
   }
 });
+
 const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
@@ -150,6 +153,7 @@ const initFormData: ApiForm = {
   exchangeName: undefined,
   userId: undefined
 };
+
 const data = reactive<PageData<ApiForm, ApiQuery>>({
   form: { ...initFormData },
   queryParams: {
@@ -162,20 +166,21 @@ const data = reactive<PageData<ApiForm, ApiQuery>>({
     params: {}
   },
   rules: {
-    apiKey: [{ required: true, message: 'api key不能为空', trigger: 'blur' }],
-    exchangeName: [{ required: true, message: '交易所不能为空', trigger: 'blur' }],
-    apiSecurity: [{ required: true, message: 'apiSecurity不能为空', trigger: 'blur' }],
-    secret: [{ required: true, message: 'apiSecurity不能为空', trigger: 'blur' }],
-    name: [{ required: true, message: 'api名称不能为空', trigger: 'blur' }]
+    apiKey: [{ required: true, message: t('accountSelect.rule.apiKey'), trigger: 'blur' }],
+    exchangeName: [{ required: true, message: t('accountSelect.rule.exchange'), trigger: 'blur' }],
+    apiSecurity: [{ required: true, message: t('accountSelect.rule.apiSecurity'), trigger: 'blur' }],
+    secret: [{ required: true, message: t('accountSelect.rule.apiSecurity'), trigger: 'blur' }],
+    name: [{ required: true, message: t('accountSelect.rule.name'), trigger: 'blur' }]
   }
 });
+
 const loadApiSetting = async () => {
   const axiosResponse = await getApiSettingStatus();
-  // console.log(axiosResponse);
   if (axiosResponse.code == 200) {
     exchangeList.value = axiosResponse.data;
   }
 };
+
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询交易所API列表 */
@@ -187,6 +192,7 @@ const getList = async () => {
   total.value = res.total;
   loading.value = false;
 };
+
 const syncBalanceBtn = async () => {
   loading.value = true;
   const axiosResponse = await syncBalance();
@@ -194,11 +200,11 @@ const syncBalanceBtn = async () => {
   loading.value = false;
 };
 
-/** 取消按钮 */
 const cancel = () => {
   reset();
   dialog.visible = false;
 };
+
 const loadExchange = async () => {
   loading.value = true;
   const res = await getSupportExchange();
@@ -211,37 +217,32 @@ const loadExchange = async () => {
   }
   loading.value = false;
 };
-/** 表单重置 */
+
 const reset = () => {
   form.value = { ...initFormData };
   apiFormRef.value?.resetFields();
 };
 
-/** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
 };
 
-/** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
 };
 
-/** 多选框选中数据 */
 const handleSelectionChange = (selection: ApiVO[]) => {
   ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 };
 
-/** 选中操作 */
 const handleSelect = (item: ApiVO) => {
   emit('select', item);
 };
 
-/** 提交按钮 */
 const submitForm = () => {
   apiConfigRef.value?.validate(async (valid: boolean) => {
     if (valid) {
@@ -252,9 +253,8 @@ const submitForm = () => {
         passphrase: configForm.value.passphrase
       };
       const checkResult = await checkApi(data);
-      // if (checkResult.code == 200) {
       if (checkResult.data?.checkStatus == 'false') {
-        ElMessage.error(proxy.$t('setting.apiSettingForm.checkFail'));
+        ElMessage.error(t('setting.apiSettingForm.checkFail'));
         return;
       }
 
@@ -264,7 +264,7 @@ const submitForm = () => {
       } else {
         await addApi(configForm.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess('操作成功');
+      proxy?.$modal.msgSuccess(t('common.message.operationSuccess'));
       dialog.visible = false;
       await getList();
     }
