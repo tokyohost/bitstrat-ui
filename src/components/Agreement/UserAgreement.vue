@@ -1,12 +1,7 @@
 <template>
   <div class="agreement-component">
     <div class="checkbox-container">
-      <input
-        type="checkbox"
-        :id="checkboxId"
-        :checked="modelValue"
-        @change="handleCheckboxChange"
-      />
+      <input type="checkbox" :id="checkboxId" :checked="modelValue" @change="handleCheckboxChange" />
       <label :for="checkboxId">
         {{ $t('agreement.checkbox_text') }}
 
@@ -21,69 +16,69 @@
     </div>
 
     <el-dialog v-model="showModal" class="modal-overlay" :title="$t('agreement.modal_title')" append-to-body @close="showModal = false">
-<!--      <div class="modal-content">-->
-<!--        <div class="modal-header">-->
-<!--          <h2>{{ $t('agreement.modal_title') }}</h2>-->
-<!--&lt;!&ndash;          <button class="close-btn" @click="showModal = false">×</button>&ndash;&gt;-->
-<!--        </div>-->
+      <!--      <div class="modal-content">-->
+      <!--        <div class="modal-header">-->
+      <!--          <h2>{{ $t('agreement.modal_title') }}</h2>-->
+      <!--&lt;!&ndash;          <button class="close-btn" @click="showModal = false">×</button>&ndash;&gt;-->
+      <!--        </div>-->
 
-        <div class="modal-body">
-          <p>{{ $t('agreement.last_updated') }}</p>
-          <p class="intro">{{ $t('agreement.intro') }}</p>
+      <div class="modal-body">
+        <p>{{ $t('agreement.last_updated') }}</p>
+        <p class="intro">{{ $t('agreement.intro') }}</p>
 
-          <ol>
-            <li>
-              <strong>{{ $t('agreement.section_1_title') }}</strong>
-              <p>{{ $t('agreement.section_1_content') }}</p>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_2_title') }}</strong>
-              <p>{{ $t('agreement.section_2_content') }}</p>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_3_title') }}</strong>
-              <p>{{ $t('agreement.section_3_content') }}</p>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_4_title') }}</strong>
-              <p>{{ $t('agreement.section_4_content') }}</p>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_5_title') }}</strong>
-              <p>{{ $t('agreement.section_5_content') }}</p>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_6_title') }}</strong>
-              <p>{{ $t('agreement.section_6_content') }}</p>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_7_title') }}</strong>
-              <p>{{ $t('agreement.section_7_title') }}</p>
-              <ul>
-                <li>{{ $t('agreement.section_7_list_1') }}</li>
-                <li>{{ $t('agreement.section_7_list_2') }}</li>
-                <li>{{ $t('agreement.section_7_list_3') }}</li>
-                <li>{{ $t('agreement.section_7_list_4') }}</li>
-                <li>{{ $t('agreement.section_7_list_5') }}</li>
-              </ul>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_8_title') }}</strong>
-              <p>{{ $t('agreement.section_8_content') }}</p>
-            </li>
-            <li>
-              <strong>{{ $t('agreement.section_9_title') }}</strong>
-              <p>{{ $t('agreement.section_9_content') }}</p>
-            </li>
-          </ol>
-        </div>
+        <ol>
+          <li>
+            <strong>{{ $t('agreement.section_1_title') }}</strong>
+            <p>{{ $t('agreement.section_1_content') }}</p>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_2_title') }}</strong>
+            <p>{{ $t('agreement.section_2_content') }}</p>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_3_title') }}</strong>
+            <p>{{ $t('agreement.section_3_content') }}</p>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_4_title') }}</strong>
+            <p>{{ $t('agreement.section_4_content') }}</p>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_5_title') }}</strong>
+            <p>{{ $t('agreement.section_5_content') }}</p>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_6_title') }}</strong>
+            <p>{{ $t('agreement.section_6_content') }}</p>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_7_title') }}</strong>
+            <p>{{ $t('agreement.section_7_title') }}</p>
+            <ul>
+              <li>{{ $t('agreement.section_7_list_1') }}</li>
+              <li>{{ $t('agreement.section_7_list_2') }}</li>
+              <li>{{ $t('agreement.section_7_list_3') }}</li>
+              <li>{{ $t('agreement.section_7_list_4') }}</li>
+              <li>{{ $t('agreement.section_7_list_5') }}</li>
+            </ul>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_8_title') }}</strong>
+            <p>{{ $t('agreement.section_8_content') }}</p>
+          </li>
+          <li>
+            <strong>{{ $t('agreement.section_9_title') }}</strong>
+            <p>{{ $t('agreement.section_9_content') }}</p>
+          </li>
+        </ol>
+      </div>
 
-        <div class="modal-footer">
-          <button @click="showModal = false" class="confirm-btn">
-            {{ $t('agreement.confirm_button') }}
-          </button>
-        </div>
-<!--      </div>-->
+      <div class="modal-footer">
+        <button @click="showModal = false" class="confirm-btn">
+          {{ $t('agreement.confirm_button') }}
+        </button>
+      </div>
+      <!--      </div>-->
     </el-dialog>
   </div>
 </template>
@@ -95,12 +90,12 @@ import { ref, computed } from 'vue';
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    default: false,
+    default: false
   },
   // 新增 prop 来接收父组件的必填错误状态，以便在组件内显示提示
   showRequiredError: {
     type: Boolean,
-    default: false,
+    default: false
   }
 });
 
@@ -130,7 +125,7 @@ const handleCheckboxChange = (event) => {
 }
 
 .agreement-link {
-  color: #007bff;
+  color: var(--el-text-color-primary);
   text-decoration: none;
   cursor: pointer;
 }

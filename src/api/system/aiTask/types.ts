@@ -64,6 +64,11 @@ export interface AiTaskVO {
   leverageMax: undefined;
   shortTermInterval: string;
   longTermInterval: string;
+  /**
+   * 分享状态 1-未分享 2-已分享
+   */
+  shareStatus: number;
+  shareId: string | number;
 }
 
 export interface AiTaskForm extends BaseEntity {

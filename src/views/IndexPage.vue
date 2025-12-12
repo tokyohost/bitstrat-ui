@@ -139,7 +139,7 @@ const goToRegister = () => {
 // 开启免费试用 (可以跳转到功能介绍页或控制台)
 const startFreeTrial = () => {
   // 假设您的控制台路由路径是 '/dashboard'
-  router.push('/index');
+  router.push('/login');
 };
 </script>
 

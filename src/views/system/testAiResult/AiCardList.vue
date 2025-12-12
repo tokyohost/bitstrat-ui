@@ -14,7 +14,9 @@
             <div>
               <div class="font-semibold text-lg text-gray-800" style="color: var(--el-text-color)">
                 {{ item.symbol || '-' }}
-                <el-tag size="small" :type="getActionType(item.action)" class="ml-2">{{ item.action }}</el-tag>
+                <el-tag size="small" :type="getActionType(item.action)" class="ml-2" style="color: var(--el-backtop-bg-color)">{{
+                  item.action
+                }}</el-tag>
               </div>
               <div class="text-xs text-gray-500">
                 ID: {{ item.id }} · 杠杆: {{ item.leverage }} · 数量: {{ formatNumber(item.size) }} · 时间: {{ item.createTime }}

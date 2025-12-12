@@ -73,7 +73,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
     legend: { display: false },
     title: { display: false },
     tooltip: {
-      enabled: true,
+      enabled: false,
       mode: 'index',
       intersect: false,
       callbacks: {

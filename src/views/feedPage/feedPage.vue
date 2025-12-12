@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { likeFeed, listFeed } from '@/api/system/feed';
+import { FeedVO } from '@/api/system/feed/types';
+import FeedChart from '@/views/feedPage/FeedChart.vue';
 
 // --- 接口定义 (TypeScript) ---
-interface Post {
+interface Post extends FeedVO {
   id: number;
   author: string;
   avatar: string; // 可能是 IPFS 哈希或 URL
@@ -13,20 +16,19 @@ interface Post {
 }
 
 // --- 状态管理 ---
-const posts = ref<Post[]>([]);
+const posts = ref<FeedVO[]>([]);
 const currentPage = ref(1);
 const isLoading = ref(false);
 const hasMore = ref(true); // 是否还有更多数据可以加载
 
 // 虚拟 Web3 数据 (用于演示)
-const generatePost = (id: number): Post => ({
+const generatePost = (id: number, item: FeedVO): FeedVO => ({
   id,
   author: `Anon #${Math.floor(Math.random() * 9000) + 1000}`,
   avatar: `https://i.pravatar.cc/150?img=${id % 70}`, // 随机头像
-  content: `这是一个关于 #${id} 链上治理提案的讨论。去中心化和自治是 Web3 的核心价值。#DeFi #DAO #Ethereum`,
-  timestamp: new Date(Date.now() - id * 3600 * 1000).toLocaleString('zh-CN'),
   likes: Math.floor(Math.random() * 500) + 10,
-  isLiked: Math.random() > 0.8
+  isLiked: Math.random() > 0.8,
+  ...item
 });
 
 // --- 无极加载/数据加载逻辑 ---
@@ -37,19 +39,24 @@ const loadMorePosts = async () => {
   isLoading.value = true;
 
   // 模拟 API 请求延迟
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // await new Promise((resolve) => setTimeout(resolve, 1000));
+  const res = await listFeed({
+    pageNum: 10,
+    pageSize: currentPage.value
+  });
 
   // 模拟加载下一页的 10 个帖子
-  const newPosts: Post[] = [];
+  const newPosts: FeedVO[] = [];
   const startId = (currentPage.value - 1) * 10 + 1;
-  for (let i = 0; i < 10; i++) {
-    newPosts.push(generatePost(startId + i));
+  const data = res.rows;
+  for (let i = 0; i < data.length; i++) {
+    newPosts.push(generatePost(startId + i, data[i]));
   }
 
   posts.value.push(...newPosts);
 
   // 假设总共有 5 页数据
-  if (currentPage.value >= 5) {
+  if (data.length < 10) {
     hasMore.value = false;
   } else {
     currentPage.value++;
@@ -60,12 +67,13 @@ const loadMorePosts = async () => {
 
 // --- 交互逻辑 ---
 
-const toggleLike = (post: Post) => {
+const toggleLike = async (post: Post) => {
   if (post.isLiked) {
-    post.likes--;
+    post.likeCount--;
   } else {
-    post.likes++;
+    post.likeCount++;
   }
+  await likeFeed(post.id);
   post.isLiked = !post.isLiked;
 };
 
@@ -73,6 +81,10 @@ const toggleLike = (post: Post) => {
 
 const observer = ref<IntersectionObserver | null>(null);
 const sentinel = ref<HTMLElement | null>(null); // 观察的哨兵元素
+
+const showFeedDetail = () => {
+  ElMessage.warning('敬请期待');
+};
 
 onMounted(() => {
   // 初始加载第一批数据
@@ -110,10 +122,8 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-gray-900 text-gray-200 p-4 sm:p-6 lg:p-8">
     <header class="sticky top-0 z-10 backdrop-blur-md bg-gray-900/80 p-3 mb-6 rounded-xl border border-blue-600/30 shadow-2xl shadow-blue-500/10">
-      <h1 class="text-2xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
-        🌐 Bitstrat 策略广场
-      </h1>
-      <p class="text-xs text-gray-500 mt-1">分享您的策略</p>
+      <h1 class="text-2xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">策略广场 Beta</h1>
+      <p class="text-xs text-gray-500 mt-1">分享您的顶尖策略</p>
     </header>
 
     <main class="max-w-xl mx-auto space-y-6 pb-20">
@@ -122,19 +132,40 @@ onUnmounted(() => {
         :key="post.id"
         class="p-4 rounded-xl border border-green-500/30 bg-gray-800/60 shadow-lg transition duration-300 hover:shadow-green-500/20"
       >
-        <div class="flex items-center mb-3">
-          <img :src="post.avatar" alt="Avatar" class="w-8 h-8 rounded-full border border-green-400/50 mr-3" />
+        <div class="flex justify-between">
+          <div class="flex items-center mb-3">
+            <img :src="post.avatar" alt="Avatar" class="w-8 h-8 rounded-full border border-green-400/50 mr-3 blur-sm" />
+            <div>
+              <p class="text-sm font-bold text-green-400">
+                {{ post.title }}
+              </p>
+              <p class="text-xs text-gray-500">{{ post.shareTime }}</p>
+            </div>
+          </div>
+
           <div>
-            <p class="text-sm font-bold text-green-400">
-              {{ post.author }}
-            </p>
-            <p class="text-xs text-gray-500">{{ post.timestamp }}</p>
+            <span
+              class="text-lg font-extrabold"
+              :class="{
+                'text-red-500': post.profit3m < 0,
+                'text-green-400': post.profit3m > 0,
+                'text-gray-400': post.profit3m == 0
+              }"
+            >
+              <span v-if="post.profit3m > 0"> &#9650; </span>
+              <span v-else-if="post.profit3m < 0"> &#9660; </span>
+              {{ post.profit3m }}%
+            </span>
+            <p class="text-xs text-gray-500 mt-0.5 text-right">3个月收益</p>
           </div>
         </div>
 
         <p class="text-gray-200 text-base mb-4 leading-relaxed whitespace-pre-wrap">
           {{ post.content }}
         </p>
+        <div class="flex justify-between items-center text-sm w-full">
+          <FeedChart :id="post.id"></FeedChart>
+        </div>
 
         <div class="flex justify-between items-center text-sm">
           <button
@@ -151,10 +182,12 @@ onUnmounted(() => {
                 clip-rule="evenodd"
               ></path>
             </svg>
-            {{ post.likes }} 赞
+            {{ post.likeCount }} 赞
           </button>
 
-          <span class="text-gray-500"> 查看 <span class="ml-1 text-green-400 cursor-pointer hover:text-cyan-400">→</span> </span>
+          <span class="text-gray-500 hover:cursor-pointer" @click="showFeedDetail">
+            查看 <span class="ml-1 text-green-400 cursor-pointer hover:text-cyan-400">→</span>
+          </span>
         </div>
       </div>
 

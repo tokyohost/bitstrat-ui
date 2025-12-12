@@ -29,7 +29,7 @@
       </template>
 
       <!-- 卡片列表 -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" :style="{ color: 'var(--el-text-color)' }">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5" :style="{ color: 'var(--el-text-color)' }">
         <TaskItem
           v-for="item in aiTaskList"
           :key="item.id"
@@ -38,6 +38,7 @@
           @delete="handleDelete"
           @start="handleStart"
           @stop="handleStop"
+          @shared="getList"
         ></TaskItem>
       </div>
 

@@ -9,7 +9,7 @@ const props = defineProps<{
   item: AiTaskVO;
 }>();
 
-const emits = defineEmits(['update', 'delete', 'start', 'stop']);
+const emits = defineEmits(['update', 'delete', 'start', 'stop', 'shared']);
 // 是否暗黑模式
 const isDark = useDark({
   storageKey: 'useDarkKey',
@@ -26,6 +26,8 @@ watch(isDark, () => {
   }
 });
 import { useRouter } from 'vue-router';
+import SharePanel from '@/views/system/aiTask/share-panel.vue';
+import { getFeed } from '@/api/system/feed';
 const router = useRouter();
 const goAiTaskLog = (item?: AiTaskVO) => {
   router.push({ path: '/ai/ai-task-log', query: { id: item.id } });
@@ -49,6 +51,18 @@ const loadChartData = async () => {
   const res = await loadChartDataSimple({ taskId: props.item.id });
   chartData.value = res.data.data;
 };
+
+const sharePanel = useTemplateRef('sharePanel');
+const shareStrategy = (item: AiTaskVO) => {
+  sharePanel.value.open();
+};
+const showSharegy = async (item: AiTaskVO) => {
+  const feedVO = await getFeed(item.shareId);
+  sharePanel.value.open(feedVO.data);
+};
+const shared = () => {
+  emits('shared');
+};
 onMounted(() => {
   loadChartData();
 });
@@ -62,11 +76,22 @@ onMounted(() => {
       <!-- 顶部：标题 + 状态 -->
       <div class="flex justify-between items-center mb-3">
         <div class="flex justify-start gap-2">
-          <div class="text-lg font-bold text-gray-900" :style="{ color: 'var(--el-text-color)' }">{{ item.name }}</div>
+          <el-tooltip effect="dark" :content="item.name" placement="top">
+            <div class="text-lg font-bold text-gray-900 overflow-hidden text-ellipsis whitespace-nowrap" :style="{ color: 'var(--el-text-color)' }">
+              {{ item.name }}
+            </div>
+          </el-tooltip>
           <ExchangeLogo :exchange="item.exchange"></ExchangeLogo>
         </div>
-
-        <dict-tag :options="ai_task_status" :value="item.status" />
+        <div class="flex justify-end">
+          <dict-tag :options="ai_task_status" :value="item.status" />
+          <div v-if="item.shareStatus == 1" class="ml-2 hover:cursor-pointer" @click="shareStrategy(item)">
+            <img src="../../../assets/icons/png/share.png" height="20" width="20" />
+          </div>
+          <el-tag :type="'primary'" size="default" v-if="item.shareStatus == 2" class="ml-2 hover:cursor-pointer" @click="showSharegy(item)"
+            >已分享</el-tag
+          >
+        </div>
       </div>
 
       <!-- 分隔线 -->
@@ -116,7 +141,7 @@ onMounted(() => {
       <div class="h-0.5 bg-gradient-to-r from-transparent to-gray-200 mt-3 mb-2"></div>
 
       <!-- 操作按钮 -->
-      <div class="flex justify-end gap-3 mt-2">
+      <div class="flex justify-end gap-1 mt-2">
         <el-button link @click="goAiTaskLog(item)" class="opacity-70 hover:opacity-100">查看</el-button>
         <el-button link icon="Edit" @click="handleUpdate(item)" class="opacity-70 hover:opacity-100">修改</el-button>
 
@@ -132,6 +157,7 @@ onMounted(() => {
 
       <!--          <div v-else class="absolute top-3 right-3 text-xs bg-gray-300/70 text-gray-700 px-2 py-0.5 rounded-full">暂停</div>-->
     </el-card>
+    <SharePanel ref="sharePanel" :strategy-id="item.id" @shared="shared"></SharePanel>
   </div>
 </template>
 
