@@ -7,11 +7,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue';
 import * as echarts from 'echarts';
-// 1. 引入 RuoYi-Vue-Plus 的设置 Store
-import { useSettingsStore } from '@/store/modules/settings';
-import { SideThemeEnum } from '@/enums/SideThemeEnum';
-
-const settingsStore = useSettingsStore();
 
 const props = defineProps({
   // 允许手动覆盖：'auto' | 'dark' | 'light'

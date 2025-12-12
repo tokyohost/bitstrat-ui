@@ -4,7 +4,7 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="任务名称" prop="name">
+            <el-form-item label="" prop="name">
               <el-input v-model="queryParams.name" placeholder="请输入任务名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
 
@@ -29,75 +29,16 @@
       </template>
 
       <!-- 卡片列表 -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" :style="{ color: 'var(--el-text-color)' }">
-        <el-card
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" :style="{ color: 'var(--el-text-color)' }">
+        <TaskItem
           v-for="item in aiTaskList"
           :key="item.id"
-          class="relative p-4 rounded-xl bg-white/70 backdrop-blur shadow-sm hover:shadow-lg border border-gray-200/50 hover:(border-primary shadow-primary/30) transition-all duration-300"
-        >
-          <!-- 顶部：标题 + 状态 -->
-          <div class="flex justify-between items-center mb-3">
-            <div class="flex justify-start gap-2">
-              <div class="text-lg font-bold text-gray-900" :style="{ color: 'var(--el-text-color)' }">{{ item.name }}</div>
-              <ExchangeLogo :exchange="item.exchange"></ExchangeLogo>
-            </div>
-
-            <dict-tag :options="ai_task_status" :value="item.status" />
-          </div>
-
-          <!-- 分隔线 -->
-          <div class="h-0.5 bg-gradient-to-r from-gray-200 to-transparent mb-3"></div>
-
-          <!-- 内容区 -->
-          <div class="space-y-2 text-sm text-gray-600 leading-normal">
-            <div class="flex justify-between">
-              <span class="font-600">币种：</span>
-              <span class="text-gray-800" :style="{ color: 'var(--el-text-color)' }">{{ item.symbols }}</span>
-            </div>
-
-            <div class="flex justify-between">
-              <span class="font-600">开始资金：</span>
-              <span class="text-emerald-600 font-600">{{ item.startBalance }}</span>
-            </div>
-
-            <!--            <div class="flex justify-between">-->
-            <!--              <span class="font-600">当前余额：</span>-->
-            <!--              <span :class="item.totalBalance >= item.startBalance ? 'text-green-600 font-600' : 'text-red-500 font-600'">-->
-            <!--                {{ item.totalBalance }}-->
-            <!--              </span>-->
-            <!--            </div>-->
-
-            <div class="flex justify-between">
-              <span class="font-600">时间粒度：</span>
-              <span>{{ item.interval }}</span>
-            </div>
-
-            <div class="flex justify-between">
-              <span class="font-600">创建时间：</span>
-              <span>{{ item.createTime }}</span>
-            </div>
-          </div>
-
-          <!-- 底部分隔线 -->
-          <div class="h-0.5 bg-gradient-to-r from-transparent to-gray-200 mt-3 mb-2"></div>
-
-          <!-- 操作按钮 -->
-          <div class="flex justify-end gap-3 mt-2">
-            <el-button link @click="goAiTaskLog(item)" class="opacity-70 hover:opacity-100">查看</el-button>
-            <el-button link icon="Edit" @click="handleUpdate(item)" class="opacity-70 hover:opacity-100">修改</el-button>
-
-            <el-button v-if="item.status == 2" link icon="VideoPause" class="opacity-70 hover:opacity-100" @click="handleStop(item)">终止</el-button>
-
-            <el-button v-if="item.status != 2" link icon="VideoPlay" class="opacity-70 hover:opacity-100" @click="handleStart(item)">启动</el-button>
-
-            <el-button link type="danger" icon="Delete" class="opacity-70 hover:opacity-100" @click="handleDelete(item)">删除</el-button>
-          </div>
-
-          <!-- 右上角徽章（可选） -->
-          <!--          <div v-if="item.status == 2" class="absolute top-3 right-3 text-xs bg-yellow-300/80 text-yellow-900 px-2 py-0.5 rounded-full">运行中</div>-->
-
-          <!--          <div v-else class="absolute top-3 right-3 text-xs bg-gray-300/70 text-gray-700 px-2 py-0.5 rounded-full">暂停</div>-->
-        </el-card>
+          :item="item"
+          @update="handleUpdate"
+          @delete="handleDelete"
+          @start="handleStart"
+          @stop="handleStop"
+        ></TaskItem>
       </div>
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
@@ -350,8 +291,9 @@ const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
-import { useRouter } from 'vue-router';
+
 import { CSSProperties } from 'vue';
+import TaskItem from '@/views/system/aiTask/TaskItem.vue';
 const checkLongInterval = (rule, value, callback) => {
   if (!isLongTermGreater(form.value.shortTermInterval, form.value.longTermInterval)) {
     callback(new Error('长期周期必须大于短周期'));
@@ -366,7 +308,7 @@ const checkShortInterval = (rule, value, callback) => {
     callback();
   }
 };
-const router = useRouter();
+
 const fieldTabMap: Record<string, string> = {
   name: 'basic',
   exchange: 'basic',
@@ -699,9 +641,6 @@ const handleExport = () => {
     },
     `aiTask_${new Date().getTime()}.xlsx`
   );
-};
-const goAiTaskLog = (item?: AiTaskVO) => {
-  router.push({ path: '/ai/ai-task-log', query: { id: item.id } });
 };
 onMounted(() => {
   getList();

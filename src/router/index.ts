@@ -138,6 +138,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/aiSummary/aiSummary.vue'),
         name: 'aiSummary',
         meta: { title: 'AI智能分析', icon: 'vip' }
+      },
+      {
+        path: 'ai-feed',
+        component: () => import('@/views/feedPage/feedPage.vue'),
+        name: 'aiFeed',
+        meta: { title: '策略广场', icon: 'vip' }
       }
     ]
   },

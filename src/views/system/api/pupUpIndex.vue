@@ -220,6 +220,7 @@ const data = reactive<PageData<ApiForm, ApiQuery>>({
     exchangeName: [{ required: true, message: '交易所不能为空', trigger: 'blur' }],
     apiSecurity: [{ required: true, message: 'apiSecurity不能为空', trigger: 'blur' }],
     secret: [{ required: true, message: 'apiSecurity不能为空', trigger: 'blur' }],
+    type: [{ required: true, message: 'type不能为空', trigger: 'blur' }],
     name: [{ required: true, message: 'api名称不能为空', trigger: 'blur' }]
   }
 });
