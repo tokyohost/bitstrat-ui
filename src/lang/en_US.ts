@@ -217,6 +217,22 @@ export default {
     }
   },
   home: {
+    aiStrategy: {
+      title: 'AI Strategy',
+      desc: 'Intelligent quantitative and automated trading assistant tools'
+    },
+    aiSummary: {
+      title: 'AI Analysis',
+      desc: 'Smart analysis of positions and market trends helper'
+    },
+    feed: {
+      title: 'Strategy Square',
+      desc: 'Discover more strategies'
+    },
+    more: {
+      title: 'More features coming soon',
+      desc: 'We are preparing more exciting content for you...'
+    },
     totalAmount: {
       title: 'Total Asset Trend Statistics'
     },

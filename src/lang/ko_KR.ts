@@ -215,6 +215,22 @@ export default {
     }
   },
   home: {
+    aiStrategy: {
+      title: 'AI 전략',
+      desc: '지능형 양적 거래 및 자동 거래 보조 도구'
+    },
+    aiSummary: {
+      title: 'AI 분석',
+      desc: '포지션 및 시장 동향 분석 보조 도구'
+    },
+    feed: {
+      title: '전략 광장',
+      desc: '더 많은 전략 발견'
+    },
+    more: {
+      title: '더 많은 기능이 곧 나올 예정입니다',
+      desc: '더 많은 흥미로운 콘텐츠를 준비 중입니다...'
+    },
     totalAmount: {
       title: '총 자산 추이 통계'
     },

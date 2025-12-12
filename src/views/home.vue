@@ -6,8 +6,8 @@
       @click="goAiStrategy"
       style="border: 1px solid var(--el-border-color)"
     >
-      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">AI 策略</h2>
-      <p class="text-gray-500 text-sm">智能量化与自动交易辅助工具</p>
+      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">{{ t('home.aiStrategy.title') }}</h2>
+      <p class="text-gray-500 text-sm">{{ t('home.aiStrategy.desc') }}</p>
     </div>
     <!-- AI 智能分析 -->
     <div
@@ -16,8 +16,8 @@
       style="border: 1px solid var(--el-border-color)"
       v-if="checkPermi(['system:home:aiSummary'])"
     >
-      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">AI 智能分析</h2>
-      <p class="text-gray-500 text-sm">智能分析仓位以及行情辅助工具</p>
+      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">{{ t('home.aiSummary.title') }}</h2>
+      <p class="text-gray-500 text-sm">{{ t('home.aiSummary.desc') }}</p>
     </div>
     <!-- 策略广场 -->
     <div
@@ -26,22 +26,24 @@
       style="border: 1px solid var(--el-border-color)"
       v-if="checkPermi(['system:home:feed'])"
     >
-      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">策略广场</h2>
-      <p class="text-gray-500 text-sm">发现更多策略</p>
+      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">{{ t('home.feed.title') }}</h2>
+      <p class="text-gray-500 text-sm">{{ t('home.feed.desc') }}</p>
     </div>
 
     <!-- 更多功能 -->
     <div class="rounded-2xl shadow p-6 opacity-70" style="border: 1px solid var(--el-border-color)">
-      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">更多功能敬请期待</h2>
-      <p class="text-gray-500 text-sm">我们正在为你准备更多精彩内容...</p>
+      <h2 class="text-xl font-semibold mb-2" style="color: var(--el-text-color)">{{ t('home.more.title') }}</h2>
+      <p class="text-gray-500 text-sm">{{ t('home.more.desc') }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { checkPermi } from '@/utils/permission';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const goAiStrategy = () => {

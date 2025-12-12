@@ -213,6 +213,22 @@ export default {
   },
   //首页
   home: {
+    aiStrategy: {
+      title: 'AI 策略',
+      desc: '智能量化与自动交易辅助工具'
+    },
+    aiSummary: {
+      title: 'AI 智能分析',
+      desc: '智能分析仓位以及行情辅助工具'
+    },
+    feed: {
+      title: '策略广场',
+      desc: '发现更多策略'
+    },
+    more: {
+      title: '更多功能敬请期待',
+      desc: '我们正在为你准备更多精彩内容...'
+    },
     totalAmount: {
       title: '总资产趋势统计'
     },
