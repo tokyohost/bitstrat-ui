@@ -455,5 +455,13 @@ export default {
       deleteSuccess: '삭제 성공',
       selectExchangeFirst: '먼저 거래소를 선택하세요'
     }
+  },
+  aiCardList: {
+    response: '응답',
+    token: '토큰',
+    cost: '비용',
+    details: '상세',
+    abnormalStatus: '상태 이상',
+    na: '해당 없음'
   }
 };

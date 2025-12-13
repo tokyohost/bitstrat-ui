@@ -22,7 +22,7 @@
             <div class="ai-sub text-sm text-gray-500 flex items-center space-x-1 mt-1">
               <el-icon><Clock /></el-icon>
               <span class="text-xs md:text-sm">{{ item.createTime }}</span>
-              <el-tag v-if="![1, 2, 3].includes(item.status)" type="danger" size="small" class="ml-2">状态异常</el-tag>
+              <el-tag v-if="![1, 2, 3].includes(item.status)" type="danger" size="small" class="ml-2">{{ t('aiCardList.abnormalStatus') }}</el-tag>
             </div>
           </div>
         </div>
@@ -30,25 +30,27 @@
         <div class="flex flex-col md:flex-row items-stretch md:items-center space-y-3 md:space-y-0 md:space-x-6 flex-shrink-0 w-full md:w-auto">
           <div class="flex justify-between md:space-x-6 text-sm w-full md:w-auto">
             <div v-if="item.status === 2" class="ai-metric w-1/3 md:w-auto text-center md:text-left">
-              <div class="ai-label text-gray-500">响应:</div>
-              <div class="ai-value font-mono text-blue-600">{{ item.responseTime || 'N/A' }}</div>
+              <div class="ai-label text-gray-500">{{ t('aiCardList.response') }}</div>
+              <div class="ai-value font-mono text-blue-600">{{ item.responseTime || t('aiCardList.na') }}</div>
             </div>
 
             <div class="ai-metric w-1/3 md:w-auto text-center md:text-left">
-              <div class="ai-label text-gray-500">Token:</div>
-              <div class="ai-value font-mono">{{ item.token || 'N/A' }}</div>
+              <div class="ai-label text-gray-500">{{ t('aiCardList.token') }}</div>
+              <div class="ai-value font-mono">{{ item.token || t('aiCardList.na') }}</div>
             </div>
 
             <div class="ai-metric w-1/3 md:w-auto text-center md:text-left">
-              <div class="ai-label text-gray-500">成本:</div>
-              <div class="ai-value font-mono text-green-600">{{ item.price || 'N/A' }}</div>
+              <div class="ai-label text-gray-500">{{ t('aiCardList.cost') }}</div>
+              <div class="ai-value font-mono text-green-600">{{ item.price || t('aiCardList.na') }}</div>
             </div>
           </div>
 
           <div class="flex justify-between items-center w-full md:w-auto mt-2 md:mt-0 pt-2 border-t md:border-t-0">
             <ImagePreviewOss v-if="item.aiConfig && item.aiConfig.imgUrl" :src="item.aiConfig.imgUrl" class="w-10 h-10 rounded-lg flex-shrink-0" />
 
-            <el-button type="primary" :icon="Tickets" link :disabled="item.status === 1" @click="emit('view', item)"> 详情 </el-button>
+            <el-button type="primary" :icon="Tickets" link :disabled="item.status === 1" @click="emit('view', item)">
+              {{ t('aiCardList.details') }}
+            </el-button>
           </div>
         </div>
       </div>
@@ -62,9 +64,11 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Tickets, Check, Warning, Loading, Clock, CircleCloseFilled } from '@element-plus/icons-vue';
 import { useSettingsStore } from '@/store/modules/settings';
 
+const { t } = useI18n();
 const settingsStore = useSettingsStore();
 
 interface TestAiRequestVO {

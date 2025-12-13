@@ -450,5 +450,13 @@ export default {
       deleteSuccess: '删除成功',
       selectExchangeFirst: '请先选择交易所'
     }
+  },
+  aiCardList: {
+    response: '响应',
+    token: 'Token',
+    cost: '成本',
+    details: '详情',
+    abnormalStatus: '状态异常',
+    na: 'N/A'
   }
 };

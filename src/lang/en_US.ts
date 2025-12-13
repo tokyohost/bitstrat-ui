@@ -457,5 +457,13 @@ export default {
       deleteSuccess: 'Deletion successful',
       selectExchangeFirst: 'Please select exchange first'
     }
+  },
+  aiCardList: {
+    response: 'Response',
+    token: 'Token',
+    cost: 'Cost',
+    details: 'Details',
+    abnormalStatus: 'Status Abnormal',
+    na: 'N/A'
   }
 };
