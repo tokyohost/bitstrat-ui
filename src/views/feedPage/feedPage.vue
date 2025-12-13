@@ -41,8 +41,8 @@ const loadMorePosts = async () => {
   // 模拟 API 请求延迟
   // await new Promise((resolve) => setTimeout(resolve, 1000));
   const res = await listFeed({
-    pageNum: 10,
-    pageSize: currentPage.value
+    pageNum: currentPage.value,
+    pageSize: 10
   });
 
   // 模拟加载下一页的 10 个帖子
