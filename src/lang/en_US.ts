@@ -145,7 +145,11 @@ export default {
   common: {
     direction: {
       long: 'Long',
-      short: 'Short'
+      short: 'Short',
+      tpsl: 'TP/SL',
+      hold: 'hold',
+      close: 'Close',
+      nothing: 'Nothing'
     },
     opt: {
       search: 'Search',
@@ -486,5 +490,20 @@ export default {
       parameterMissing: 'Parameter missing',
       requestInitiated: 'Request initiated, please refresh later'
     }
+  },
+  aiCardListComp: {
+    details: 'Details',
+    leverage: 'Leverage',
+    quantity: 'Quantity',
+    time: 'Time',
+    analysisEn: 'Analysis (EN)',
+    analysisZh: 'Analysis (ZH)',
+    takeProfit: 'Take Profit',
+    stopLoss: 'Stop Loss',
+    close: 'Close',
+    executionResult: 'Execution Result',
+    think: 'Think',
+    userPrompt: 'User prompt',
+    systemPrompt: 'System prompt'
   }
 };

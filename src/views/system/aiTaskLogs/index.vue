@@ -57,10 +57,10 @@
         <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
       </el-tab-pane>
       <el-tab-pane label="操作日志" name="log">
-        <TestAiResult ref="aiResultref"></TestAiResult>
+        <TestAiResult ref="aiResultref" :task-id="taskId"></TestAiResult>
       </el-tab-pane>
       <el-tab-pane label="历史仓位" name="history">
-        <HistoryPosition :task="taskVo"></HistoryPosition>
+        <HistoryPosition ref="aiHistoryRef" :task="taskVo"></HistoryPosition>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -99,6 +99,7 @@ const positionWidget = useTemplateRef('positionWidget');
 
 const aiResultref = useTemplateRef('aiResultref');
 const aiRequestRef = useTemplateRef('aiRequestRef');
+const aiHistoryRef = useTemplateRef('aiHistoryRef');
 
 const refshPosition = () => {
   positionWidget.value.openRefresh();
@@ -356,8 +357,10 @@ onMounted(async () => {
       handleLoadChat();
       if (activeName.value == 'request') {
         aiRequestRef.value.getList(taskId.value);
-      } else {
-        aiResultref.value.getList(taskId.value);
+      } else if (activeName.value == 'log') {
+        aiResultref.value.getList();
+      } else if (activeName.value == 'history') {
+        aiHistoryRef.value.fetchData(false);
       }
       loop(); // 下一轮
     }, 1000 * 10);

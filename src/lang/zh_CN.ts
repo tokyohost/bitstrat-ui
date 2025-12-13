@@ -145,7 +145,11 @@ export default {
   common: {
     direction: {
       long: '做多',
-      short: '做空'
+      short: '做空',
+      tpsl: 'TP/SL',
+      hold: 'hold',
+      close: 'Close',
+      nothing: 'Nothing'
     },
     opt: {
       search: '查询',
@@ -469,7 +473,7 @@ export default {
     error: '异常',
     viewDetails: '查看详情',
     confirm: '确 定',
-    cancel: '取 消',
+    cancel: '取消',
     operation: '操作',
     rule: {
       id: 'id不能为空'
@@ -479,5 +483,20 @@ export default {
       parameterMissing: '参数缺失',
       requestInitiated: '请求已发起请稍后刷新'
     }
+  },
+  aiCardListComp: {
+    details: '详情',
+    leverage: '杠杆',
+    quantity: '数量',
+    time: '时间',
+    analysisEn: '分析（EN）',
+    analysisZh: '分析（ZH）',
+    takeProfit: '止盈',
+    stopLoss: '止损',
+    close: '关闭',
+    executionResult: '执行结果',
+    think: 'Think',
+    userPrompt: 'User prompt',
+    systemPrompt: 'System prompt'
   }
 };

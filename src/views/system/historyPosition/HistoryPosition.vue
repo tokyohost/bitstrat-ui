@@ -113,6 +113,9 @@ const viewDetails = (id: string) => {
   // TODO: 实现查看详情逻辑，或者使用 emit 通知父组件
   console.log('View details', id);
 };
+defineExpose({
+  fetchData
+});
 
 onMounted(() => {
   handleQuery();

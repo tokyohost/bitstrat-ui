@@ -143,7 +143,11 @@ export default {
   common: {
     direction: {
       long: '롱',
-      short: '숏'
+      short: '숏',
+      tpsl: 'TP/SL',
+      hold: '보유',
+      close: '청산',
+      nothing: '없음'
     },
     opt: {
       search: '검색',
@@ -484,5 +488,20 @@ export default {
       parameterMissing: '매개변수 누락',
       requestInitiated: '요청이 시작되었습니다. 나중에 새로고침하세요'
     }
+  },
+  aiCardListComp: {
+    details: '상세',
+    leverage: '레버리지',
+    quantity: '수량',
+    time: '시간',
+    analysisEn: '분석 (EN)',
+    analysisZh: '분석 (ZH)',
+    takeProfit: '익절',
+    stopLoss: '손절',
+    close: '닫기',
+    executionResult: '실행 결과',
+    think: 'Think',
+    userPrompt: 'User prompt',
+    systemPrompt: 'System prompt'
   }
 };

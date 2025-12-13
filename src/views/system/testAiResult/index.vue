@@ -36,7 +36,12 @@ const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
-
+const props = defineProps({
+  taskId: {
+    type: String,
+    default: ''
+  }
+});
 const initFormData: TestAiResultForm = {
   id: undefined,
   action: undefined,
@@ -80,10 +85,10 @@ const handleQuery = () => {
   }
 };
 /** 查询AI 操作日志列表 */
-const getList = async (taskId: string) => {
+const getList = async () => {
   // loading.value = true;
-  if (taskId) {
-    queryParams.value.taskId = taskId;
+  if (props.taskId) {
+    queryParams.value.taskId = props.taskId;
   }
   const res = await listTestAiResult(queryParams.value);
   testAiResultList.value = res.rows;
@@ -91,72 +96,10 @@ const getList = async (taskId: string) => {
   // loading.value = false;
 };
 
-/** 取消按钮 */
-const cancel = () => {
-  reset();
-  dialog.visible = false;
-};
-
 /** 表单重置 */
 const reset = () => {
   form.value = { ...initFormData };
   testAiResultFormRef.value?.resetFields();
-};
-
-/** 重置按钮操作 */
-const resetQuery = () => {
-  queryFormRef.value?.resetFields();
-  handleQuery();
-};
-
-/** 多选框选中数据 */
-const handleSelectionChange = (selection: TestAiResultVO[]) => {
-  ids.value = selection.map((item) => item.id);
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
-};
-
-/** 新增按钮操作 */
-const handleAdd = () => {
-  reset();
-  dialog.visible = true;
-  dialog.title = '添加AI 操作日志';
-};
-
-/** 修改按钮操作 */
-const handleUpdate = async (row?: TestAiResultVO) => {
-  reset();
-  const _id = row?.id || ids.value[0];
-  const res = await getTestAiResult(_id);
-  Object.assign(form.value, res.data);
-  dialog.visible = true;
-  dialog.title = '修改AI 操作日志';
-};
-
-/** 提交按钮 */
-const submitForm = () => {
-  testAiResultFormRef.value?.validate(async (valid: boolean) => {
-    if (valid) {
-      buttonLoading.value = true;
-      if (form.value.id) {
-        await updateTestAiResult(form.value).finally(() => (buttonLoading.value = false));
-      } else {
-        await addTestAiResult(form.value).finally(() => (buttonLoading.value = false));
-      }
-      proxy?.$modal.msgSuccess('操作成功');
-      dialog.visible = false;
-      await getList();
-    }
-  });
-};
-
-/** 删除按钮操作 */
-const handleDelete = async (row?: TestAiResultVO) => {
-  const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除AI 操作日志编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
-  await delTestAiResult(_ids);
-  proxy?.$modal.msgSuccess('删除成功');
-  await getList();
 };
 
 /** 导出按钮操作 */

@@ -43,7 +43,7 @@ export interface TestAiResultVO {
    * 分析zh
    */
   reasoningZh: string;
-
+  taskId?: string | number;
 }
 
 export interface TestAiResultForm extends BaseEntity {
@@ -91,11 +91,9 @@ export interface TestAiResultForm extends BaseEntity {
    * 分析zh
    */
   reasoningZh?: string;
-
 }
 
 export interface TestAiResultQuery extends PageQuery {
-
   /**
    * 操作
    */
@@ -136,11 +134,8 @@ export interface TestAiResultQuery extends PageQuery {
    */
   reasoningZh?: string;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
-
-
-
