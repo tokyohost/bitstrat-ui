@@ -117,6 +117,43 @@ export default {
       done: '트리거됨!'
     }
   },
+  apiSetting: {
+    title: 'API 설정',
+    configApi: 'API 구성',
+    queryForm: {
+      apiKey: 'API 키',
+      apiKeyPlaceholder: 'API 키를 입력하세요',
+      exchangeName: '거래소 이름',
+      selectExchange: '거래소를 선택하세요'
+    },
+    table: {
+      exchange: '거래소',
+      name: '이름',
+      apiKey: 'API 키',
+      type: '유형',
+      createTime: '생성 시간'
+    },
+    form: {
+      exchange: '거래소',
+      name: '이름',
+      namePlaceholder: '이름을 입력하세요',
+      type: '유형',
+      selectType: '유형을 선택하세요',
+      save: '저장'
+    },
+    dialog: {
+      addTitle: '거래소 API 추가',
+      editTitle: '거래소 API 편집'
+    },
+    submitSuccess: '작업 성공',
+    deleteSuccess: '삭제 성공',
+    deleteConfirm: 'ID "{ids}"인 API를 삭제하시겠습니까?',
+    fields: {
+      apiKey: 'API 키',
+      secret: 'API 시크릿',
+      passphrase: '비밀번호'
+    }
+  },
   //menu 国际化
   menu: {
     首页: '홈',
@@ -551,5 +588,51 @@ export default {
     historyPosition: '거래 이력',
     usdt: 'USDT',
     anomalyWarning: '매개변수 오류!'
+  },
+  profile: {
+    personalInfo: '개인 정보',
+    basicInfo: '기본 정보',
+    userName: '사용자 이름',
+    email: '이메일',
+    phone: '휴대폰 번호',
+    dept: '소속 부서',
+    role: '역할',
+    createTime: '생성 시간',
+    resetPassword: '비밀번호 변경',
+    thirdParty: '제3자 응용프로그램',
+    onlineDevice: '온라인 디바이스',
+    invitationCode: '초대 코드'
+  },
+  resetPassword: {
+    oldPassword: '기존 비밀번호',
+    newPassword: '새 비밀번호',
+    confirmPassword: '비밀번호 확인',
+    oldPasswordPlaceholder: '기존 비밀번호를 입력하세요',
+    newPasswordPlaceholder: '새 비밀번호를 입력하세요',
+    confirmPasswordPlaceholder: '새 비밀번호를 확인하세요',
+    save: '저장',
+    close: '닫기',
+    rule: {
+      oldPasswordRequired: '기존 비밀번호는 필수입니다',
+      newPasswordRequired: '새 비밀번호는 필수입니다',
+      newPasswordLength: '길이는 6자 이상 20자 이하여야 합니다',
+      newPasswordPattern: '다음 문자는 포함할 수 없습니다: < > " \' \\ |',
+      confirmPasswordRequired: '비밀번호 확인은 필수입니다',
+      confirmPasswordNotMatch: '입력한 비밀번호가 일치하지 않습니다'
+    },
+    success: '비밀번호가 성공적으로 변경되었습니다'
+  },
+  onlineDevice: {
+    title: '온라인 디바이스',
+    deviceType: '디바이스 유형',
+    host: '호스트',
+    loginLocation: '로그인 위치',
+    os: '운영 체제',
+    browser: '브라우저',
+    loginTime: '로그인 시간',
+    action: '작업',
+    delete: '삭제',
+    deleteConfirm: '디바이스 삭제 후 해당 디바이스에서 로그인할 때 재인증이 필요합니다',
+    deleteSuccess: '삭제 성공'
   }
 };

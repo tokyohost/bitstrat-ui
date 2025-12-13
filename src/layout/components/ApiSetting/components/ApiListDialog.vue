@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import DialogApiList from '@/views/system/api/pupUpIndex.vue';
 import CryptoSlogan from '@/layout/components/ApiSetting/components/CryptoSlogan.vue';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   visible: boolean;
@@ -30,7 +33,7 @@ watch(localVisible, (val) => {
 
 <template>
   <div>
-    <el-dialog v-model="localVisible" title="config api" width="1200px">
+    <el-dialog v-model="localVisible" :title="t('apiSetting.configApi')" width="1200px">
       <DialogApiList></DialogApiList>
       <template #footer>
         <div class="dialog-footer">

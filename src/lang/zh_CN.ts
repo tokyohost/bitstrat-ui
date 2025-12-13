@@ -119,6 +119,43 @@ export default {
       done: '已触发'
     }
   },
+  apiSetting: {
+    title: '配置API',
+    configApi: '配置 API',
+    queryForm: {
+      apiKey: 'API Key',
+      apiKeyPlaceholder: '请输入API Key',
+      exchangeName: '交易所名称',
+      selectExchange: '请选择交易所'
+    },
+    table: {
+      exchange: '交易所',
+      name: '名称',
+      apiKey: 'API Key',
+      type: '类型',
+      createTime: '创建时间'
+    },
+    form: {
+      exchange: '交易所',
+      name: '名称',
+      namePlaceholder: '请输入名称',
+      type: '类型',
+      selectType: '请选择类型',
+      save: '保存'
+    },
+    dialog: {
+      addTitle: '添加交易所API',
+      editTitle: '修改交易所API'
+    },
+    submitSuccess: '操作成功',
+    deleteSuccess: '删除成功',
+    deleteConfirm: '是否确认删除交易所API编号为"{ids}"的数据项？',
+    fields: {
+      apiKey: 'API Key',
+      secret: 'API Secret',
+      passphrase: '密码'
+    }
+  },
   //menu 国际化
   menu: {
     首页: '首页',
@@ -546,5 +583,51 @@ export default {
     historyPosition: '历史仓位',
     usdt: 'USDT',
     anomalyWarning: '参数异常！'
+  },
+  profile: {
+    personalInfo: '个人信息',
+    basicInfo: '基本资料',
+    userName: '用户名称',
+    email: '用户邮箱',
+    phone: '手机号码',
+    dept: '所属部门',
+    role: '所属角色',
+    createTime: '创建日期',
+    resetPassword: '修改密码',
+    thirdParty: '第三方应用',
+    onlineDevice: '在线设备',
+    invitationCode: '邀请码'
+  },
+  resetPassword: {
+    oldPassword: '旧密码',
+    newPassword: '新密码',
+    confirmPassword: '确认密码',
+    oldPasswordPlaceholder: '请输入旧密码',
+    newPasswordPlaceholder: '请输入新密码',
+    confirmPasswordPlaceholder: '请确认新密码',
+    save: '保存',
+    close: '关闭',
+    rule: {
+      oldPasswordRequired: '旧密码不能为空',
+      newPasswordRequired: '新密码不能为空',
+      newPasswordLength: '长度在 6 到 20 个字符',
+      newPasswordPattern: '不能包含非法字符：< > " \' \\ |',
+      confirmPasswordRequired: '确认密码不能为空',
+      confirmPasswordNotMatch: '两次输入的密码不一致'
+    },
+    success: '修改成功'
+  },
+  onlineDevice: {
+    title: '在线设备',
+    deviceType: '设备类型',
+    host: '主机',
+    loginLocation: '登录地点',
+    os: '操作系统',
+    browser: '浏览器',
+    loginTime: '登录时间',
+    action: '操作',
+    delete: '删除',
+    deleteConfirm: '删除设备后，在该设备登录需要重新进行验证',
+    deleteSuccess: '删除成功'
   }
 };

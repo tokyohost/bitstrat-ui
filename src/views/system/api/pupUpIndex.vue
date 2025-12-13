@@ -4,17 +4,28 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="100">
-            <el-form-item label="api key" prop="apiKey">
-              <el-input v-model="queryParams.apiKey" placeholder="请输入api key" clearable @keyup.enter="handleQuery" />
+            <el-form-item :label="t('apiSetting.queryForm.apiKey')" prop="apiKey">
+              <el-input
+                v-model="queryParams.apiKey"
+                :placeholder="t('apiSetting.queryForm.apiKeyPlaceholder')"
+                clearable
+                @keyup.enter="handleQuery"
+              />
             </el-form-item>
-            <el-form-item label="交易所名称" prop="exchangeName">
-              <el-select v-model="queryParams.exchangeName" :placeholder="'请选择交易所'" :filterable="true" clearable @keyup.enter="handleQuery">
-                <el-option :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>
+            <el-form-item :label="t('apiSetting.queryForm.exchangeName')" prop="exchangeName">
+              <el-select
+                v-model="queryParams.exchangeName"
+                :placeholder="t('apiSetting.queryForm.selectExchange')"
+                :filterable="true"
+                clearable
+                @keyup.enter="handleQuery"
+              >
+                <el-option :key="item.name" :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+              <el-button type="primary" icon="Search" @click="handleQuery">{{ t('common.opt.search') }}</el-button>
+              <el-button icon="Refresh" @click="resetQuery">{{ t('common.opt.reset') }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -25,41 +36,40 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:api:add']">新增 </el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:api:add']">{{ t('common.opt.add') }} </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:api:edit']">修改 </el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:api:edit']"
+              >{{ t('common.opt.edit') }}
+            </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:api:remove']"
-              >删除
+              >{{ t('common.opt.delete') }}
             </el-button>
           </el-col>
-          <!--          <el-col :span="1.5">-->
-          <!--            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:api:export']">导出</el-button>-->
-          <!--          </el-col>-->
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
 
       <el-table v-loading="loading" :data="apiList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="交易所" align="center" prop="exchangeName" />
-        <el-table-column label="名称" align="center" prop="name" />
-        <el-table-column label="api key" align="center" prop="apiKey" />
-        <el-table-column label="type" align="center" prop="type">
+        <el-table-column :label="t('apiSetting.table.exchange')" align="center" prop="exchangeName" />
+        <el-table-column :label="t('apiSetting.table.name')" align="center" prop="name" />
+        <el-table-column :label="t('apiSetting.table.apiKey')" align="center" prop="apiKey" />
+        <el-table-column :label="t('apiSetting.table.type')" align="center" prop="type">
           <template #default="scope">
             <dict-tag :options="exchange_api_type" :value="scope.row.type" />
           </template>
         </el-table-column>
         <!--        <el-table-column label="api secret" align="center" prop="apiSecurity" />-->
-        <el-table-column label="创建时间" align="center" prop="createTime" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column :label="t('apiSetting.table.createTime')" align="center" prop="createTime" />
+        <el-table-column :label="t('common.opt.opt')" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-tooltip content="修改" placement="top">
+            <el-tooltip :content="t('common.opt.edit')" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:api:edit']"></el-button>
             </el-tooltip>
-            <el-tooltip content="删除" placement="top">
+            <el-tooltip :content="t('common.opt.delete')" placement="top">
               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:api:remove']"></el-button>
             </el-tooltip>
           </template>
@@ -68,81 +78,43 @@
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
-    <!-- 添加或修改交易所API对话框 -->
-    <!--    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>-->
-    <!--      <el-form ref="apiFormRef" :model="form" :rules="rules" label-width="80px" :label-position="'top'">-->
-    <!--        <el-form-item :label="'交易所'" prop="exchangeName">-->
-    <!--          &lt;!&ndash;              <el-input v-model="form.symbol" placeholder="请输入币种" />&ndash;&gt;-->
-    <!--          <el-select v-model="form.exchangeName" :placeholder="'请选择交易所'" :filterable="true">-->
-    <!--            <el-option :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>-->
-    <!--          </el-select>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item :label="'Api名称'" prop="exchangeName">-->
-    <!--          &lt;!&ndash;              <el-input v-model="form.symbol" placeholder="请输入币种" />&ndash;&gt;-->
-    <!--          <el-select v-model="form.exchangeName" :placeholder="'请选择交易所'" :filterable="true">-->
-    <!--            <el-option :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>-->
-    <!--          </el-select>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="api key" prop="apiKey">-->
-    <!--          <el-input v-model="form.apiKey" placeholder="请输入api key" />-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="api security" prop="apiSecurity">-->
-    <!--          <el-input v-model="form.apiSecurity" placeholder="请输入api security" />-->
-    <!--        </el-form-item>-->
-    <!--      </el-form>-->
-    <!--      <template #footer>-->
-    <!--        <div class="dialog-footer">-->
-    <!--          <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>-->
-    <!--          <el-button @click="cancel">取 消</el-button>-->
-    <!--        </div>-->
-    <!--      </template>-->
-    <!--    </el-dialog>-->
     <!-- 配置弹窗 -->
     <el-dialog
       v-model="dialog.visible"
-      :title="(configForm.exchangeName ? configForm.exchangeName : '') + proxy.$t('setting.apiSettingForm.title')"
+      :title="(configForm.exchangeName ? configForm.exchangeName : '') + t('setting.apiSettingForm.title')"
       width="500px"
       @click.stop
     >
-      <!--        <el-form-item label="API Key">-->
-      <!--          <el-input v-model="configForm.apiKey" />-->
-      <!--        </el-form-item>-->
-      <!--        <el-form-item label="Secret">-->
-      <!--          <el-input v-model="configForm.secret" />-->
-      <!--        </el-form-item>-->
       <el-form label-position="top" label-width="100px" ref="apiConfigRef" :model="configForm" :rules="rules">
-        <el-form-item :label="'交易所'" prop="exchangeName">
+        <el-form-item :label="t('apiSetting.form.exchange')" prop="exchangeName">
           <!--              <el-input v-model="form.symbol" placeholder="请输入币种" />-->
-          <el-select v-model="configForm.exchangeName" :placeholder="'请选择交易所'" :filterable="true">
-            <el-option :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>
+          <el-select v-model="configForm.exchangeName" :placeholder="t('apiSetting.queryForm.selectExchange')" :filterable="true">
+            <el-option :key="item.name" :label="item.desc" :value="item.name" v-for="item in supportExchangeList"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="configForm.name" placeholder="请输入名称" />
+        <el-form-item :label="t('apiSetting.form.name')" prop="name">
+          <el-input v-model="configForm.name" :placeholder="t('apiSetting.form.namePlaceholder')" />
         </el-form-item>
         <ApiConfigForm :fields="currentFields" :model-value="configForm" i18n-prefix="setting.apiSettingForm"></ApiConfigForm>
-        <el-form-item label="类型" prop="type">
-          <el-select v-model="configForm.type" placeholder="请选择类型" clearable>
+        <el-form-item :label="t('apiSetting.form.type')" prop="type">
+          <el-select v-model="configForm.type" :placeholder="t('apiSetting.form.selectType')" clearable>
             <el-option v-for="dict in exchange_api_type" :key="dict.value" :label="dict.label" :value="dict.value">
               <dict-tag :options="exchange_api_type" :value="dict.value" />
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
-
-      <!--        <el-form-item label="Passphrase" v-if="currentExchange?.needPassphrase">-->
-      <!--          <el-input v-model="configForm.passphrase" />-->
-      <!--        </el-form-item>-->
       <template #footer>
         <CryptoSlogan></CryptoSlogan>
-        <el-button @click="dialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm">保存</el-button>
+        <el-button @click="dialog.visible = false">{{ t('common.dialog.cancel') }}</el-button>
+        <el-button type="primary" @click="submitForm">{{ t('apiSetting.form.save') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup name="DialogApiList" lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useApiConfig } from '@/constants/useApiConfig';
 import { listApi, getApi, delApi, addApi, updateApi } from '@/api/system/api';
 import { ApiVO, ApiQuery, ApiForm } from '@/api/system/api/types';
@@ -154,6 +126,7 @@ import { ref } from 'vue';
 import { ApiSettingVo } from '@/layout/components/ApiSetting/types';
 import CryptoSlogan from '@/layout/components/ApiSetting/components/CryptoSlogan.vue';
 
+const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const { exchange_api_type } = toRefs<any>(proxy?.useDict('exchange_api_type'));
@@ -182,16 +155,20 @@ const exchangeList = ref<ApiSettingVo[]>([
 ]);
 // 当前选中的交易所
 const currentExchange = ref<ApiSettingVo | (typeof exchangeList)[0]>(null);
-const { configForm, fieldConfigs } = useApiConfig();
+const { configForm, fieldConfigs, getExchangeFields } = useApiConfig();
 
-// 计算当前配置的字段
+// 计算当前配置的字段 - 方式一（推荐）
 const currentFields = computed(() => {
-  if (configForm.value.exchangeName) {
-    return fieldConfigs[configForm.value?.exchangeName.toLowerCase() as keyof typeof fieldConfigs] || [];
-  } else {
-    return [];
-  }
+  return getExchangeFields(configForm.value.exchangeName);
 });
+
+// 或者直接使用方式二
+// const currentFields = computed(() => {
+//   if (!configForm.value.exchangeName) return [];
+//   const exchange = configForm.value.exchangeName.toLowerCase();
+//   return fieldConfigs.value[exchange as keyof typeof fieldConfigs.value] || [];
+// });
+
 const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
@@ -288,7 +265,7 @@ const handleSelectionChange = (selection: ApiVO[]) => {
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = '添加交易所API';
+  dialog.title = t('apiSetting.dialog.addTitle');
 };
 
 /** 修改按钮操作 */
@@ -302,7 +279,7 @@ const handleUpdate = async (row?: ApiVO) => {
   configForm.value.secret = res.data.apiSecurity;
   currentExchange.value = { exchangeName: form.value.exchangeName, status: null };
   dialog.visible = true;
-  dialog.title = '修改交易所API';
+  dialog.title = t('apiSetting.dialog.editTitle');
 };
 
 /** 提交按钮 */
@@ -319,7 +296,7 @@ const submitForm = () => {
       const checkResult = await checkApi(data);
       // if (checkResult.code == 200) {
       if (checkResult.data?.checkStatus == 'false') {
-        ElMessage.error(proxy.$t('setting.apiSettingForm.checkFail'));
+        ElMessage.error(t('setting.apiSettingForm.checkFail'));
         return;
       }
       configForm.value.apiSecurity = configForm.value.secret;
@@ -329,7 +306,7 @@ const submitForm = () => {
       } else {
         await addApi(configForm.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess('操作成功');
+      proxy?.$modal.msgSuccess(t('apiSetting.submitSuccess'));
       dialog.visible = false;
       await getList();
     }
@@ -339,9 +316,9 @@ const submitForm = () => {
 /** 删除按钮操作 */
 const handleDelete = async (row?: ApiVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除交易所API编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
+  await proxy?.$modal.confirm(t('apiSetting.deleteConfirm', { ids: _ids })).finally(() => (loading.value = false));
   await delApi(_ids);
-  proxy?.$modal.msgSuccess('删除成功');
+  proxy?.$modal.msgSuccess(t('apiSetting.deleteSuccess'));
   await getList();
 };
 

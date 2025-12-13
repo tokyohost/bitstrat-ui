@@ -119,6 +119,43 @@ export default {
       done: 'Triggered !'
     }
   },
+  apiSetting: {
+    title: 'API Configuration',
+    configApi: 'Config API',
+    queryForm: {
+      apiKey: 'API Key',
+      apiKeyPlaceholder: 'Please enter API Key',
+      exchangeName: 'Exchange Name',
+      selectExchange: 'Please select an exchange'
+    },
+    table: {
+      exchange: 'Exchange',
+      name: 'Name',
+      apiKey: 'API Key',
+      type: 'Type',
+      createTime: 'Creation Time'
+    },
+    form: {
+      exchange: 'Exchange',
+      name: 'Name',
+      namePlaceholder: 'Please enter name',
+      type: 'Type',
+      selectType: 'Please select type',
+      save: 'Save'
+    },
+    dialog: {
+      addTitle: 'Add Exchange API',
+      editTitle: 'Edit Exchange API'
+    },
+    submitSuccess: 'Operation successful',
+    deleteSuccess: 'Delete successful',
+    deleteConfirm: 'Are you sure you want to delete the API with ID "{ids}"?',
+    fields: {
+      apiKey: 'API Key',
+      secret: 'API Secret',
+      passphrase: 'Passphrase'
+    }
+  },
   //menu 国际化
   menu: {
     首页: 'Home',
@@ -553,5 +590,51 @@ export default {
     historyPosition: 'History Position',
     usdt: 'USDT',
     anomalyWarning: 'Parameter Anomaly!'
+  },
+  profile: {
+    personalInfo: 'Personal Information',
+    basicInfo: 'Basic Information',
+    userName: 'Username',
+    email: 'Email',
+    phone: 'Phone Number',
+    dept: 'Department',
+    role: 'Role',
+    createTime: 'Create Time',
+    resetPassword: 'Reset Password',
+    thirdParty: 'Third Party Application',
+    onlineDevice: 'Online Device',
+    invitationCode: 'Invitation Code'
+  },
+  resetPassword: {
+    oldPassword: 'Old Password',
+    newPassword: 'New Password',
+    confirmPassword: 'Confirm Password',
+    oldPasswordPlaceholder: 'Please enter old password',
+    newPasswordPlaceholder: 'Please enter new password',
+    confirmPasswordPlaceholder: 'Please confirm new password',
+    save: 'Save',
+    close: 'Close',
+    rule: {
+      oldPasswordRequired: 'Old password is required',
+      newPasswordRequired: 'New password is required',
+      newPasswordLength: 'Length should be between 6 and 20 characters',
+      newPasswordPattern: 'Cannot contain illegal characters: < > " \' \\ |',
+      confirmPasswordRequired: 'Confirm password is required',
+      confirmPasswordNotMatch: 'The passwords entered do not match'
+    },
+    success: 'Password changed successfully'
+  },
+  onlineDevice: {
+    title: 'Online Devices',
+    deviceType: 'Device Type',
+    host: 'Host',
+    loginLocation: 'Login Location',
+    os: 'Operating System',
+    browser: 'Browser',
+    loginTime: 'Login Time',
+    action: 'Action',
+    delete: 'Delete',
+    deleteConfirm: 'After deleting the device, you need to re-authenticate when logging in from this device',
+    deleteSuccess: 'Delete successful'
   }
 };
