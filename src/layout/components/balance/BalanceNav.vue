@@ -20,7 +20,7 @@
       <template #default>
         <div class="bg-white">
           <div class="px-5 pt-5 pb-2 flex justify-between items-center">
-            <span class="text-xs text-gray-400 font-medium">当前可用余额 (CNY)</span>
+            <span class="text-xs text-gray-400 font-medium">{{ t('wallet.availableBalance') }}</span>
             <el-icon
               class="cursor-pointer text-gray-400 hover:text-blue-500 transition-all"
               :class="{ 'animate-spin': refreshing }"
@@ -39,14 +39,16 @@
 
             <div v-else class="flex items-baseline gap-1 text-gray-800">
               <span class="text-2xl font-bold font-mono tracking-tight">
-                <count-to :startVal="0" :endVal="Number(balance)" :duration="1000" :decimals="6"></count-to>
+                $<count-to :startVal="0" :endVal="Number(balance)" :duration="1000" :decimals="6"></count-to>
               </span>
-              <span class="text-xs text-gray-400">元</span>
+              <!--              <span class="text-xs text-gray-400">元</span>-->
             </div>
           </div>
 
           <div class="p-3 bg-gray-50 flex justify-between items-center gap-3">
-            <el-button text bg size="small" class="!w-full !m-0 hover:!text-blue-600" @click="goAccountBalance"> 查看明细 </el-button>
+            <el-button text bg size="small" class="!w-full !m-0 hover:!text-blue-600" @click="goAccountBalance">
+              {{ t('wallet.viewDetails') }}
+            </el-button>
             <el-button
               type="primary"
               size="small"
@@ -54,7 +56,7 @@
               icon="Lightning"
               @click="onRechargeClick"
             >
-              立即充值
+              {{ t('wallet.rechargeNow') }}
             </el-button>
           </div>
         </div>
@@ -64,9 +66,11 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Wallet, Refresh, Lightning } from '@element-plus/icons-vue';
 import { CountTo } from 'vue3-count-to';
-// import RechargeDialog from ... (如果需要在当前页弹窗)
+
+const { t } = useI18n();
 
 // 模拟 Props 或 Store
 const props = defineProps({

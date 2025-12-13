@@ -9,7 +9,7 @@
             </div>
             <div class="flex flex-row justify-between items-center gap-4">
               <div class="text-4xl font-bold font-mono tracking-wide color[white]">
-                ¥ <count-to :startVal="0" :endVal="Number(balance)" :duration="1000" :decimals="6"></count-to>
+                $ <count-to :startVal="0" :endVal="Number(balance)" :duration="1000" :decimals="6"></count-to>
               </div>
               <el-icon class="cursor-pointer hover:text-blue-500 transition-all" @click="loadBalance">
                 <Refresh />

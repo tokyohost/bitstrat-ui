@@ -654,5 +654,39 @@ export default {
       已完成: '已完成',
       处理中: '处理中'
     }
+  },
+
+  wallet: {
+    availableBalance: '当前可用额度',
+    viewDetails: '查看明细',
+    rechargeNow: '立即充值'
+  },
+
+  recharge: {
+    title: '账户充值',
+    selectAmount: '选择充值金额',
+    customAmount: '或输入自定义金额',
+    enterAmount: '请输入金额',
+    paymentMethod: '支付方式',
+    alipay: '支付宝',
+    wechat: '微信支付',
+    adapting: '(正在适配)',
+    popular: '热门',
+    instantPayment: '即时到账，安全快捷',
+    backToModify: '< 返回修改金额',
+    payableAmount: '应付金额',
+    qrCode: '二维码',
+    qrLoading: '二维码加载中...',
+    qrExpired: '二维码已过期',
+    qrExpiredTip: '点击刷新',
+    qrValidity: '二维码有效期',
+    qrScanTip: '请使用{method}扫一扫',
+    payNow: '立即支付',
+    cancel: '取 消',
+    successMessage: '充值成功！资金已到账',
+    failureMessage: '支付失败或超时',
+    orderFailedMessage: '创建支付订单失败，请重试',
+    paymentSuccess: '支付成功！',
+    minute: '分'
   }
 };

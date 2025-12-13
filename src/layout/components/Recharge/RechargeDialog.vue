@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="账户充值"
+    :title="t('recharge.title')"
     width="600px"
     class="recharge-dialog rounded-xl"
     append-to-body
@@ -12,7 +12,7 @@
     <div class="px-4 pb-2">
       <div v-if="!showQrCode">
         <div class="text-sm font-bold text-gray-700 mb-4 flex items-center">
-          <el-icon class="mr-1 text-blue-500"><Money /></el-icon> 选择充值金额
+          <el-icon class="mr-1 text-blue-500"><Money /></el-icon> {{ t('recharge.selectAmount') }}
         </div>
 
         <div class="grid grid-cols-3 gap-4 mb-6">
@@ -27,7 +27,7 @@
               v-if="index === 2"
               class="absolute -top-3 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm transform rotate-6"
             >
-              热门
+              {{ t('recharge.popular') }}
             </div>
 
             <div
@@ -40,7 +40,7 @@
         </div>
 
         <div class="mb-8">
-          <div class="text-xs text-gray-500 mb-2">或输入自定义金额</div>
+          <div class="text-xs text-gray-500 mb-2">{{ t('recharge.customAmount') }}</div>
           <el-input-number
             v-model="customAmount"
             :min="0.01"
@@ -48,17 +48,17 @@
             :precision="2"
             controls-position="right"
             class="!w-full"
-            placeholder="请输入金额"
+            :placeholder="t('recharge.enterAmount')"
             size="large"
             @focus="selectedAmount = 0"
           >
-            <template #prefix>¥</template>
+            <template #prefix>$</template>
           </el-input-number>
         </div>
 
         <div class="mb-6">
           <div class="text-sm font-bold text-gray-700 mb-3 flex items-center">
-            <el-icon class="mr-1 text-blue-500"><Wallet /></el-icon> 支付方式
+            <el-icon class="mr-1 text-blue-500"><Wallet /></el-icon> {{ t('recharge.paymentMethod') }}
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div
@@ -67,7 +67,7 @@
               @click="payType = 'alipay'"
             >
               <i class="i-carbon-logo-alipay text-2xl text-blue-500"></i><img src="../../../assets/icons/png/alipay.png" height="20" width="20" />
-              <span class="font-medium text-gray-700">支付宝</span>
+              <span class="font-medium text-gray-700">{{ t('recharge.alipay') }}</span>
               <el-icon v-if="payType === 'alipay'" class="text-blue-500 ml-auto"><Select /></el-icon>
             </div>
             <!--            <div-->
@@ -77,7 +77,7 @@
             <!--              @click="payType = 'wechat'"-->
             <!--            >-->
             <!--              <i class="i-carbon-logo-wechat text-2xl text-green-500"></i>-->
-            <!--              <span class="font-medium text-gray-700">微信支付(正在适配)</span>-->
+            <!--              <span class="font-medium text-gray-700">{{ t('recharge.wechat') }}{{ t('recharge.adapting') }}</span>-->
             <!--              <el-icon v-if="payType === 'wechat'" class="text-green-500 ml-auto"><Select /></el-icon>-->
             <!--            </div>-->
           </div>
@@ -86,8 +86,8 @@
 
       <div v-else class="flex flex-col items-center justify-center py-4 animate-fade-in-up">
         <div class="text-center mb-6">
-          <p class="text-gray-500 text-sm mb-1">应付金额</p>
-          <p class="text-4xl font-bold font-mono text-gray-900">¥ {{ payData.payAmount }}</p>
+          <p class="text-gray-500 text-sm mb-1">{{ t('recharge.payableAmount') }}</p>
+          <p class="text-4xl font-bold font-mono text-gray-900">$ {{ payData.payAmount }}</p>
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 relative mb-6">
@@ -96,37 +96,41 @@
           </div>
           <div v-else class="relative group">
             <!--            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=SimulatePayment" alt="Payment QR" class="w-48 h-48 rounded-lg" />-->
-            <img :src="payData.qrCodeBase64" alt="Payment QR" class="w-48 h-48 rounded-lg" />
+            <img :src="payData.qrCodeBase64" :alt="t('recharge.qrCode')" class="w-48 h-48 rounded-lg" />
             <div
               v-if="isExpired"
               class="absolute inset-0 bg-white/90 flex flex-col items-center justify-center cursor-pointer"
               @click="refreshQrCode"
             >
               <el-icon class="text-2xl text-red-500 mb-2"><RefreshRight /></el-icon>
-              <span class="text-sm font-bold text-gray-600">二维码已过期</span>
-              <span class="text-xs text-blue-500 mt-1">点击刷新</span>
+              <span class="text-sm font-bold text-gray-600">{{ t('recharge.qrExpired') }}</span>
+              <span class="text-xs text-blue-500 mt-1">{{ t('recharge.qrExpiredTip') }}</span>
             </div>
           </div>
 
           <div class="mt-4 text-center flex items-center justify-center gap-2 text-sm text-gray-600">
             <el-icon :color="payType === 'alipay' ? '#1677ff' : '#07c160'"></el-icon>
-            请使用{{ payType === 'alipay' ? '支付宝' : '微信' }}扫一扫
+            {{ t('recharge.qrScanTip', { method: payType === 'alipay' ? t('recharge.alipay') : t('recharge.wechat') }) }}
           </div>
         </div>
 
-        <div class="text-xs text-gray-400">二维码有效期 <span class="text-red-400">60:00</span>，请尽快完成支付</div>
+        <div class="text-xs text-gray-400">
+          {{ t('recharge.qrValidity') }} <span class="text-red-400">60:00</span>{{ t('recharge.minute') }}{{ t('recharge.instantPayment') }}
+        </div>
       </div>
     </div>
 
     <template #footer>
       <div class="dialog-footer flex justify-between items-center px-4">
         <div class="text-xs text-gray-400">
-          <span v-if="!showQrCode">即时到账，安全快捷</span>
-          <span v-else class="text-blue-500 cursor-pointer hover:underline" @click="showQrCode = false"> &lt; 返回修改金额 </span>
+          <span v-if="!showQrCode">{{ t('recharge.instantPayment') }}</span>
+          <span v-else class="text-blue-500 cursor-pointer hover:underline" @click="showQrCode = false">
+            {{ t('recharge.backToModify') }}
+          </span>
         </div>
 
         <div>
-          <el-button @click="handleClose">取 消</el-button>
+          <el-button @click="handleClose">{{ t('recharge.cancel') }}</el-button>
 
           <el-button
             v-if="!showQrCode"
@@ -135,10 +139,10 @@
             @click="handleCreateOrder"
             :disabled="finalAmount <= 0"
           >
-            立即支付 ¥{{ finalAmount.toFixed(2) }}
+            {{ t('recharge.payNow') }} ${{ finalAmount.toFixed(2) }}
           </el-button>
 
-          <!--          <el-button v-else type="success" @click="simulateSuccess" :loading="checkingStatus"> 模拟支付成功 (测试用) </el-button>-->
+          <!--          <el-button v-else type="success" @click="simulateSuccess" :loading="checkingStatus"> {{ t('recharge.simulateSuccess') }} ({{ t('recharge.testOnly') }}) </el-button>-->
         </div>
       </div>
     </template>
@@ -146,17 +150,20 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { ref, computed, watch } from 'vue';
 import { Money, Wallet, Select, Loading, RefreshRight } from '@element-plus/icons-vue';
 import { qrPay } from '@/layout/components/Recharge/pay';
 import { PayParams, QrPayResponse } from '@/layout/components/Recharge/types';
 import { usePaymentPolling } from '@/hooks/usePaymentPolling';
 
+const { t } = useI18n();
 const { startPolling, stopPolling } = usePaymentPolling();
+
 // --- Props & Emits ---
 const props = defineProps({
   visible: { type: Boolean, default: false },
-  showButton: { type: Boolean, default: false } // 兼容旧代码，暂不使用
+  showButton: { type: Boolean, default: false }
 });
 const emit = defineEmits(['update:visible', 'recharge-success']);
 
@@ -177,7 +184,6 @@ const isExpired = ref(false);
 const checkingStatus = ref(false);
 
 // --- Computed ---
-// 最终支付金额：如果输入了自定义金额，优先使用自定义；否则使用选中金额
 const finalAmount = computed(() => {
   if (customAmount.value && customAmount.value > 0) {
     return customAmount.value;
@@ -189,8 +195,9 @@ const finalAmount = computed(() => {
 
 const selectAmount = (val: number) => {
   selectedAmount.value = val;
-  customAmount.value = undefined; // 清空自定义输入，避免混淆
+  customAmount.value = undefined;
 };
+
 const payParams = ref<PayParams>({
   payAmount: 0,
   payType: 'alipay'
@@ -207,31 +214,21 @@ const handleCreateOrder = async () => {
   showQrCode.value = true;
   qrLoading.value = true;
 
-  // 模拟 API 请求延迟
-  // setTimeout(() => {
-  //   qrLoading.value = false;
-  //   // 这里应该是请求后端接口，获取 codeUrl
-  //   // startPollingPaymentStatus(); // 真实场景：开始轮询支付状态
-  //
-  //
-  // }, 1000);
   const response = await qrPay(payParams.value);
   if (response.code === 200) {
-    // 这里应该是请求后端接口，获取 codeUrl
-    // 真实场景：开始轮询支付状态
     const data = response.data;
     startPolling(
       data.outTradeNo,
       () => {
         // 成功回调
-        ElMessage.success('支付成功！');
+        ElMessage.success(t('recharge.paymentSuccess'));
         showQrCode.value = false;
         emit('recharge-success');
         handleClose();
       },
       () => {
         // 失败或超时回调
-        ElMessage.error('支付失败或超时');
+        ElMessage.error(t('recharge.failureMessage'));
         showQrCode.value = false;
       }
     );
@@ -241,7 +238,7 @@ const handleCreateOrder = async () => {
   } else {
     qrLoading.value = false;
     ElMessage.error({
-      message: response.msg || '创建支付订单失败，请重试',
+      message: t('recharge.orderFailedMessage'),
       type: 'error',
       duration: 2000
     });
@@ -267,22 +264,7 @@ const handleClose = () => {
   }, 300);
 };
 
-// 模拟支付成功 (仅供演示)
-const simulateSuccess = () => {
-  checkingStatus.value = true;
-  setTimeout(() => {
-    checkingStatus.value = false;
-    ElMessage.success({
-      message: '充值成功！资金已到账',
-      type: 'success',
-      duration: 2000
-    });
-    emit('recharge-success');
-    handleClose();
-  }, 1000);
-};
-
-// 监听自定义金额输入，如果用户开始输入，取消预设选中
+// 监听自定义金额输入
 watch(customAmount, (newVal) => {
   if (newVal) {
     selectedAmount.value = 0;

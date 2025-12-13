@@ -659,5 +659,37 @@ export default {
       已完成: '완료',
       处理中: '처리 중'
     }
+  },
+  wallet: {
+    availableBalance: '사용 가능 크레딧',
+    viewDetails: '상세 보기',
+    rechargeNow: '지금 충전'
+  },
+  recharge: {
+    title: '계정 충전',
+    selectAmount: '충전 금액 선택',
+    customAmount: '또는 사용자 정의 금액 입력',
+    enterAmount: '금액을 입력하세요',
+    paymentMethod: '결제 방법',
+    alipay: '알리페이',
+    wechat: '위챗 페이',
+    adapting: '(적응 중)',
+    popular: '인기',
+    instantPayment: '즉시 결제, 안전하고 빠름',
+    backToModify: '< 금액 수정으로 돌아가기',
+    payableAmount: '지불 금액',
+    qrCode: 'QR 코드',
+    qrLoading: 'QR 코드 로드 중...',
+    qrExpired: 'QR 코드 만료됨',
+    qrExpiredTip: '새로고침 클릭',
+    qrValidity: 'QR 코드 유효 기간',
+    qrScanTip: '{method}로 스캔하세요',
+    payNow: '지금 결제',
+    cancel: '취소',
+    successMessage: '충전 성공! 자금이 입금되었습니다',
+    failureMessage: '결제 실패 또는 시간 초과',
+    orderFailedMessage: '결제 주문 생성 실패, 다시 시도하세요',
+    paymentSuccess: '결제 성공!',
+    minute: '분'
   }
 };

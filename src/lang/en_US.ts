@@ -661,5 +661,37 @@ export default {
       已完成: 'Completed',
       处理中: 'Processing'
     }
+  },
+  wallet: {
+    availableBalance: 'Available Credits',
+    viewDetails: 'View Details',
+    rechargeNow: 'Recharge Now'
+  },
+  recharge: {
+    title: 'Account Recharge',
+    selectAmount: 'Select Recharge Amount',
+    customAmount: 'Or enter a custom amount',
+    enterAmount: 'Please enter amount',
+    paymentMethod: 'Payment Method',
+    alipay: 'Alipay',
+    wechat: 'WeChat Pay',
+    adapting: '(Adapting)',
+    popular: 'Popular',
+    instantPayment: 'Instant payment, safe and fast',
+    backToModify: '< Back to Modify Amount',
+    payableAmount: 'Payable Amount',
+    qrCode: 'QR Code',
+    qrLoading: 'Loading QR Code...',
+    qrExpired: 'QR Code Expired',
+    qrExpiredTip: 'Click to Refresh',
+    qrValidity: 'QR Code Valid Period',
+    qrScanTip: 'Please scan with {method}',
+    payNow: 'Pay Now',
+    cancel: 'Cancel',
+    successMessage: 'Recharge successful! Funds received',
+    failureMessage: 'Payment failed or timeout',
+    orderFailedMessage: 'Failed to create payment order, please try again',
+    paymentSuccess: 'Payment successful!',
+    minute: 'min'
   }
 };
