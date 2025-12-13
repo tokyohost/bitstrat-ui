@@ -498,5 +498,31 @@ export default {
     think: 'Think',
     userPrompt: 'User prompt',
     systemPrompt: 'System prompt'
+  },
+  historyPosition: {
+    tradeDetails: '交易详情',
+    realizedPnl: '已实现盈亏',
+    closingQuantity: '平仓数量',
+    openingPrice: 'Open Avg Price',
+    closingPrice: 'Close Avg Price',
+    closingTime: '平仓',
+    openingTime: '开仓',
+    totalFee: '总费用',
+    pnl: 'P&L',
+    pnlAfterFee: 'P&L (未扣费)',
+    openFee: '开仓手续费',
+    closeFee: '平仓手续费',
+    fundingFee: '资金费用',
+    feeDetails: '费用明细',
+    loadingMore: '加载中...',
+    loadMoreHistory: '加载更多历史记录',
+    noMore: '到底了',
+    noData: '没有更多数据了',
+    fullMargin: '全仓',
+    isolatedMargin: '逐仓',
+    long: '多',
+    short: '空',
+    openPriceLabel: '开:',
+    closePriceLabel: '平:'
   }
 };

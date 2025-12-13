@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { queryHistoryPositionByPage } from '@/views/system/historyPosition/index';
 import { HistoryPosition, HistoryPositionQuery } from '@/views/system/historyPosition/type';
 import { AiTaskVO } from '@/api/system/aiTask/types';
 import { ElMessage } from 'element-plus';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   task: AiTaskVO;
@@ -67,7 +70,7 @@ const fetchData = async (isAppend: boolean = false) => {
 
     if (list.length === 0) {
       hasMore.value = false;
-      if (isAppend) ElMessage.warning('没有更多数据了');
+      if (isAppend) ElMessage.warning(t('historyPosition.noData'));
     } else {
       // 更新分页游标
       const last = list[list.length - 1];
@@ -139,62 +142,67 @@ onMounted(() => {
         :show-header="false"
         class="mobile-list-view"
       >
-        <el-table-column label="交易详情" min-width="100%" :show-overflow-tooltip="false">
+        <el-table-column :label="t('historyPosition.tradeDetails')" min-width="100%" :show-overflow-tooltip="false">
           <template #default="{ row }">
             <div class="flex flex-col gap-2 p-3 border rounded-lg md:hidden shadow-sm" style="background: var(--el-bg-color)">
               <div class="flex justify-between items-center pb-2 border-b">
                 <div class="flex items-center space-x-2">
                   <span class="symbol font-bold text-base">{{ row.symbol }}</span>
                   <el-tag size="default" :type="row.holdSide === 'long' ? 'success' : 'danger'" effect="dark" class="side-tag">
-                    {{ row.holdSide === 'long' ? '多' : '空' }}
+                    {{ row.holdSide === 'long' ? t('historyPosition.long') : t('historyPosition.short') }}
                   </el-tag>
                 </div>
-                <div class="margin-info text-xs text-gray-500">{{ row.marginCoin }} · {{ row.marginMode === 'crossed' ? '全仓' : '逐仓' }}</div>
+                <div class="margin-info text-xs text-gray-500">
+                  {{ row.marginCoin }} ·
+                  {{
+                    row.marginMode === 'crossed' || row.marginMode === 'cross' ? t('historyPosition.fullMargin') : t('historyPosition.isolatedMargin')
+                  }}
+                </div>
               </div>
 
               <div class="flex justify-between items-center">
                 <div class="flex flex-col">
-                  <span class="text-xs text-gray-500">已实现盈亏</span>
+                  <span class="text-xs text-gray-500">{{ t('historyPosition.realizedPnl') }}</span>
                   <div :class="['pnl-value', Number(row.netProfit) > 0 ? 'text-green-600' : 'text-red-600', 'font-bold', 'text-lg']">
                     {{ Number(row.netProfit) > 0 ? '+' : '' }}{{ formatNumber(row.netProfit, 4) }}
                   </div>
                   <el-tooltip effect="dark" placement="bottom">
                     <template #content>
                       <div class="tooltip-content text-xs">
-                        <div>P&L: {{ formatNumber(row.pnl, 4) }}</div>
-                        <div>开仓手续费: {{ formatNumber(row.openFee, 4) }}</div>
-                        <div>平仓手续费: {{ formatNumber(row.closeFee, 4) }}</div>
-                        <div>资金费用: {{ formatNumber(row.totalFunding, 4) }}</div>
+                        <div>{{ t('historyPosition.pnl') }}: {{ formatNumber(row.pnl, 4) }}</div>
+                        <div>{{ t('historyPosition.openFee') }}: {{ formatNumber(row.openFee, 4) }}</div>
+                        <div>{{ t('historyPosition.closeFee') }}: {{ formatNumber(row.closeFee, 4) }}</div>
+                        <div>{{ t('historyPosition.fundingFee') }}: {{ formatNumber(row.totalFunding, 4) }}</div>
                       </div>
                     </template>
-                    <span class="detail-link text-blue-500 text-xs mt-1 cursor-pointer">费用明细</span>
+                    <span class="detail-link text-blue-500 text-xs mt-1 cursor-pointer">{{ t('historyPosition.feeDetails') }}</span>
                   </el-tooltip>
                 </div>
 
                 <div class="flex flex-col items-end">
-                  <span class="text-xs text-gray-500">平仓数量</span>
+                  <span class="text-xs text-gray-500">{{ t('historyPosition.closingQuantity') }}</span>
                   <span class="text-base font-medium">{{ row.closeTotalPos }}</span>
                 </div>
               </div>
 
               <div class="flex justify-between text-sm pt-2 border-t mt-1">
                 <div class="flex flex-col">
-                  <span class="label text-gray-500">开仓均价:</span>
+                  <span class="label text-gray-500">{{ t('historyPosition.openingPrice') }}:</span>
                   <span class="value font-mono">{{ formatNumber(row.openAvgPrice) }}</span>
                 </div>
                 <div class="flex flex-col items-end">
-                  <span class="label text-gray-500">平仓均价:</span>
+                  <span class="label text-gray-500">{{ t('historyPosition.closingPrice') }}:</span>
                   <span class="value font-mono">{{ formatNumber(row.closeAvgPrice) }}</span>
                 </div>
               </div>
 
               <div class="flex justify-between text-xs text-gray-500 pt-2 border-t">
                 <div class="flex flex-col">
-                  <span class="text-gray-400">平仓: {{ formatTimestamp(row.utime) }}</span>
-                  <span class="text-gray-400">开仓: {{ formatTimestamp(row.ctime) }}</span>
+                  <span class="text-gray-400">{{ t('historyPosition.closingTime') }}: {{ formatTimestamp(row.utime) }}</span>
+                  <span class="text-gray-400">{{ t('historyPosition.openingTime') }}: {{ formatTimestamp(row.ctime) }}</span>
                 </div>
                 <div class="flex flex-col items-end">
-                  <span class="text-gray-500">总费用:</span>
+                  <span class="text-gray-500">{{ t('historyPosition.totalFee') }}:</span>
                   <span class="text-gray-600 font-medium">{{
                     formatNumber(Number(row.openFee) + Number(row.closeFee) + Number(row.totalFunding), 4)
                   }}</span>
@@ -208,10 +216,17 @@ onMounted(() => {
                   <div class="symbol-row">
                     <span class="symbol font-bold">{{ row.symbol }}</span>
                     <el-tag size="small" :type="row.holdSide === 'long' ? 'success' : 'danger'" effect="dark" class="side-tag ml-1">
-                      {{ row.holdSide === 'long' ? '多' : '空' }}
+                      {{ row.holdSide === 'long' ? t('historyPosition.long') : t('historyPosition.short') }}
                     </el-tag>
                   </div>
-                  <div class="margin-info text-xs text-gray-500">{{ row.marginCoin }} · {{ row.marginMode === 'crossed' ? '全仓' : '逐仓' }}</div>
+                  <div class="margin-info text-xs text-gray-500">
+                    {{ row.marginCoin }} ·
+                    {{
+                      row.marginMode === 'crossed' || row.marginMode === 'cross'
+                        ? t('historyPosition.fullMargin')
+                        : t('historyPosition.isolatedMargin')
+                    }}
+                  </div>
                 </div>
               </div>
 
@@ -219,11 +234,11 @@ onMounted(() => {
 
               <div class="flex-1 text-right min-w-[180px]">
                 <div class="price-row">
-                  <span class="label text-gray-500">开:</span>
+                  <span class="label text-gray-500">{{ t('historyPosition.openPriceLabel') }}</span>
                   <span class="value font-mono ml-1">{{ formatNumber(row.openAvgPrice) }}</span>
                 </div>
                 <div class="price-row">
-                  <span class="label text-gray-500">平:</span>
+                  <span class="label text-gray-500">{{ t('historyPosition.closePriceLabel') }}</span>
                   <span class="value font-mono ml-1">{{ formatNumber(row.closeAvgPrice) }}</span>
                 </div>
               </div>
@@ -235,13 +250,13 @@ onMounted(() => {
                 <el-tooltip effect="dark" placement="top">
                   <template #content>
                     <div class="tooltip-content text-xs">
-                      <div>P&L (未扣费): {{ formatNumber(row.pnl, 4) }}</div>
-                      <div>开仓手续费: {{ formatNumber(row.openFee, 4) }}</div>
-                      <div>平仓手续费: {{ formatNumber(row.closeFee, 4) }}</div>
-                      <div>资金费用: {{ formatNumber(row.totalFunding, 4) }}</div>
+                      <div>{{ t('historyPosition.pnlAfterFee') }}: {{ formatNumber(row.pnl, 4) }}</div>
+                      <div>{{ t('historyPosition.openFee') }}: {{ formatNumber(row.openFee, 4) }}</div>
+                      <div>{{ t('historyPosition.closeFee') }}: {{ formatNumber(row.closeFee, 4) }}</div>
+                      <div>{{ t('historyPosition.fundingFee') }}: {{ formatNumber(row.totalFunding, 4) }}</div>
                     </div>
                   </template>
-                  <span class="detail-link text-blue-500 text-xs cursor-pointer">费用明细</span>
+                  <span class="detail-link text-blue-500 text-xs cursor-pointer">{{ t('historyPosition.feeDetails') }}</span>
                 </el-tooltip>
               </div>
 
@@ -250,8 +265,8 @@ onMounted(() => {
               </div>
 
               <div class="flex-1 text-right min-w-[180px]">
-                <div class="main-time">{{ formatTimestamp(row.utime) }} (平)</div>
-                <div class="sub-time text-gray-500 text-xs">{{ formatTimestamp(row.ctime) }} (开)</div>
+                <div class="main-time">{{ formatTimestamp(row.utime) }} ({{ t('historyPosition.closingTime') }})</div>
+                <div class="sub-time text-gray-500 text-xs">{{ formatTimestamp(row.ctime) }} ({{ t('historyPosition.openingTime') }})</div>
               </div>
             </div>
           </template>
@@ -260,9 +275,9 @@ onMounted(() => {
 
       <div class="load-more-container" v-if="data.length > 0">
         <el-button v-if="hasMore" text bg type="primary" :loading="moreLoading" @click="handleLoadMore" class="load-more-btn">
-          {{ moreLoading ? '加载中...' : '加载更多历史记录' }}
+          {{ moreLoading ? t('historyPosition.loadingMore') : t('historyPosition.loadMoreHistory') }}
         </el-button>
-        <span v-else class="no-more-text">到底了</span>
+        <span v-else class="no-more-text">{{ t('historyPosition.noMore') }}</span>
       </div>
     </el-card>
   </div>

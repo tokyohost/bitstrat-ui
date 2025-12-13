@@ -505,5 +505,31 @@ export default {
     think: 'Think',
     userPrompt: 'User prompt',
     systemPrompt: 'System prompt'
+  },
+  historyPosition: {
+    tradeDetails: 'Trade Details',
+    realizedPnl: 'Realized P&L',
+    closingQuantity: 'Closing Quantity',
+    openingPrice: 'Open Avg Price',
+    closingPrice: 'Close Avg Price',
+    closingTime: 'Close Time',
+    openingTime: 'Open Time',
+    totalFee: 'Total Fee',
+    pnl: 'P&L',
+    pnlAfterFee: 'P&L (Before Fee)',
+    openFee: 'Open Fee',
+    closeFee: 'Close Fee',
+    fundingFee: 'Funding Fee',
+    feeDetails: 'Fee Details',
+    loadingMore: 'Loading...',
+    loadMoreHistory: 'Load More History',
+    noMore: 'No More Data',
+    noData: 'No More Data',
+    fullMargin: 'Full',
+    isolatedMargin: 'Isolated',
+    long: 'Long',
+    short: 'Short',
+    openPriceLabel: 'Open:',
+    closePriceLabel: 'Close:'
   }
 };

@@ -503,5 +503,31 @@ export default {
     think: 'Think',
     userPrompt: 'User prompt',
     systemPrompt: 'System prompt'
+  },
+  historyPosition: {
+    tradeDetails: '거래 상세',
+    realizedPnl: '실현 손익',
+    closingQuantity: '청산 수량',
+    openingPrice: '평균 개시가',
+    closingPrice: '평균 청산가',
+    closingTime: '청산',
+    openingTime: '개시',
+    totalFee: '총 수수료',
+    pnl: 'P&L',
+    pnlAfterFee: 'P&L (수수료 제외)',
+    openFee: '개시 수수료',
+    closeFee: '청산 수수료',
+    fundingFee: '자금 조달료',
+    feeDetails: '수수료 상세',
+    loadingMore: '로드 중...',
+    loadMoreHistory: '더 많은 거래 기록 로드',
+    noMore: '더 이상 데이터 없음',
+    noData: '더 이상 데이터 없음',
+    fullMargin: '전체',
+    isolatedMargin: '격리',
+    long: '롱',
+    short: '숏',
+    openPriceLabel: '개:',
+    closePriceLabel: '청:'
   }
 };
