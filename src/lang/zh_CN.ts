@@ -458,5 +458,26 @@ export default {
     details: '详情',
     abnormalStatus: '状态异常',
     na: 'N/A'
+  },
+  testAiRequest: {
+    invokeRequest: '立即发起请求',
+    noData: '暂无数据',
+    requestKey: '请求key',
+    systemPrompt: '系统提示词',
+    userPrompt: '用户提示词',
+    response: '响应',
+    error: '异常',
+    viewDetails: '查看详情',
+    confirm: '确 定',
+    cancel: '取 消',
+    operation: '操作',
+    rule: {
+      id: 'id不能为空'
+    },
+    message: {
+      success: '操作成功',
+      parameterMissing: '参数缺失',
+      requestInitiated: '请求已发起请稍后刷新'
+    }
   }
 };

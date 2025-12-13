@@ -463,5 +463,26 @@ export default {
     details: '상세',
     abnormalStatus: '상태 이상',
     na: '해당 없음'
+  },
+  testAiRequest: {
+    invokeRequest: '요청 시작',
+    noData: '데이터 없음',
+    requestKey: '요청 키',
+    systemPrompt: '시스템 프롬프트',
+    userPrompt: '사용자 프롬프트',
+    response: '응답',
+    error: '오류',
+    viewDetails: '상세 보기',
+    confirm: '확인',
+    cancel: '취소',
+    operation: '작업',
+    rule: {
+      id: 'ID는 비워둘 수 없습니다'
+    },
+    message: {
+      success: '작업이 성공했습니다',
+      parameterMissing: '매개변수 누락',
+      requestInitiated: '요청이 시작되었습니다. 나중에 새로고침하세요'
+    }
   }
 };

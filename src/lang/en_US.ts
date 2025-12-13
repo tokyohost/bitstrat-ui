@@ -465,5 +465,26 @@ export default {
     details: 'Details',
     abnormalStatus: 'Status Abnormal',
     na: 'N/A'
+  },
+  testAiRequest: {
+    invokeRequest: 'Initiate Request',
+    noData: 'No Data',
+    requestKey: 'Request Key',
+    systemPrompt: 'System Prompt',
+    userPrompt: 'User Prompt',
+    response: 'Response',
+    error: 'Error',
+    viewDetails: 'View Details',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    operation: 'Operation',
+    rule: {
+      id: 'ID cannot be empty'
+    },
+    message: {
+      success: 'Operation successful',
+      parameterMissing: 'Parameter missing',
+      requestInitiated: 'Request initiated, please refresh later'
+    }
   }
 };
