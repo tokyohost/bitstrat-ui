@@ -175,7 +175,8 @@ export default {
     'AI任务中心': 'AI 작업 센터',
     'AI智能分析': 'AI 지능형 분석',
     '策略广场': '전략 허브',
-    'AI任务监控': '작업 모니터링'
+    'AI任务监控': '작업 모니터링',
+    '账户余额': '계정 크레딧'
   },
   //通用
   common: {
@@ -634,5 +635,29 @@ export default {
     delete: '삭제',
     deleteConfirm: '디바이스 삭제 후 해당 디바이스에서 로그인할 때 재인증이 필요합니다',
     deleteSuccess: '삭제 성공'
+  },
+  balanceLog: {
+    title: '계정 크레딧',
+    availableBalance: '사용 가능 크레딧',
+    recharge: '크레딧 구매',
+    billDetails: '청구 내역',
+    all: '전체',
+    rechargeType: '충전',
+    consumption: '사용',
+    gift: '선물',
+    refresh: '목록 새로고침',
+    transactionTime: '거래 시간',
+    type: '유형',
+    amount: '금액',
+    status: '상태',
+    balance: '크레딧',
+    remark: '비고',
+    noRemark: '-',
+    errorLoadBalance: '크레딧 불러오기 실패',
+    balanceStatus: {
+      异常: '비정상',
+      已完成: '완료',
+      处理中: '처리 중'
+    }
   }
 };

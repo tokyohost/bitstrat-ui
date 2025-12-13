@@ -177,7 +177,8 @@ export default {
     AI任务中心: 'AI任务中心',
     AI智能分析: 'AI智能分析',
     策略广场: '策略广场',
-    AI任务监控: 'AI任务监控'
+    AI任务监控: 'AI任务监控',
+    '账户余额': '账户额度'
   },
   //通用
   common: {
@@ -629,5 +630,29 @@ export default {
     delete: '删除',
     deleteConfirm: '删除设备后，在该设备登录需要重新进行验证',
     deleteSuccess: '删除成功'
+  },
+  balanceLog: {
+    title: '账户额度',
+    availableBalance: '当前可用额度',
+    recharge: '购买额度',
+    billDetails: '账单明细',
+    all: '全部',
+    rechargeType: '购买',
+    consumption: '消费',
+    gift: '赠送',
+    refresh: '刷新列表',
+    transactionTime: '交易时间',
+    type: '类型',
+    amount: '额度',
+    status: '状态',
+    balance: '余额',
+    remark: '备注',
+    noRemark: '-',
+    errorLoadBalance: '获取额度失败',
+    balanceStatus: {
+      异常: '异常',
+      已完成: '已完成',
+      处理中: '处理中'
+    }
   }
 };

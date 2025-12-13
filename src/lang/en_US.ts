@@ -177,7 +177,8 @@ export default {
     'AI任务中心': 'AI Task Center',
     'AI智能分析': 'AI Intelligent Analysis',
     '策略广场': 'Strategy Hub',
-    'AI任务监控': 'Task Monitor'
+    'AI任务监控': 'Task Monitor',
+    '账户余额': 'Account Credits'
   },
   //通用
   common: {
@@ -636,5 +637,29 @@ export default {
     delete: 'Delete',
     deleteConfirm: 'After deleting the device, you need to re-authenticate when logging in from this device',
     deleteSuccess: 'Delete successful'
+  },
+  balanceLog: {
+    title: 'Account Credits',
+    availableBalance: 'Available Credits',
+    recharge: 'Buy Credits Now',
+    billDetails: 'Bill Details',
+    all: 'All',
+    rechargeType: 'Recharge',
+    consumption: 'Consumption',
+    gift: 'Gift',
+    refresh: 'Refresh List',
+    transactionTime: 'Transaction Time',
+    type: 'Type',
+    amount: 'Amount',
+    status: 'Status',
+    balance: 'Credits',
+    remark: 'Remark',
+    noRemark: '-',
+    errorLoadBalance: 'Failed to load Credits',
+    balanceStatus: {
+      异常: 'Abnormal',
+      已完成: 'Completed',
+      处理中: 'Processing'
+    }
   }
 };

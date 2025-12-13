@@ -5,7 +5,7 @@
         <div class="relative z-10 flex justify-between items-center p-2">
           <div>
             <div class="text-blue-100 text-sm font-medium mb-1 flex items-center gap-1">
-              <el-icon><Wallet /></el-icon> 当前可用余额
+              <el-icon><Wallet /></el-icon> {{ t('balanceLog.availableBalance') }}
             </div>
             <div class="flex flex-row justify-between items-center gap-4">
               <div class="text-4xl font-bold font-mono tracking-wide color[white]">
@@ -25,7 +25,7 @@
               icon="Lightning"
               @click="handleRecharge"
             >
-              立即充值
+              {{ t('balanceLog.recharge') }}
             </el-button>
           </div>
         </div>
@@ -40,23 +40,23 @@
       <template #header>
         <div class="flex flex-wrap justify-between items-center">
           <div class="flex items-center gap-2 text-lg font-bold text-gray-800">
-            <el-icon class="text-blue-500"><List /></el-icon> 账单明细
+            <el-icon class="text-blue-500"><List /></el-icon> {{ t('balanceLog.billDetails') }}
           </div>
 
           <div class="flex items-center gap-3">
             <el-radio-group v-model="queryParams.type" size="small" @change="handleQuery">
-              <el-radio-button label="">全部</el-radio-button>
-              <el-radio-button label="1">充值</el-radio-button>
-              <el-radio-button label="2">消费</el-radio-button>
-              <el-radio-button label="4">赠送</el-radio-button>
+              <el-radio-button label="">{{ t('balanceLog.all') }}</el-radio-button>
+              <el-radio-button label="1">{{ t('balanceLog.rechargeType') }}</el-radio-button>
+              <el-radio-button label="2">{{ t('balanceLog.consumption') }}</el-radio-button>
+              <el-radio-button label="4">{{ t('balanceLog.gift') }}</el-radio-button>
             </el-radio-group>
-            <el-button circle icon="Refresh" @click="resetQuery" title="刷新列表"></el-button>
+            <el-button circle icon="Refresh" @click="resetQuery" :title="t('balanceLog.refresh')"></el-button>
           </div>
         </div>
       </template>
 
       <el-table v-loading="loading" :data="balanceLogList" :header-cell-style="{ background: '#f8fafc', color: '#64748b' }" style="width: 100%">
-        <el-table-column label="交易时间" align="left" prop="createTime" min-width="160">
+        <el-table-column :label="t('balanceLog.transactionTime')" align="left" prop="createTime" min-width="160">
           <template #default="scope">
             <div class="flex flex-col">
               <span class="text-gray-700 font-medium">{{ scope.row.createTime }}</span>
@@ -64,38 +64,39 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="类型" align="center" prop="type" width="120">
+        <el-table-column :label="t('balanceLog.type')" align="center" prop="type" width="120">
           <template #default="scope">
             <dict-tag :options="balance_log_type" :value="scope.row.type" />
           </template>
         </el-table-column>
 
-        <el-table-column label="金额" align="right" prop="changeAmount" min-width="140">
+        <el-table-column :label="t('balanceLog.amount')" align="right" prop="changeAmount" min-width="140">
           <template #default="{ row }">
             <span class="font-bold text-lg font-mono" :class="Number(row.changeAmount) > 0 ? 'text-green-500' : 'text-red-500'">
               {{ Number(row.changeAmount) > 0 ? '+' : '' }}{{ row.changeAmount }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" align="center" prop="type" width="120">
+
+        <el-table-column :label="t('balanceLog.status')" align="center" prop="type" width="120">
           <template #default="scope">
             <div v-if="scope.row.status">
-              <dict-tag :options="balance_status" :value="scope.row.status" />
+              <dict-tag :options="balance_status" :value="scope.row.status" i18n-profilx="balanceLog.balanceStatus" />
             </div>
-            <div v-else>-</div>
+            <div v-else>{{ t('balanceLog.noRemark') }}</div>
           </template>
         </el-table-column>
 
-        <el-table-column label="余额" align="right" prop="afterBalance" min-width="140">
+        <el-table-column :label="t('balanceLog.balance')" align="right" prop="afterBalance" min-width="140">
           <template #default="{ row }">
             <span class="text-gray-500 font-mono" v-if="row.type != 1">¥ {{ row.afterBalance }}</span>
-            <span class="text-gray-500 font-mono" v-else>-</span>
+            <span class="text-gray-500 font-mono" v-else>{{ t('balanceLog.noRemark') }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="备注" align="left" prop="remark" min-width="200" show-overflow-tooltip>
+        <el-table-column :label="t('balanceLog.remark')" align="left" prop="remark" min-width="200" show-overflow-tooltip>
           <template #default="{ row }">
-            <div class="text-gray-500 text-sm">{{ row.remark || '-' }}</div>
+            <div class="text-gray-500 text-sm">{{ row.remark || t('balanceLog.noRemark') }}</div>
           </template>
         </el-table-column>
       </el-table>
@@ -110,6 +111,7 @@
 </template>
 
 <script setup name="BalanceLog" lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Wallet, Money, List, Lightning, Refresh } from '@element-plus/icons-vue';
 import RechargeDialog from '@/layout/components/Recharge/RechargeDialog.vue';
 import { listBalanceLog } from '@/api/system/balanceLog';
@@ -118,6 +120,7 @@ import { getUserProfile } from '@/api/system/user';
 // 如果您项目中安装了 vue-count-to，可以使用它来实现数字滚动效果，如果没有，请移除 <count-to> 组件改为直接显示
 import { CountTo } from 'vue3-count-to';
 
+const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { balance_log_type } = toRefs<any>(proxy?.useDict('balance_log_type'));
 const { balance_status } = toRefs<any>(proxy?.useDict('balance_status'));
@@ -145,7 +148,7 @@ const loadBalance = async () => {
     // 确保取到正确的数据结构
     balance.value = res?.data?.user?.balance || 0;
   } catch (e) {
-    console.error('获取余额失败', e);
+    console.error(t('balanceLog.errorLoadBalance'), e);
   }
 };
 
