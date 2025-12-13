@@ -314,7 +314,7 @@ export default {
     }
   },
   accountSelectDialog: {
-    title: 'API 구성',
+    title: 'API 설정',
     action: {
       close: '닫기'
     }
@@ -333,5 +333,55 @@ export default {
     tpslOrder: 'TP/SL 주문',
     leverage: '레버리지',
     marginType: '마진 유형'
+  },
+  feedPage: {
+    title: '전략 광장 Beta',
+    subtitle: '최고의 전략을 공유하세요',
+    profit3m: '3개월 수익',
+    likes: '좋아요',
+    viewDetails: '보기',
+    loadingMore: '더 많은 데이터 로드 중...',
+    noMore: '더 이상 데이터 없음',
+    loadNext: '다음 페이지 로드',
+    comingSoon: '곧 출시될 예정입니다'
+  },
+  sharePanel: {
+    title: '전략 광장에 전략 공유',
+    strategyTitle: '전략 제목',
+    strategyTitlePlaceholder: '눈에 띄는 이름을 지어주세요',
+    introduction: '소개',
+    introductionPlaceholder: '전략 내용을 소개해주세요',
+    strategyTags: '전략 태그',
+    selectTags: '태그 선택',
+    tagLimit: '최대 3개 태그',
+    notice: '전략 광장에 공유해도 Prompt나 구성이 공개되지 않으며, API 손익 곡선만 표시됩니다',
+    cancel: '취소',
+    cancelShare: '공유 취소',
+    updateShare: '공유 업데이트',
+    share: '공유',
+    rule: {
+      title: '제목은 비워둘 수 없습니다',
+      titleLength: '제목은 4~12자여야 합니다',
+      content: '소개는 비워둘 수 없습니다',
+      contentLength: '소개는 4~200자여야 합니다',
+      tags: '최소 1개의 태그를 선택하세요'
+    }
+  },
+  taskItem: {
+    view: '보기',
+    edit: '편집',
+    stop: '중지',
+    start: '시작',
+    delete: '삭제',
+    coins: '코인',
+    startBalance: '시작 잔액',
+    timeGranularity: '시간 단위',
+    createTime: '생성 시간',
+    shared: '공유됨',
+    status: {
+      已创建: '생성됨',
+      正在运行: '실행 중',
+      已终止: '중지됨'
+    }
   }
 };

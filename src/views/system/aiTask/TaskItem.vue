@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 import { AiTaskVO } from '@/api/system/aiTask/types';
 import { loadChartDataSimple } from '@/views/system/aiTask/index';
+
+const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { ai_task_status } = toRefs<any>(proxy?.useDict('ai_task_status'));
 
@@ -10,12 +13,14 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(['update', 'delete', 'start', 'stop', 'shared']);
+
 // 是否暗黑模式
 const isDark = useDark({
   storageKey: 'useDarkKey',
   valueDark: 'dark',
   valueLight: 'light'
 });
+
 // 核心逻辑：计算最终使用的主题
 const actualTheme = ref<string>('light');
 watch(isDark, () => {
@@ -25,26 +30,35 @@ watch(isDark, () => {
     actualTheme.value = 'light';
   }
 });
+
 import { useRouter } from 'vue-router';
 import SharePanel from '@/views/system/aiTask/share-panel.vue';
 import { getFeed } from '@/api/system/feed';
+
 const router = useRouter();
+
 const goAiTaskLog = (item?: AiTaskVO) => {
   router.push({ path: '/ai/ai-task-log', query: { id: item.id } });
 };
+
 const handleUpdate = (item: AiTaskVO) => {
   emits('update', item);
 };
+
 const handleDelete = (item: AiTaskVO) => {
   emits('delete', item);
 };
+
 const handleStart = (item: AiTaskVO) => {
   emits('start', item);
 };
+
 const handleStop = (item: AiTaskVO) => {
   emits('stop', item);
 };
+
 const chartData = ref<number[]>([]);
+
 const loadChartData = async () => {
   console.log('loadChartData  11');
   // Placeholder for any data loading logic if needed in the future
@@ -53,16 +67,20 @@ const loadChartData = async () => {
 };
 
 const sharePanel = useTemplateRef('sharePanel');
+
 const shareStrategy = (item: AiTaskVO) => {
   sharePanel.value.open();
 };
+
 const showSharegy = async (item: AiTaskVO) => {
   const feedVO = await getFeed(item.shareId);
   sharePanel.value.open(feedVO.data);
 };
+
 const shared = () => {
   emits('shared');
 };
+
 onMounted(() => {
   loadChartData();
 });
@@ -84,13 +102,13 @@ onMounted(() => {
           <ExchangeLogo :exchange="item.exchange"></ExchangeLogo>
         </div>
         <div class="flex justify-end">
-          <dict-tag :options="ai_task_status" :value="item.status" />
+          <dict-tag :options="ai_task_status" :value="item.status" :i18n-profilx="'taskItem.status'" />
           <div v-if="item.shareStatus == 1" class="ml-2 hover:cursor-pointer" @click="shareStrategy(item)">
             <img src="../../../assets/icons/png/share.png" height="20" width="20" />
           </div>
-          <el-tag :type="'primary'" size="default" v-if="item.shareStatus == 2" class="ml-2 hover:cursor-pointer" @click="showSharegy(item)"
-            >已分享</el-tag
-          >
+          <el-tag :type="'primary'" size="default" v-if="item.shareStatus == 2" class="ml-2 hover:cursor-pointer" @click="showSharegy(item)">{{
+            t('taskItem.shared')
+          }}</el-tag>
         </div>
       </div>
 
@@ -100,29 +118,22 @@ onMounted(() => {
       <!-- 内容区 -->
       <div class="space-y-2 text-sm text-gray-600 leading-normal">
         <div class="flex justify-between">
-          <span class="font-600">币种：</span>
+          <span class="font-600">{{ t('taskItem.coins') }}：</span>
           <span class="text-gray-800" :style="{ color: 'var(--el-text-color)' }">{{ item.symbols }}</span>
         </div>
 
         <div class="flex justify-between">
-          <span class="font-600">开始资金：</span>
+          <span class="font-600">{{ t('taskItem.startBalance') }}：</span>
           <span class="text-emerald-600 font-600">{{ item.startBalance }}</span>
         </div>
 
-        <!--            <div class="flex justify-between">-->
-        <!--              <span class="font-600">当前余额：</span>-->
-        <!--              <span :class="item.totalBalance >= item.startBalance ? 'text-green-600 font-600' : 'text-red-500 font-600'">-->
-        <!--                {{ item.totalBalance }}-->
-        <!--              </span>-->
-        <!--            </div>-->
-
         <div class="flex justify-between">
-          <span class="font-600">时间粒度：</span>
+          <span class="font-600">{{ t('taskItem.timeGranularity') }}：</span>
           <span>{{ item.interval }}</span>
         </div>
 
         <div class="flex justify-between">
-          <span class="font-600">创建时间：</span>
+          <span class="font-600">{{ t('taskItem.createTime') }}：</span>
           <span>{{ item.createTime }}</span>
         </div>
 
@@ -142,20 +153,21 @@ onMounted(() => {
 
       <!-- 操作按钮 -->
       <div class="flex justify-end gap-1 mt-2">
-        <el-button link @click="goAiTaskLog(item)" class="opacity-70 hover:opacity-100">查看</el-button>
-        <el-button link icon="Edit" @click="handleUpdate(item)" class="opacity-70 hover:opacity-100">修改</el-button>
+        <el-button link @click="goAiTaskLog(item)" class="opacity-70 hover:opacity-100">{{ t('taskItem.view') }}</el-button>
+        <el-button link icon="Edit" @click="handleUpdate(item)" class="opacity-70 hover:opacity-100">{{ t('taskItem.edit') }}</el-button>
 
-        <el-button v-if="item.status == 2" link icon="VideoPause" class="opacity-70 hover:opacity-100" @click="handleStop(item)">终止</el-button>
+        <el-button v-if="item.status == 2" link icon="VideoPause" class="opacity-70 hover:opacity-100" @click="handleStop(item)">{{
+          t('taskItem.stop')
+        }}</el-button>
 
-        <el-button v-if="item.status != 2" link icon="VideoPlay" class="opacity-70 hover:opacity-100" @click="handleStart(item)">启动</el-button>
+        <el-button v-if="item.status != 2" link icon="VideoPlay" class="opacity-70 hover:opacity-100" @click="handleStart(item)">{{
+          t('taskItem.start')
+        }}</el-button>
 
-        <el-button link type="danger" icon="Delete" class="opacity-70 hover:opacity-100" @click="handleDelete(item)">删除</el-button>
+        <el-button link type="danger" icon="Delete" class="opacity-70 hover:opacity-100" @click="handleDelete(item)">{{
+          t('taskItem.delete')
+        }}</el-button>
       </div>
-
-      <!-- 右上角徽章（可选） -->
-      <!--          <div v-if="item.status == 2" class="absolute top-3 right-3 text-xs bg-yellow-300/80 text-yellow-900 px-2 py-0.5 rounded-full">运行中</div>-->
-
-      <!--          <div v-else class="absolute top-3 right-3 text-xs bg-gray-300/70 text-gray-700 px-2 py-0.5 rounded-full">暂停</div>-->
     </el-card>
     <SharePanel ref="sharePanel" :strategy-id="item.id" @shared="shared"></SharePanel>
   </div>

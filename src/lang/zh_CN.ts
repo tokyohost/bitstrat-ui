@@ -333,5 +333,55 @@ export default {
     tpslOrder: 'TPSL订单',
     leverage: '杠杆',
     marginType: '保证金类型'
+  },
+  feedPage: {
+    title: '策略广场 Beta',
+    subtitle: '分享您的顶尖策略',
+    profit3m: '3个月收益',
+    likes: '赞',
+    viewDetails: '查看',
+    loadingMore: '加载更多数据...',
+    noMore: '没有更多啦',
+    loadNext: '加载下一页',
+    comingSoon: '敬请期待'
+  },
+  sharePanel: {
+    title: '分享策略到策略广场',
+    strategyTitle: '策略标题',
+    strategyTitlePlaceholder: '取一个显眼的名字吧',
+    introduction: '简介',
+    introductionPlaceholder: '介绍一下您的策略内容吧',
+    strategyTags: '策略标签',
+    selectTags: '请选择标签',
+    tagLimit: '最多选择3个标签',
+    notice: '分享至策略广场不会公开您的提示词或者任何配置,仅仅展示您API 的盈亏曲线',
+    cancel: '取消',
+    cancelShare: '取消分享',
+    updateShare: '更新分享',
+    share: '分享',
+    rule: {
+      title: '标题不能为空',
+      titleLength: '标题长度 4~12 字符',
+      content: '简介不能为空',
+      contentLength: '简介长度 4~200 字符',
+      tags: '至少选择一个标签'
+    }
+  },
+  taskItem: {
+    view: '查看',
+    edit: '修改',
+    stop: '终止',
+    start: '启动',
+    delete: '删除',
+    coins: '币种',
+    startBalance: '开始资金',
+    timeGranularity: '时间粒度',
+    createTime: '创建时间',
+    shared: '已分享',
+    status: {
+      已创建: '已创建',
+      正在运行: '正在运行',
+      已终止: '已终止'
+    }
   }
 };

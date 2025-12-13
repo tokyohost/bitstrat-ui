@@ -316,7 +316,7 @@ export default {
     }
   },
   accountSelectDialog: {
-    title: 'Configure API',
+    title: 'API Setting',
     action: {
       close: 'Close'
     }
@@ -335,5 +335,55 @@ export default {
     tpslOrder: 'TP/SL Order',
     leverage: 'Leverage',
     marginType: 'Margin Type'
+  },
+  feedPage: {
+    title: 'Strategy Plaza Beta',
+    subtitle: 'Share Your Top Strategies',
+    profit3m: '3-Month Return',
+    likes: 'Likes',
+    viewDetails: 'View',
+    loadingMore: 'Loading more data...',
+    noMore: 'No more data',
+    loadNext: 'Load Next Page',
+    comingSoon: 'Coming soon'
+  },
+  sharePanel: {
+    title: 'Share Strategy to Strategy Plaza',
+    strategyTitle: 'Strategy Title',
+    strategyTitlePlaceholder: 'Give it a catchy name',
+    introduction: 'Introduction',
+    introductionPlaceholder: 'Describe your strategy content',
+    strategyTags: 'Strategy Tags',
+    selectTags: 'Select tags',
+    tagLimit: 'Max 3 tags',
+    notice: 'Sharing to the Strategy Plaza will not disclose your prompts or any configuration, only your API profit/loss curve',
+    cancel: 'Cancel',
+    cancelShare: 'Cancel Share',
+    updateShare: 'Update Share',
+    share: 'Share',
+    rule: {
+      title: 'Title cannot be empty',
+      titleLength: 'Title must be 4-12 characters',
+      content: 'Introduction cannot be empty',
+      contentLength: 'Introduction must be 4-200 characters',
+      tags: 'Select at least one tag'
+    }
+  },
+  taskItem: {
+    view: 'View',
+    edit: 'Edit',
+    stop: 'Stop',
+    start: 'Start',
+    delete: 'Delete',
+    coins: 'Coins',
+    startBalance: 'Start Balance',
+    timeGranularity: 'Time Granularity',
+    createTime: 'Create Time',
+    shared: 'Shared',
+    status: {
+      已创建: 'Created',
+      正在运行: 'Running',
+      已终止: 'Stopped'
+    }
   }
 };

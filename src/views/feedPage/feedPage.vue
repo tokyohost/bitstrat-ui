@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { likeFeed, listFeed } from '@/api/system/feed';
 import { FeedVO } from '@/api/system/feed/types';
 import FeedChart from '@/views/feedPage/FeedChart.vue';
+
+const { t } = useI18n();
 
 // --- 接口定义 (TypeScript) ---
 interface Post extends FeedVO {
@@ -83,7 +86,7 @@ const observer = ref<IntersectionObserver | null>(null);
 const sentinel = ref<HTMLElement | null>(null); // 观察的哨兵元素
 
 const showFeedDetail = () => {
-  ElMessage.warning('敬请期待');
+  ElMessage.warning(t('feedPage.comingSoon'));
 };
 
 onMounted(() => {
@@ -122,8 +125,10 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-gray-900 text-gray-200 p-4 sm:p-6 lg:p-8">
     <header class="sticky top-0 z-10 backdrop-blur-md bg-gray-900/80 p-3 mb-6 rounded-xl border border-blue-600/30 shadow-2xl shadow-blue-500/10">
-      <h1 class="text-2xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">策略广场 Beta</h1>
-      <p class="text-xs text-gray-500 mt-1">分享您的顶尖策略</p>
+      <h1 class="text-2xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+        {{ t('feedPage.title') }}
+      </h1>
+      <p class="text-xs text-gray-500 mt-1">{{ t('feedPage.subtitle') }}</p>
     </header>
 
     <main class="max-w-xl mx-auto space-y-6 pb-20">
@@ -156,7 +161,7 @@ onUnmounted(() => {
               <span v-else-if="post.profit3m < 0"> &#9660; </span>
               {{ post.profit3m }}%
             </span>
-            <p class="text-xs text-gray-500 mt-0.5 text-right">3个月收益</p>
+            <p class="text-xs text-gray-500 mt-0.5 text-right">{{ t('feedPage.profit3m') }}</p>
           </div>
         </div>
 
@@ -182,11 +187,11 @@ onUnmounted(() => {
                 clip-rule="evenodd"
               ></path>
             </svg>
-            {{ post.likeCount }} 赞
+            {{ post.likeCount }} {{ t('feedPage.likes') }}
           </button>
 
           <span class="text-gray-500 hover:cursor-pointer" @click="showFeedDetail">
-            查看 <span class="ml-1 text-green-400 cursor-pointer hover:text-cyan-400">→</span>
+            {{ t('feedPage.viewDetails') }} <span class="ml-1 text-green-400 cursor-pointer hover:text-cyan-400">→</span>
           </span>
         </div>
       </div>
@@ -206,9 +211,9 @@ onUnmounted(() => {
           <span>加载更多数据...</span>
         </div>
 
-        <p v-else-if="!hasMore" class="text-gray-500 border-t border-gray-700 pt-4 mt-4">没有更多啦</p>
+        <p v-else-if="!hasMore" class="text-gray-500 border-t border-gray-700 pt-4 mt-4">{{ t('feedPage.noMore') }}</p>
 
-        <button v-else @click="loadMorePosts" class="text-blue-500 hover:text-blue-400 underline">加载下一页</button>
+        <button v-else @click="loadMorePosts" class="text-blue-500 hover:text-blue-400 underline">{{ t('feedPage.loadNext') }}</button>
       </div>
     </main>
   </div>
