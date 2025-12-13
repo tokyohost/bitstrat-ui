@@ -427,6 +427,9 @@ export default {
     systemPromptPlaceholder: '请输入系统提示词,您可以在此要求AI执行的规则、交易逻辑、交易纪律等等,一切取决于您，期待您的完美策略',
     preset1: '预设提示词1',
     preset2: '预设提示词2',
+    preset3: '预设提示词3(KR)',
+    presetWarning:
+      '请不要直接使用预设提示词，预设提示词仅为示例，您应该仿照其格式书写您自己独特的交易策略(PS 回测报告显示预设提示词90%行情下效果不佳。)',
     userPrompt: '用户提示词',
     userPromptPlaceholder: '请输入您的交易想法，将添加到每次调用API时用户提示词最前',
     exampleContent: '以下示例内容作为提供给AI的行情数据、当前仓位数据、历史成绩等数据，暂不支持修改，您的交易想法将拼接在示例内容之前:',

@@ -432,7 +432,10 @@ export default {
     systemPromptPlaceholder:
       'Enter system prompt, you can require AI to execute rules, trading logic, trading discipline, etc. It all depends on you, looking forward to your perfect strategy',
     preset1: 'Preset Prompt 1',
-    preset2: 'Preset Prompt 2',
+    preset2: 'Preset Prompt 2(ZH)',
+    preset3: 'Preset Prompt 3(KR)',
+    presetWarning:
+      'Please do not se preset prompts directly. Preset prompts are only examples. You should write your own unique trading strategy by following their format. (PS: Backtesting reports show that preset prompts perform poorly in 90% of market conditions.)',
     userPrompt: 'User Prompt',
     userPromptPlaceholder: 'Enter your trading ideas, which will be added to the user prompt at the beginning of each API call',
     exampleContent:

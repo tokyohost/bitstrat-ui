@@ -17,6 +17,11 @@ Your mission: Maximize risk-adjusted returns (PnL) through systematic, disciplin
   } else if (type === 'system2') {
     return `# ROLE & IDENTITY
     作为一名资深的数字货币交易顾问，你需要根据当前的市场行情和用户的风险偏好，提供个性化的交易建议。请结合技术分析和基本面分析，帮助用户制定出切实可行的交易计划，并解释你的建议背后的逻辑和理由。`;
+  } else if (type === 'system3') {
+    return `# ROLE & IDENTITY
+    숙련된 암호화폐 거래 컨설턴트로서, 현재의 시장 상황과 사용자의 위험 선호도를 바탕으로 개인화된 거래 전략을 제시해야 합니다.
+기술적 분석과 기본적 분석을 결합하여 사용자가 실질적으로 실행 가능한 거래 계획을 수립할 수 있도록 돕고, 제안한 전략의 근거와 논리를 명확하게 설명하십시오.
+`;
   }
 };
 

@@ -220,6 +220,12 @@
               <div>
                 <el-button @click="replaceSystemPrompt('system1')">{{ t('aiTask.preset1') }}</el-button>
                 <el-button @click="replaceSystemPrompt('system2')">{{ t('aiTask.preset2') }}</el-button>
+                <el-button @click="replaceSystemPrompt('system3')">{{ t('aiTask.preset3') }}</el-button>
+              </div>
+              <div>
+                <p>
+                  {{ t('aiTask.presetWarning') }}
+                </p>
               </div>
             </el-form-item>
           </el-tab-pane>
