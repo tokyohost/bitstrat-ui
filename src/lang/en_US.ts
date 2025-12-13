@@ -320,5 +320,20 @@ export default {
     action: {
       close: 'Close'
     }
+  },
+  positionWidget: {
+    full: 'Full',
+    positionSize: 'Position Size',
+    avgPrice: 'Average Entry Price',
+    unrealizedProfit: 'Unrealized Profit/Loss',
+    realizedProfit: 'Realized Profit/Loss',
+    margin: 'Margin',
+    marginRatio: 'Maintenance Margin Ratio',
+    liqPrice: 'Est. Liquidation Price',
+    syncTime: 'Sync Time',
+    updateTime: 'Position Update Time',
+    tpslOrder: 'TP/SL Order',
+    leverage: 'Leverage',
+    marginType: 'Margin Type'
   }
 };

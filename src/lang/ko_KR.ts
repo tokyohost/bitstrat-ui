@@ -318,5 +318,20 @@ export default {
     action: {
       close: '닫기'
     }
+  },
+  positionWidget: {
+    full: '전체',
+    positionSize: '포지션 크기',
+    avgPrice: '평균 진입 가격',
+    unrealizedProfit: '미실현 손익',
+    realizedProfit: '실현 손익',
+    margin: '마진',
+    marginRatio: '유지 보증금 비율',
+    liqPrice: '청산 예상 가격',
+    syncTime: '동기화 시간',
+    updateTime: '포지션 업데이트 시간',
+    tpslOrder: 'TP/SL 주문',
+    leverage: '레버리지',
+    marginType: '마진 유형'
   }
 };

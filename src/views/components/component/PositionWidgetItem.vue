@@ -4,6 +4,9 @@ import TradePairTag from '@/views/system/analysis/components/TradePairTag.vue';
 import { PositionWsData } from '@/views/components/type/type';
 import { queryPositionTpslBySymbol } from '@/views/system/historyPosition';
 import { HistoryPositionTpslQuery, TpSlOrder } from '@/views/system/historyPosition/type';
+import { useI18n } from 'vue-i18n'; // 新增：引入 i18n
+
+const { t } = useI18n(); // 新增：获取 t 函数
 
 const props = defineProps<{
   position: PositionWsData;
@@ -22,7 +25,7 @@ const customColor = computed(() => {
 const syncTpsl = () => {
   emits('showTpsl', props.position);
 };
-const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`);
+const format = (percentage) => (percentage === 100 ? t('positionWidget.full') : `${percentage}%`); // 修改：支持 i18n
 
 const emits = defineEmits(['showTpsl']);
 </script>
@@ -44,7 +47,7 @@ const emits = defineEmits(['showTpsl']);
           <el-tag type="warning" size="small" disable-transitions>{{ props.position.marginType }}</el-tag>
           <el-tag type="success" size="small" disable-transitions>TP:{{ props.position.takeProfit || '-' }}</el-tag>
           <el-tag type="danger" size="small" disable-transitions>SL:{{ props.position.stopLoss || '-' }}</el-tag>
-          <el-button type="primary" link size="small" disable-transitions @click="syncTpsl">TPSL ORDER</el-button>
+          <el-button type="primary" link size="small" disable-transitions @click="syncTpsl">{{ t('positionWidget.tpslOrder') }}</el-button>
         </div>
 
         <div class="text-right text-xs md:text-sm text-gray-500 font-medium flex-shrink-0">
@@ -55,34 +58,36 @@ const emits = defineEmits(['showTpsl']);
       <div class="flex flex-col gap-2">
         <div class="flex flex-col md:flex-row w-full gap-2 md:gap-4">
           <div class="flex justify-between md:justify-start md:flex-1 text-xs md:items-center">
-            <div class="text-gray-500 flex-shrink-0">持仓数量</div>
+            <div class="text-gray-500 flex-shrink-0">{{ t('positionWidget.positionSize') }}</div>
             <div class="font-medium text-blue-600 ml-1">{{ props.position.size ?? '-' }} {{ props.position.symbol }}</div>
           </div>
           <div class="flex justify-between md:justify-start md:flex-1 text-xs md:items-center">
-            <div class="text-gray-500 flex-shrink-0">平均入场价格</div>
+            <div class="text-gray-500 flex-shrink-0">{{ t('positionWidget.avgPrice') }}</div>
             <div class="font-medium ml-1">{{ props.position.avgPrice ?? '-' }}</div>
           </div>
         </div>
 
         <div class="flex flex-col md:flex-row w-full gap-2 md:gap-4">
           <div class="flex justify-between md:justify-start md:flex-1 text-xs md:items-center">
-            <div class="text-gray-500 flex-shrink-0">未实现盈亏</div>
-            <div class="font-medium text-green-600 ml-1">{{ props.position.unrealizedProfit ?? '-' }}</div>
+            <div class="text-gray-500 flex-shrink-0">{{ t('positionWidget.unrealizedProfit') }}</div>
+            <div class="font-medium text-green-600 ml-1" :class="props.position.unrealizedProfit > 0 ? 'text-green-600' : 'text-red-600'">
+              {{ props.position.unrealizedProfit ?? '-' }}
+            </div>
           </div>
           <div class="flex justify-between md:justify-start md:flex-1 text-xs md:items-center">
-            <div class="text-gray-500 flex-shrink-0">已实现盈亏</div>
+            <div class="text-gray-500 flex-shrink-0">{{ t('positionWidget.realizedProfit') }}</div>
             <div class="font-medium ml-1">{{ props.position.profit ?? '-' }}</div>
           </div>
         </div>
 
         <div class="flex flex-col md:flex-row w-full gap-2 md:gap-4">
           <div class="flex justify-between md:justify-start md:flex-1 text-xs md:items-center">
-            <div class="text-gray-500 flex-shrink-0">保证金</div>
-            <div class="font-medium ml-1">{{ props.position.marginPrice ?? '-' }} U</div>
+            <div class="text-gray-500 flex-shrink-0">{{ t('positionWidget.margin') }}</div>
+            <div class="font-medium ml-1">{{ props.position.marginPrice ?? '-' }}</div>
           </div>
           <div class="flex flex-col md:flex-1 text-xs">
             <div class="flex justify-between items-center w-full">
-              <div class="text-gray-500 flex-shrink-0">MMR</div>
+              <div class="text-gray-500 flex-shrink-0">{{ t('positionWidget.marginRatio') }}</div>
               <div class="font-medium ml-1 md:hidden">{{ props.position.marginRatio ?? '-' }}%</div>
             </div>
             <div class="flex w-full mt-1 items-center">
@@ -102,14 +107,14 @@ const emits = defineEmits(['showTpsl']);
         </div>
 
         <div class="flex justify-between md:justify-start md:flex-row w-full text-xs md:items-center">
-          <div class="text-gray-500 flex-shrink-0">预估强平价</div>
+          <div class="text-gray-500 flex-shrink-0">{{ t('positionWidget.liqPrice') }}</div>
           <div class="font-medium text-red-500 ml-1">{{ props.position.liqPrice ?? '-' }}</div>
         </div>
       </div>
 
       <div class="flex flex-col md:flex-row justify-between w-full text-xs text-gray-500 mt-3 pt-2 border-t gap-1">
-        <div class="text-left md:text-right">同步时间: {{ props.position.serverTime }}</div>
-        <div class="text-left md:text-right">仓位变更时间: {{ props.position.updateTime }}</div>
+        <div class="text-left md:text-right">{{ t('positionWidget.syncTime') }}: {{ props.position.serverTime }}</div>
+        <div class="text-left md:text-right">{{ t('positionWidget.updateTime') }}: {{ props.position.updateTime }}</div>
       </div>
     </el-card>
   </div>

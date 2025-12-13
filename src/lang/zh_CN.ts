@@ -318,5 +318,20 @@ export default {
     action: {
       close: '关闭'
     }
+  },
+  positionWidget: {
+    full: '全仓',
+    positionSize: '持仓数量',
+    avgPrice: '平均入场价格',
+    unrealizedProfit: '未实现盈亏',
+    realizedProfit: '已实现盈亏',
+    margin: '保证金',
+    marginRatio: '保证金率',
+    liqPrice: '预估强平价',
+    syncTime: '同步时间',
+    updateTime: '仓位变更时间',
+    tpslOrder: 'TPSL订单',
+    leverage: '杠杆',
+    marginType: '保证金类型'
   }
 };
