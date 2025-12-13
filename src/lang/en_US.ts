@@ -136,7 +136,10 @@ export default {
     系统监控: 'System Monitoring',
     系统工具: 'System Tools',
     AI策略: 'AI Strategies',
-    任务管理: 'Task Management'
+    任务管理: 'Task Management',
+    'AI任务中心': 'AI Task Center',
+    'AI智能分析': 'AI Intelligent Analysis',
+    '策略广场': 'Strategy Hub'
   },
   //通用
   common: {

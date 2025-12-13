@@ -125,7 +125,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         path: 'ai-strategy',
         component: () => import('@/views/system/aiTask/index.vue'),
         name: 'aiTaskCenter',
-        meta: { title: 'AI 任务中心', icon: 'vip' }
+        meta: { title: 'AI任务中心', icon: 'vip' }
       },
       {
         path: 'ai-task-log',
