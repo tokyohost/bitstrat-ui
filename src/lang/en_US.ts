@@ -385,5 +385,74 @@ export default {
       正在运行: 'Running',
       已终止: 'Stopped'
     }
+  },
+  aiTask: {
+    taskName: 'Task Name',
+    taskNamePlaceholder: 'Please enter task name',
+    search: 'Search',
+    reset: 'Reset',
+    createTask: 'Create Task',
+    modifyTask: 'Modify Task',
+    exchange: 'Exchange',
+    selectExchange: 'Please select exchange',
+    coins: 'Coins',
+    coinsPopoverTitle: 'Coins',
+    coinsPopoverContent: 'Coins allowed for AI trading',
+    selectCoins: 'Please select coins',
+    initialBalance: 'Initial Balance',
+    initialBalancePopoverTitle: 'Initial Amount',
+    initialBalancePopoverContent:
+      'Let AI remember the cost line at the start of trading (try to enter account/sub-account balance, get the entire account USDT balance when getting the balance)',
+    aiAgent: 'AI Agent',
+    selectAiAgent: 'Please select AI Agent',
+    timeGranularity: 'Time Granularity',
+    timeGranularityPopoverTitle: 'Time Granularity',
+    timeGranularityPopoverContent:
+      'How often the system provides market data to AI and waits for AI to make trading decisions (not too short, consider AI thinking time)',
+    leverage: 'Leverage Range',
+    shortTermIndicator: 'Short Term Indicator',
+    shortTermIndicatorPopoverTitle: 'Short Term Indicator',
+    shortTermIndicatorPopoverContent: 'Get K-line data as a data source for short-term indicators like EMA/MACD/RSI when calling AI',
+    longTermIndicator: 'Long Term Indicator',
+    longTermIndicatorPopoverTitle: 'Long Term Indicator',
+    longTermIndicatorPopoverContent:
+      'Get K-line data as a data source for long-term indicators like EMA/MACD/RSI when calling AI. Note: long-term indicators must be longer than short-term indicators!!',
+    basicConfig: 'Basic Configuration',
+    accountSelect: 'Account Selection',
+    selectAccount: 'Select Account',
+    systemPrompt: 'System Prompt',
+    systemPromptPlaceholder:
+      'Enter system prompt, you can require AI to execute rules, trading logic, trading discipline, etc. It all depends on you, looking forward to your perfect strategy',
+    preset1: 'Preset Prompt 1',
+    preset2: 'Preset Prompt 2',
+    userPrompt: 'User Prompt',
+    userPromptPlaceholder: 'Enter your trading ideas, which will be added to the user prompt at the beginning of each API call',
+    exampleContent:
+      'The following example content is provided to AI as market data, current position data, historical achievements, etc. Currently not modifiable. Your trading ideas will be spliced before the example content:',
+    nextStep: 'Next',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    minutes: 'minutes',
+    usdt: 'USDT',
+    rule: {
+      taskName: 'Task name cannot be empty',
+      exchange: 'Exchange cannot be empty',
+      symbols: 'At least one coin must be selected',
+      aiAgent: 'Please select AI Agent',
+      timeGranularity: 'Please select time granularity',
+      apiId: 'Please select API account',
+      systemPrompt: 'System prompt cannot be empty',
+      leverage: 'Leverage range must be selected',
+      longTermInterval: 'Long-term cycle must be greater than short-term cycle',
+      shortTermInterval: 'Short-term cycle must be less than long-term cycle',
+      initialBalance: 'Initial balance must be filled',
+      initialBalanceLessThan10: 'Initial balance cannot be less than 10'
+    },
+    message: {
+      success: 'Operation successful',
+      deleteConfirm: 'Are you sure you want to delete the AI task with ID "{id}"?',
+      deleteSuccess: 'Deletion successful',
+      selectExchangeFirst: 'Please select exchange first'
+    }
   }
 };

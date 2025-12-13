@@ -383,5 +383,74 @@ export default {
       正在运行: '실행 중',
       已终止: '중지됨'
     }
+  },
+  aiTask: {
+    taskName: '작업 이름',
+    taskNamePlaceholder: '작업 이름을 입력하세요',
+    search: '검색',
+    reset: '재설정',
+    createTask: '작업 생성',
+    modifyTask: '작업 수정',
+    exchange: '거래소',
+    selectExchange: '거래소를 선택하세요',
+    coins: '코인',
+    coinsPopoverTitle: '코인',
+    coinsPopoverContent: 'AI 거래를 허용하는 코인',
+    selectCoins: '코인을 선택하세요',
+    initialBalance: '초기 잔액',
+    initialBalancePopoverTitle: '초기 금액',
+    initialBalancePopoverContent:
+      'AI에게 거래 시작 시의 비용선을 기억하도록 함 (계정/서브계정 잔액을 입력하면, 전체 계정의 USDT 잔액을 가져올 때 입력하세요)',
+    aiAgent: 'AI 에이전트',
+    selectAiAgent: 'AI 에이전트를 선택하세요',
+    timeGranularity: '시간 단위',
+    timeGranularityPopoverTitle: '시간 단위',
+    timeGranularityPopoverContent:
+      '시스템이 얼마나 자주 AI에 시장 데이터를 제공하고 AI의 거래 결정을 기다릴 것인지 (너무 짧지 않도록 선택, AI의 사고 시간 고려)',
+    leverage: '레버리지 범위',
+    shortTermIndicator: '단기 지표',
+    shortTermIndicatorPopoverTitle: '단기 지표',
+    shortTermIndicatorPopoverContent: 'AI를 호출할 때 EMA/MACD/RSI 등 단기 지표의 데이터 소스로 K선 데이터를 가져옴',
+    longTermIndicator: '장기 지표',
+    longTermIndicatorPopoverTitle: '장기 지표',
+    longTermIndicatorPopoverContent:
+      'AI를 호출할 때 EMA/MACD/RSI 등 장기 지표의 데이터 소스로 K선 데이터를 가져옴. 주의: 장기 지표는 단기 지표보다 길어야 합니다!!',
+    basicConfig: '기본 설정',
+    accountSelect: '계정 선택',
+    selectAccount: '계정 선택',
+    systemPrompt: '시스템 프롬프트',
+    systemPromptPlaceholder:
+      '시스템 프롬프트를 입력하면, AI가 실행할 규칙, 거래 논리, 거래 규율 등을 요구할 수 있습니다. 모두 당신의 선택입니다. 당신의 완벽한 전략을 기대합니다',
+    preset1: '사전 설정된 프롬프트 1',
+    preset2: '사전 설정된 프롬프트 2',
+    userPrompt: '사용자 프롬프트',
+    userPromptPlaceholder: '거래 아이디어를 입력하면, 각 API 호출 시 사용자 프롬프트의 맨 앞에 추가됩니다',
+    exampleContent:
+      '다음 예제 내용은 AI에 제공되는 시장 데이터, 현재 포지션 데이터, 과거 성적 등입니다. 현재는 수정할 수 없으며, 당신의 거래 아이디어는 예제 내용 앞에 결합됩니다:',
+    nextStep: '다음',
+    confirm: '확인',
+    cancel: '취소',
+    minutes: '분',
+    usdt: 'USDT',
+    rule: {
+      taskName: '작업 이름은 비워둘 수 없습니다',
+      exchange: '거래소는 비워둘 수 없습니다',
+      symbols: '최소 하나의 코인을 선택해야 합니다',
+      aiAgent: 'AI 에이전트를 선택하세요',
+      timeGranularity: '시간 단위를 선택하세요',
+      apiId: 'API 계정을 선택하세요',
+      systemPrompt: '시스템 프롬프트는 비워둘 수 없습니다',
+      leverage: '레버리지 범위를 선택해야 합니다',
+      longTermInterval: '장기 주기는 단기 주기보다 커야 합니다',
+      shortTermInterval: '단기 주기는 장기 주기보다 작아야 합니다',
+      initialBalance: '초기 잔액을 입력해야 합니다',
+      initialBalanceLessThan10: '초기 잔액은 10 미만일 수 없습니다'
+    },
+    message: {
+      success: '작업이 성공했습니다',
+      deleteConfirm: 'ID가 "{id}"인 AI 작업을 삭제하시겠습니까?',
+      deleteSuccess: '삭제 성공',
+      selectExchangeFirst: '먼저 거래소를 선택하세요'
+    }
   }
 };

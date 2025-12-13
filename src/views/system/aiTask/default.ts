@@ -22,53 +22,53 @@ Your mission: Maximize risk-adjusted returns (PnL) through systematic, disciplin
 
 export const termIntervalList = () => [
   {
-    name: '1分钟',
+    name: '1m',
     value: '1m'
   },
   {
-    name: '3分钟',
+    name: '3m',
     value: '3m'
   },
   {
-    name: '5分钟',
+    name: '5m',
     value: '5m'
   },
   {
-    name: '15分钟',
+    name: '15m',
     value: '15m'
   },
   {
-    name: '30分钟',
+    name: '30m',
     value: '30m'
   },
   {
-    name: '1小时',
+    name: '1H',
     value: '1H'
   },
   {
-    name: '4小时',
+    name: '4H',
     value: '4H'
   },
   {
-    name: '6小时',
+    name: '6H',
     value: '6H'
   },
   {
-    name: '12小时',
+    name: '12H',
     value: '12H'
   },
   {
-    name: '1天',
+    name: '1D',
     value: '1D'
-  },
-  {
-    name: '3天',
-    value: '3D'
-  },
-  {
-    name: '1周',
-    value: '1W'
   }
+  // {
+  //   name: '3D',
+  //   value: '3D'
+  // },
+  // {
+  //   name: '1W',
+  //   value: '1W'
+  // }
   // {
   //   name:'1月',
   //   value:'1M'

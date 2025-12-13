@@ -4,13 +4,14 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="" prop="name">
-              <el-input v-model="queryParams.name" placeholder="请输入任务名称" clearable @keyup.enter="handleQuery" />
+            <!--            <el-form-item :label="t('aiTask.taskName')" prop="name">-->
+            <el-form-item prop="name">
+              <el-input v-model="queryParams.name" :placeholder="t('aiTask.taskNamePlaceholder')" clearable @keyup.enter="handleQuery" />
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+              <el-button type="primary" icon="Search" @click="handleQuery">{{ t('aiTask.search') }}</el-button>
+              <el-button icon="Refresh" @click="resetQuery">{{ t('aiTask.reset') }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -21,7 +22,7 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:aiTask:add']">创建任务</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:aiTask:add']">{{ t('aiTask.createTask') }}</el-button>
           </el-col>
 
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -44,33 +45,32 @@
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
+
     <!-- 添加或修改AI任务对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" append-to-body custom-class="mobile-dialog">
       <el-form ref="aiTaskFormRef" :model="form" :rules="rules" label-width="80px" label-position="top">
         <el-tabs v-model="activeTab" :tab-position="tabPosition" style="width: 100%" class="demo-tabs">
-          <el-tab-pane name="basic" label="基本配置">
-            <el-form-item label="任务名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入任务名称" />
+          <el-tab-pane name="basic" :label="t('aiTask.basicConfig')">
+            <el-form-item :label="t('aiTask.taskName')" prop="name">
+              <el-input v-model="form.name" :placeholder="t('aiTask.taskNamePlaceholder')" />
             </el-form-item>
-            <el-form-item label="交易所" prop="exchange">
-              <el-select v-model="form.exchange" placeholder="请选择交易所" @change="onExchange($event)" prop="exchangeA">
+            <el-form-item :label="t('aiTask.exchange')" prop="exchange">
+              <el-select v-model="form.exchange" :placeholder="t('aiTask.selectExchange')" @change="onExchange($event)" prop="exchangeA">
                 <el-option v-for="exchange in supportExchangeList" :key="exchange.name" :label="exchange.name" :value="exchange.name">
                   <div class="flex justify-between flex-row">
                     <ExchangeLogo :exchange="exchange.name" />
-                    <!--                    <span>{{exchange.name}}</span>-->
                   </div>
                 </el-option>
-                <!-- 正确 label 插槽写法 -->
                 <template #label="{ value }">
                   <ExchangeLogo :exchange="value" />
                 </template>
               </el-select>
             </el-form-item>
-            <el-form-item label="币种" prop="symbols">
+            <el-form-item :label="t('aiTask.coins')" prop="symbols">
               <template #label>
-                <el-popover title="币种" content="允许AI交易的币种" placement="top-start">
+                <el-popover :title="t('aiTask.coinsPopoverTitle')" :content="t('aiTask.coinsPopoverContent')" placement="top-start">
                   <template #reference>
-                    <span>币种</span>
+                    <span>{{ t('aiTask.coins') }}</span>
                   </template>
                 </el-popover>
               </template>
@@ -78,7 +78,7 @@
                 v-model="symbolsArr"
                 multiple
                 clearable
-                placeholder="请选择币种"
+                :placeholder="t('aiTask.selectCoins')"
                 style="width: 100%"
                 filterable
                 @focus="onExchange(form.exchange)"
@@ -86,68 +86,67 @@
                 <el-option v-for="symbol in filteredSymbols" :key="symbol.symbol" :label="symbol.coin" :value="symbol.coin" />
               </el-select>
             </el-form-item>
-            <el-form-item label="初始资金" prop="startBalance">
+            <el-form-item :label="t('aiTask.initialBalance')" prop="startBalance">
               <template #label>
-                <el-popover
-                  title="初始金额"
-                  content="让AI记住他开始交易时的成本线(尽量填写账户/子账户余额,获取余额时获取整个账户的USDT余额)"
-                  placement="top-start"
-                >
+                <el-popover :title="t('aiTask.initialBalancePopoverTitle')" :content="t('aiTask.initialBalancePopoverContent')" placement="top-start">
                   <template #reference>
-                    <span>初始资金</span>
+                    <span>{{ t('aiTask.initialBalance') }}</span>
                   </template>
                 </el-popover>
               </template>
-              <el-input v-model="form.startBalance" type="number" :step="0.01" :min="10" placeholder="请输入初始资金">
-                <template #append> USDT </template>
+              <el-input v-model="form.startBalance" type="number" :step="0.01" :min="10" :placeholder="t('aiTask.initialBalance')">
+                <template #append>{{ t('aiTask.usdt') }}</template>
               </el-input>
             </el-form-item>
-            <el-form-item label="AI智能体" prop="aiWorkflowId">
-              <!--          <el-input v-model="form.aiWorkflowId" placeholder="请输入ai 流水线id" />-->
+            <el-form-item :label="t('aiTask.aiAgent')" prop="aiWorkflowId">
               <AiConfigSelector v-model="form.aiWorkflowId" :type="1"></AiConfigSelector>
             </el-form-item>
-            <el-form-item label="时间粒度" prop="interval">
+            <el-form-item :label="t('aiTask.timeGranularity')" prop="interval">
               <template #label>
                 <el-popover
-                  title="时间粒度"
-                  content="系统每隔多久将行情数据提供给AI并等待AI做出交易决策（选择时不易过短，需要将ai思考时间考虑在内）"
+                  :title="t('aiTask.timeGranularityPopoverTitle')"
+                  :content="t('aiTask.timeGranularityPopoverContent')"
                   placement="top-start"
                 >
                   <template #reference>
-                    <span>时间粒度</span>
+                    <span>{{ t('aiTask.timeGranularity') }}</span>
                   </template>
                 </el-popover>
               </template>
               <div class="interval-scroll flex items-center gap-1">
                 <el-radio-group v-model="form.interval" size="small">
                   <div class="inline-flex gap-0">
-                    <el-radio border label="5分钟" value="5m" />
-                    <el-radio border label="8分钟" value="8m" />
-                    <el-radio border label="10分钟" value="10m" />
-                    <el-radio border label="12分钟" value="12m" />
-                    <el-radio border label="14分钟" value="14m" />
-                    <el-radio border label="15分钟" value="15m" />
-                    <el-radio border label="20分钟" value="20m" />
-                    <el-radio border label="30分钟" value="30m" />
-                    <el-radio border label="40分钟" value="40m" />
-                    <el-radio border label="50分钟" value="50m" />
-                    <el-radio border label="60分钟" value="60m" />
+                    <el-radio border label="5m" value="5m" />
+                    <el-radio border label="8m" value="8m" />
+                    <el-radio border label="10m" value="10m" />
+                    <el-radio border label="12m" value="12m" />
+                    <el-radio border label="14m" value="14m" />
+                    <el-radio border label="15m" value="15m" />
+                    <el-radio border label="20m" value="20m" />
+                    <el-radio border label="30m" value="30m" />
+                    <el-radio border label="40m" value="40m" />
+                    <el-radio border label="50m" value="50m" />
+                    <el-radio border label="60m" value="60m" />
                   </div>
                 </el-radio-group>
               </div>
             </el-form-item>
-            <el-form-item label="杠杆范围" prop="leverage">
+            <el-form-item :label="t('aiTask.leverage')" prop="leverage">
               <div style="width: 50%">
                 <el-slider v-model="leverageValue" range :marks="marks" :min="1" :max="20" />
               </div>
             </el-form-item>
-            <!--  1m/3m/5m/15m/30m/1H/4H/6H/12H/1D/3D/1W/1M-->
+
             <div class="mt-5 pt-5">
-              <el-form-item label="短期指标" prop="shortTermInterval">
+              <el-form-item :label="t('aiTask.shortTermIndicator')" prop="shortTermInterval">
                 <template #label>
-                  <el-popover title="短期指标" content="每次调用AI时获取多长时间的K线数据作为短期指标EMA/MACD/RSI 等的数据源" placement="top-start">
+                  <el-popover
+                    :title="t('aiTask.shortTermIndicatorPopoverTitle')"
+                    :content="t('aiTask.shortTermIndicatorPopoverContent')"
+                    placement="top-start"
+                  >
                     <template #reference>
-                      <span>短期指标</span>
+                      <span>{{ t('aiTask.shortTermIndicator') }}</span>
                     </template>
                   </el-popover>
                 </template>
@@ -161,15 +160,15 @@
                   </el-radio-group>
                 </div>
               </el-form-item>
-              <el-form-item label="长期指标" prop="longTermInterval">
+              <el-form-item :label="t('aiTask.longTermIndicator')" prop="longTermInterval">
                 <template #label>
                   <el-popover
-                    title="长期指标"
-                    content="每次调用AI时获取多长时间的K线数据作为长期指标EMA/MACD/RSI 等的数据源,注意!!长期指标必须比短期指标更长时!!"
+                    :title="t('aiTask.longTermIndicatorPopoverTitle')"
+                    :content="t('aiTask.longTermIndicatorPopoverContent')"
                     placement="top-start"
                   >
                     <template #reference>
-                      <span>长期指标</span>
+                      <span>{{ t('aiTask.longTermIndicator') }}</span>
                     </template>
                   </el-popover>
                 </template>
@@ -185,7 +184,7 @@
               </el-form-item>
             </div>
           </el-tab-pane>
-          <el-tab-pane name="account" label="账号选择">
+          <el-tab-pane name="account" :label="t('aiTask.accountSelect')">
             <el-form-item label="" label-width="0" prop="apiId">
               <el-card title="A" class="w-full" shadow="hover">
                 <div class="flex justify-between w-full">
@@ -197,7 +196,7 @@
                     <div>{{ form.account?.name || '-' }}</div>
 
                     <img src="@/assets/icons/png/switch.png" height="18" width="18" v-if="form.account" />
-                    <div class="color-#409EFF" v-else>选择账户</div>
+                    <div class="color-#409EFF" v-else>{{ t('aiTask.selectAccount') }}</div>
                     <AccountSelectDialog
                       v-model:visible="showAccountSelect"
                       :exchange-name="form.exchange"
@@ -208,38 +207,34 @@
               </el-card>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane name="system" label="系统提示词">
+          <el-tab-pane name="system" :label="t('aiTask.systemPrompt')">
             <el-form-item label-width="0" prop="systemPrompt">
               <el-input
                 v-model="form.systemPrompt"
                 type="textarea"
-                placeholder="请输入系统提示词,您可以在此要求AI执行的规则、交易逻辑、交易纪律等等,一切取决于您，期待您的完美策略"
+                :placeholder="t('aiTask.systemPromptPlaceholder')"
                 :autosize="{ minRows: 24 }"
                 :maxlength="20000"
                 show-word-limit
               />
               <div>
-                <el-button @click="replaceSystemPrompt('system1')">预设提示词1</el-button>
-                <el-button @click="replaceSystemPrompt('system2')">预设提示词2</el-button>
+                <el-button @click="replaceSystemPrompt('system1')">{{ t('aiTask.preset1') }}</el-button>
+                <el-button @click="replaceSystemPrompt('system2')">{{ t('aiTask.preset2') }}</el-button>
               </div>
             </el-form-item>
-            <!--            <div>-->
-            <!--              <div>以下提示词作为系统执行中的数据约束以及正常运转，不支持修改:</div>-->
-            <!--              <div><SystemPromptDefault></SystemPromptDefault></div>-->
-            <!--            </div>-->
           </el-tab-pane>
-          <el-tab-pane name="user" label="用户提示词">
+          <el-tab-pane name="user" :label="t('aiTask.userPrompt')">
             <el-form-item prop="userPrompt" label-width="0">
               <el-input
                 v-model="form.userPrompt"
                 type="textarea"
-                placeholder="请输入您的交易想法，将添加到每次调用API时用户提示词最前"
+                :placeholder="t('aiTask.userPromptPlaceholder')"
                 :autosize="{ minRows: 24 }"
                 :maxlength="5000"
                 show-word-limit
               />
               <div>
-                <div>以下示例内容作为提供给AI的行情数据、当前仓位数据、历史成绩等数据，暂不支持修改，您的交易想法将拼接在示例内容之前:</div>
+                <div>{{ t('aiTask.exampleContent') }}</div>
                 <div><UserPromptDefault></UserPromptDefault></div>
               </div>
             </el-form-item>
@@ -248,9 +243,9 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button :loading="buttonLoading" type="primary" @click="nextForm" v-if="activeTab != 'user'">下一步</el-button>
-          <el-button :loading="buttonLoading" type="primary" v-else @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button :loading="buttonLoading" type="primary" @click="nextForm" v-if="activeTab != 'user'">{{ t('aiTask.nextStep') }}</el-button>
+          <el-button :loading="buttonLoading" type="primary" v-else @click="submitForm">{{ t('aiTask.confirm') }}</el-button>
+          <el-button @click="cancel">{{ t('aiTask.cancel') }}</el-button>
         </div>
       </template>
     </el-dialog>
@@ -258,6 +253,7 @@
 </template>
 
 <script setup name="AiTask" lang="ts">
+import { useI18n } from 'vue-i18n';
 import { listAiTask, getAiTask, delAiTask, addAiTask, updateAiTask, stopTask, startTask } from '@/api/system/aiTask';
 import { AiTaskVO, AiTaskQuery, AiTaskForm } from '@/api/system/aiTask/types';
 import AiConfigSelector from '@/views/system/aiTask/AiConfigSelector.vue';
@@ -273,6 +269,7 @@ import { isLongTermGreater, isShortTermSmaller, termIntervalList } from '@/views
 import { loadDefaultTemplate } from '@/views/system/aiTask/default';
 import UserPromptDefault from '@/views/system/aiTask/UserPromptDefault.vue';
 
+const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { ai_task_status } = toRefs<any>(proxy?.useDict('ai_task_status'));
 
@@ -297,14 +294,14 @@ import { CSSProperties } from 'vue';
 import TaskItem from '@/views/system/aiTask/TaskItem.vue';
 const checkLongInterval = (rule, value, callback) => {
   if (!isLongTermGreater(form.value.shortTermInterval, form.value.longTermInterval)) {
-    callback(new Error('长期周期必须大于短周期'));
+    callback(new Error(t('aiTask.rule.longTermInterval')));
   } else {
     callback();
   }
 };
 const checkShortInterval = (rule, value, callback) => {
   if (!isShortTermSmaller(form.value.shortTermInterval, form.value.longTermInterval)) {
-    callback(new Error('短周期必须小于长期周期'));
+    callback(new Error(t('aiTask.rule.shortTermInterval')));
   } else {
     callback();
   }
@@ -365,22 +362,22 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
     params: {}
   },
   rules: {
-    name: [{ required: true, message: '任务名称不能为空', trigger: 'blur' }],
-    exchange: [{ required: true, message: '交易所不能为空', trigger: 'blur' }],
-    symbols: [{ required: true, message: '操作币种至少选择一个', trigger: 'blur' }],
-    aiWorkflowId: [{ required: true, message: '请选择AI 智能体', trigger: 'blur' }],
-    interval: [{ required: true, message: '请选择时间粒度', trigger: 'blur' }],
-    apiId: [{ required: true, message: '请选择API账号', trigger: 'blur' }],
-    systemPrompt: [{ required: true, message: '系统提示词不允许为空', trigger: 'blur' }],
-    leverage: [{ required: true, message: '杠杆范围必须选择', trigger: 'blur' }],
+    name: [{ required: true, message: t('aiTask.rule.taskName'), trigger: 'blur' }],
+    exchange: [{ required: true, message: t('aiTask.rule.exchange'), trigger: 'blur' }],
+    symbols: [{ required: true, message: t('aiTask.rule.symbols'), trigger: 'blur' }],
+    aiWorkflowId: [{ required: true, message: t('aiTask.rule.aiAgent'), trigger: 'blur' }],
+    interval: [{ required: true, message: t('aiTask.rule.timeGranularity'), trigger: 'blur' }],
+    apiId: [{ required: true, message: t('aiTask.rule.apiId'), trigger: 'blur' }],
+    systemPrompt: [{ required: true, message: t('aiTask.rule.systemPrompt'), trigger: 'blur' }],
+    leverage: [{ required: true, message: t('aiTask.rule.leverage'), trigger: 'blur' }],
     longTermInterval: [{ required: true, validator: checkLongInterval, trigger: 'change' }],
     shortTermInterval: [{ required: true, validator: checkShortInterval, trigger: 'change' }],
     startBalance: [
-      { required: true, message: '初始资金必须填写', trigger: 'blur' },
+      { required: true, message: t('aiTask.rule.initialBalance'), trigger: 'blur' },
       {
         validator: (_, value, callback) => {
           if (Number(value) < 10) {
-            callback(new Error('初始资金不能小于 10'));
+            callback(new Error(t('aiTask.rule.initialBalanceLessThan10')));
           } else {
             callback();
           }
@@ -488,7 +485,7 @@ const openAccountSelect = () => {
   if (form.value.exchange) {
     showAccountSelect.value = true;
   } else {
-    ElMessage.error('请先选择交易所');
+    ElMessage.error(t('aiTask.message.selectExchangeFirst'));
   }
 };
 const filteredSymbols = ref<LinerSymbol[]>();
@@ -513,7 +510,7 @@ const onExchange = async (exchangeName) => {
     // loadedExchanges.value.add(exchangeName);
     // console.success(data); // 显示加载成功的信息
   } catch (error) {
-    console.error(`加载失败: ${error}`);
+    console.error(`LoadError: ${error}`);
   }
 };
 
@@ -560,7 +557,7 @@ const handleSelectionChange = (selection: AiTaskVO[]) => {
 const handleAdd = () => {
   reset();
   dialog.visible = true;
-  dialog.title = '创建任务';
+  dialog.title = t('aiTask.createTask');
 };
 
 /** 修改按钮操作 */
@@ -570,7 +567,7 @@ const handleUpdate = async (row?: AiTaskVO) => {
   const res = await getAiTask(_id);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = '修改任务';
+  dialog.title = t('aiTask.modifyTask');
 };
 /** 修改按钮操作 */
 const handleStop = async (row?: AiTaskVO) => {
@@ -605,7 +602,7 @@ const submitForm = () => {
       } else {
         await addAiTask(form.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess('操作成功');
+      proxy?.$modal.msgSuccess(t('aiTask.message.success'));
       dialog.visible = false;
       await getList();
     } else {
@@ -627,9 +624,9 @@ const submitForm = () => {
 /** 删除按钮操作 */
 const handleDelete = async (row?: AiTaskVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除AI任务编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
+  await proxy?.$modal.confirm(t('aiTask.message.deleteConfirm', { id: _ids })).finally(() => (loading.value = false));
   await delAiTask(_ids);
-  proxy?.$modal.msgSuccess('删除成功');
+  proxy?.$modal.msgSuccess(t('aiTask.message.deleteSuccess'));
   await getList();
 };
 
