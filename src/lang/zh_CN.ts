@@ -139,7 +139,8 @@ export default {
     任务管理: '任务管理',
     AI任务中心: 'AI任务中心',
     AI智能分析: 'AI智能分析',
-    策略广场: '策略广场'
+    策略广场: '策略广场',
+    AI任务监控: 'AI任务监控'
   },
   //通用
   common: {
@@ -524,5 +525,23 @@ export default {
     short: '空',
     openPriceLabel: '开:',
     closePriceLabel: '平:'
+  },
+  aiLogs: {
+    accountFundsTrend: '账户资金趋势',
+    accountAvailableTrend: '账户可用余额趋势',
+    realtimePosition: '实时持仓',
+    query: '查询',
+    selectDateRange: '请选择有效的时间范围进行查询。',
+    startDate: '开始日期',
+    endDate: '结束日期',
+    rangeSeparator: '至',
+    lastWeek: '近一周',
+    lastMonth: '近一月',
+    lastThreeMonths: '近三月',
+    requestLog: '请求日志',
+    operationLog: '操作日志',
+    historyPosition: '历史仓位',
+    usdt: 'USDT',
+    anomalyWarning: '参数异常！'
   }
 };

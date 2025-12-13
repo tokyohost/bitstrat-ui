@@ -139,7 +139,8 @@ export default {
     任务管理: 'Task Management',
     'AI任务中心': 'AI Task Center',
     'AI智能分析': 'AI Intelligent Analysis',
-    '策略广场': 'Strategy Hub'
+    '策略广场': 'Strategy Hub',
+    'AI任务监控': 'Task Monitor'
   },
   //通用
   common: {
@@ -531,5 +532,23 @@ export default {
     short: 'Short',
     openPriceLabel: 'Open:',
     closePriceLabel: 'Close:'
+  },
+  aiLogs: {
+    accountFundsTrend: 'Account Funds Trend',
+    accountAvailableTrend: 'Account Available Balance Trend',
+    realtimePosition: 'Real-time Position',
+    query: 'Query',
+    selectDateRange: 'Please select a valid date range for query.',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    rangeSeparator: 'to',
+    lastWeek: 'Last Week',
+    lastMonth: 'Last Month',
+    lastThreeMonths: 'Last 3 Months',
+    requestLog: 'Request Log',
+    operationLog: 'Operation Log',
+    historyPosition: 'History Position',
+    usdt: 'USDT',
+    anomalyWarning: 'Parameter Anomaly!'
   }
 };

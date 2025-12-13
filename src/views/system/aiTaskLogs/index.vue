@@ -12,9 +12,9 @@
               v-model="dateRange"
               type="daterange"
               unlink-panels
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
+              :range-separator="t('aiLogs.rangeSeparator')"
+              :start-placeholder="t('aiLogs.startDate')"
+              :end-placeholder="t('aiLogs.endDate')"
               size="default"
               :shortcuts="shortcuts"
               @change="handleDateChange"
@@ -22,7 +22,9 @@
             />
 
             <div class="flex w-full md:w-auto gap-3">
-              <el-button type="primary" size="default" @click="handleQuery" class="flex-grow md:w-auto"> 查询 </el-button>
+              <el-button type="primary" size="default" @click="handleQuery" class="flex-grow md:w-auto">
+                {{ t('aiLogs.query') }}
+              </el-button>
               <el-button circle icon="Refresh" @click="getChat" class="flex-shrink-0" />
             </div>
           </div>
@@ -33,47 +35,61 @@
           :key="taskVo?.startBalance || 0"
           :xData="xData"
           :seriesData="seriesData"
-          title="账户资金趋势"
-          tooltipUnit="USDT"
+          :title="t('aiLogs.accountFundsTrend')"
+          :tooltipUnit="t('aiLogs.usdt')"
           height="360px"
           :center-line="true"
         >
         </LineChart>
-        <LineChart :xData="xDataFreeBalance" :seriesData="seriesDataFreeBalance" title="账户可用余额趋势" tooltipUnit="USDT" height="360px">
+        <LineChart
+          :xData="xDataFreeBalance"
+          :seriesData="seriesDataFreeBalance"
+          :title="t('aiLogs.accountAvailableTrend')"
+          :tooltipUnit="t('aiLogs.usdt')"
+          height="360px"
+        >
         </LineChart>
       </div>
     </el-card>
-    <el-card shadow="never" title="实时持仓" class="mt-2">
+    <el-card shadow="never" class="mt-2">
       <template #header>
-        <el-row :gutter="10" class="mb8">
-          <div>实时持仓</div>
+        <el-row :gutter="10" class="mb8 justify-between flex">
+          <div>{{ t('aiLogs.realtimePosition') }}</div>
           <right-toolbar :search="false" @queryTable="refshPosition"></right-toolbar>
         </el-row>
       </template>
       <PositionWidget ref="positionWidget" :accountId="taskVo?.apiId"></PositionWidget>
     </el-card>
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="请求日志" name="request">
+      <el-tab-pane :label="t('aiLogs.requestLog')" name="request">
         <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
       </el-tab-pane>
-      <el-tab-pane label="操作日志" name="log">
-        <TestAiResult ref="aiResultref" :task-id="taskId"></TestAiResult>
+      <el-tab-pane :label="t('aiLogs.operationLog')" name="log">
+        <TestAiResult ref="aiResultref"></TestAiResult>
       </el-tab-pane>
-      <el-tab-pane label="历史仓位" name="history">
-        <HistoryPosition ref="aiHistoryRef" :task="taskVo"></HistoryPosition>
+      <el-tab-pane :label="t('aiLogs.historyPosition')" name="history">
+        <HistoryPosition ref="aiHistoryRef" :task="taskVo as AiTaskVO"></HistoryPosition>
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script setup name="AiLogs" lang="ts">
+import { useI18n } from 'vue-i18n';
 import { listAiLogs, getAiLogs, delAiLogs, addAiLogs, updateAiLogs, loadChartData, loadChartDataFreeBalance } from '@/api/system/aiLogs';
 import { AiLogsVO, AiLogsQuery, AiLogsForm } from '@/api/system/aiLogs/types';
 import LineChart from '@/views/system/aiTaskLogs/LineChart.vue';
 import TestAiResult from '@/views/system/testAiResult/index.vue';
 import TestAiRequest from '@/views/system/testAiRequest/index.vue';
+import type { TabsPaneContext } from 'element-plus';
+import { getAiTask } from '@/api/system/aiTask';
+import { AiTaskVO } from '@/api/system/aiTask/types';
+import PositionWidget from '@/views/components/widgets/PositionWidget.vue';
+import HistoryPosition from '@/views/system/historyPosition/HistoryPosition.vue';
 
+const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const route = useRoute();
 
 const aiLogsList = ref<AiLogsVO[]>([]);
 const buttonLoading = ref(false);
@@ -86,23 +102,19 @@ const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
 const aiLogsFormRef = ref<ElFormInstance>();
-import type { TabsPaneContext } from 'element-plus';
-import { getAiTask } from '@/api/system/aiTask';
-import { AiTaskVO } from '@/api/system/aiTask/types';
-import PositionWidget from '@/views/components/widgets/PositionWidget.vue';
-import HistoryPosition from '@/views/system/historyPosition/HistoryPosition.vue';
-const xData = ref([]);
-const seriesData = ref([]);
-const xDataFreeBalance = ref([]);
-const seriesDataFreeBalance = ref([]);
-const positionWidget = useTemplateRef('positionWidget');
 
+const xData = ref<any[]>([]);
+const seriesData = ref<any[]>([]);
+const xDataFreeBalance = ref<any[]>([]);
+const seriesDataFreeBalance = ref<any[]>([]);
+
+const positionWidget = useTemplateRef('positionWidget');
 const aiResultref = useTemplateRef('aiResultref');
 const aiRequestRef = useTemplateRef('aiRequestRef');
 const aiHistoryRef = useTemplateRef('aiHistoryRef');
 
 const refshPosition = () => {
-  positionWidget.value.openRefresh();
+  positionWidget.value?.openRefresh();
 };
 
 const dialog = reactive<DialogOption>({
@@ -116,6 +128,7 @@ const initFormData: AiLogsForm = {
   freeBalance: undefined,
   time: undefined
 };
+
 const data = reactive<PageData<AiLogsForm, AiLogsQuery>>({
   form: { ...initFormData },
   queryParams: {
@@ -143,6 +156,7 @@ const getList = async () => {
   total.value = res.total;
   loading.value = false;
 };
+
 const getChat = async () => {
   loading.value = true;
   queryParams.value.taskId = taskId.value;
@@ -151,6 +165,7 @@ const getChat = async () => {
   seriesData.value = res.data.seriesData;
   loading.value = false;
 };
+
 const getChatFreeBalance = async () => {
   loading.value = true;
   queryParams.value.taskId = taskId.value;
@@ -171,60 +186,47 @@ const reset = () => {
   form.value = { ...initFormData };
   aiLogsFormRef.value?.resetFields();
 };
+
 /**
- * 辅助函数：将 Date 对象格式化为 YYYY-MM-DD 字符串
+ * 搜索按钮操作
  */
-const formatDateToYYYYMMDD = (date: Date): string => {
-  // 确保日期不因时区偏移而改变
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
-/** 搜索按钮操作 */
 const handleQuery = () => {
   // 1. 检查日期范围是否有效
   if (!dateRange.value || dateRange.value.length !== 2) {
-    proxy?.$modal.msgWarning('请选择有效的时间范围进行查询。');
+    proxy?.$modal.msgWarning(t('aiLogs.selectDateRange'));
     return;
   }
 
   const [rawStartDate, rawEndDate] = dateRange.value;
 
-  // --- 核心国际化时间处理 ---
-
   // 1. 调整开始日期：确保从当天的 00:00:00 开始
-  //    注意：为了消除本地时区的影响，我们通常使用 Date.UTC() 或直接操作 UTC 属性。
   const start = new Date(rawStartDate.getFullYear(), rawStartDate.getMonth(), rawStartDate.getDate(), 0, 0, 0);
-  // 转换为 ISO 8601 格式的 UTC 字符串 (e.g., 2025-01-01T00:00:00.000Z)
   const startDateISO = start.toISOString();
 
   // 2. 调整结束日期：确保到当天的 23:59:59 结束
-  //    使用 23:59:59.999 或直接将日期设置为下一天的 00:00:00 来实现 "to the end of day" 的查询
   const end = new Date(rawEndDate.getFullYear(), rawEndDate.getMonth(), rawEndDate.getDate(), 23, 59, 59, 999);
-  // 转换为 ISO 8601 格式的 UTC 字符串 (e.g., 2025-01-03T23:59:59.999Z)
   const endDateISO = end.toISOString();
 
-  // --- 设置查询参数 ---
-
+  // 设置查询参数
   queryParams.value.pageNum = 1;
-  // 将完整的 ISO 字符串作为 Date 参数传递给后端
   queryParams.value.startDate = startDateISO;
   queryParams.value.endDate = endDateISO;
   handleLoadChat();
 };
+
 const handleLoadChat = () => {
   console.log('handleLoadChat');
   getChat();
   getChatFreeBalance();
 };
-// --- 时间选择逻辑 ---
+
+// 时间选择逻辑
 const dateRange = ref<[Date, Date] | null>(null);
 
-// 快捷选项配置
-const shortcuts = [
+// 快捷选项配置 - 使用 computed 以支持动态翻译
+const shortcuts = computed(() => [
   {
-    text: '近一周',
+    text: t('aiLogs.lastWeek'),
     value: () => {
       const end = new Date();
       const start = new Date();
@@ -233,7 +235,7 @@ const shortcuts = [
     }
   },
   {
-    text: '近一月',
+    text: t('aiLogs.lastMonth'),
     value: () => {
       const end = new Date();
       const start = new Date();
@@ -242,7 +244,7 @@ const shortcuts = [
     }
   },
   {
-    text: '近三月',
+    text: t('aiLogs.lastThreeMonths'),
     value: () => {
       const end = new Date();
       const start = new Date();
@@ -250,13 +252,12 @@ const shortcuts = [
       return [start, end];
     }
   }
-];
+]);
 
 /**
  * 处理时间选择器值变化
  */
 const handleDateChange = (val: [Date, Date] | null) => {
-  // 可以在这里进行一些即时的数据验证或格式化
   console.log('选定的时间范围:', val);
 };
 
@@ -328,25 +329,29 @@ const handleExport = () => {
     `aiLogs_${new Date().getTime()}.xlsx`
   );
 };
+
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event);
-  aiRequestRef.value.getList(taskId.value);
-  aiResultref.value.getList(taskId.value);
+  aiRequestRef.value?.getList(taskId.value);
+  aiHistoryRef.value?.fetchData(false);
 };
-const taskId = ref<string>(undefined);
-const taskVo = ref<AiTaskVO>(undefined);
-let timer: any = null;
+
+const taskId = ref<string>('');
+const taskVo = ref<AiTaskVO | undefined>(undefined);
+let timer: NodeJS.Timeout | null = null;
 
 onMounted(async () => {
-  dateRange.value = shortcuts[0].value();
-  const id = useRoute().query.id;
+  const shortcutValue = shortcuts.value[0].value() as [Date, Date];
+  dateRange.value = shortcutValue;
+
+  const id = route.query.id;
   if (!id) {
-    ElMessage.error('参数异常！');
+    ElMessage.error(t('aiLogs.anomalyWarning'));
     return;
   }
-  taskId.value = id as string;
+  taskId.value = String(id);
 
-  const res = await getAiTask(id as string);
+  const res = await getAiTask(String(id));
   taskVo.value = res.data;
 
   await getList();
@@ -355,12 +360,12 @@ onMounted(async () => {
   const loop = () => {
     timer = setTimeout(() => {
       handleLoadChat();
-      if (activeName.value == 'request') {
-        aiRequestRef.value.getList(taskId.value);
-      } else if (activeName.value == 'log') {
-        aiResultref.value.getList();
-      } else if (activeName.value == 'history') {
-        aiHistoryRef.value.fetchData(false);
+      if (activeName.value === 'request') {
+        aiRequestRef.value?.getList(taskId.value);
+      } else if (activeName.value === 'log') {
+        aiResultref.value?.getList();
+      } else if (activeName.value === 'history') {
+        aiHistoryRef.value?.fetchData(false);
       }
       loop(); // 下一轮
     }, 1000 * 10);
@@ -376,6 +381,7 @@ onUnmounted(() => {
   }
 });
 </script>
+
 <style lang="scss">
 .chart-date-picker {
   /* 确保 width 生效并覆盖 Element Plus 默认样式 */

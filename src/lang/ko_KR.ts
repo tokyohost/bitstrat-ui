@@ -137,7 +137,8 @@ export default {
     任务管理: '작업 관리',
     'AI任务中心': 'AI 작업 센터',
     'AI智能分析': 'AI 지능형 분석',
-    '策略广场': '전략 허브'
+    '策略广场': '전략 허브',
+    'AI任务监控': '작업 모니터링'
   },
   //通用
   common: {
@@ -529,5 +530,23 @@ export default {
     short: '숏',
     openPriceLabel: '개:',
     closePriceLabel: '청:'
+  },
+  aiLogs: {
+    accountFundsTrend: '계정 자금 추이',
+    accountAvailableTrend: '계정 가용 잔액 추이',
+    realtimePosition: '실시간 포지션',
+    query: '조회',
+    selectDateRange: '유효한 날짜 범위를 선택하여 조회하세요.',
+    startDate: '시작 날짜',
+    endDate: '종료 날짜',
+    rangeSeparator: '~',
+    lastWeek: '지난 주',
+    lastMonth: '지난 달',
+    lastThreeMonths: '지난 3개월',
+    requestLog: '요청 로그',
+    operationLog: '작업 로그',
+    historyPosition: '거래 이력',
+    usdt: 'USDT',
+    anomalyWarning: '매개변수 오류!'
   }
 };
