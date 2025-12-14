@@ -63,6 +63,32 @@
       </el-form-item>
       <el-form-item v-if="captchaEnabled" prop="code">
         <el-input
+          v-model="emailForm.code"
+          size="large"
+          auto-complete="off"
+          :placeholder="proxy.$t('register.emailCodePlaceHolder')"
+          style="width: 63%"
+        >
+          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
+          <template #append><el-button :disabled="emailInterval >0" @click="handleMailCode">{{ emailInterval <=0 ? t("register.getEmailCode") :(emailInterval +'s')}}</el-button></template>
+        </el-input>
+        <div class="login-code">
+          <img :src="codeUrl" class="login-code-img" @click="getEmailCode" />
+        </div>
+      </el-form-item>
+      <el-form-item v-if="captchaEnabled" prop="emailCode">
+        <el-input
+          v-model="registerForm.emailCode"
+          size="large"
+          auto-complete="off"
+          :placeholder="proxy.$t('register.emailCode')"
+          @keyup.enter="handleRegister"
+        >
+          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item v-if="captchaEnabled" prop="code">
+        <el-input
           v-model="registerForm.code"
           size="large"
           auto-complete="off"
@@ -94,8 +120,8 @@
 </template>
 
 <script setup lang="ts">
-import { getCodeImg, register, getTenantList } from '@/api/login';
-import { RegisterForm, TenantVO } from '@/api/types';
+import { getCodeImg, register, getTenantList, getRegCode } from '@/api/login';
+import { EmailCodeBody, RegisterForm, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
 import { useI18n } from 'vue-i18n';
 
@@ -115,7 +141,13 @@ const registerForm = ref<RegisterForm>({
   code: '',
   uuid: '',
   userType: 'sys_user',
-  invitationCode: ''
+  invitationCode: '',
+  emailCode: ''
+});
+const emailForm = ref<EmailCodeBody>({
+  email: '',
+  uuid: '',
+  code: '',
 });
 
 // 租户开关
@@ -163,11 +195,39 @@ const registerRules: ElFormRules = {
   code: [{ required: true, trigger: 'change', message: t('register.rule.code.required') }]
 };
 const codeUrl = ref('');
+const emailCodeUrl = ref('');
 const loading = ref(false);
 const captchaEnabled = ref(true);
 const registerRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
+const emailInterval = ref<number>(0);
+
+const handleMailCode = async () => {
+
+  emailForm.value.email = registerForm.value.email;
+
+  try{
+    const [err] = await to(getRegCode(emailForm.value));
+    if (!err) {
+      ElMessage.success(t('register.emailOk'));
+
+    } else {
+      loading.value = false;
+
+    }
+  }finally {
+    //开始倒计时60s
+    emailInterval.value = 60;
+    const timer = setInterval(() => {
+      emailInterval.value -= 1;
+      if (emailInterval.value <= 0) {
+        clearInterval(timer);
+      }
+    }, 1000);
+  }
+};
+
 
 const handleRegister = () => {
   registerRef.value?.validate(async (valid: boolean) => {
@@ -176,7 +236,7 @@ const handleRegister = () => {
       const [err] = await to(register(registerForm.value));
       if (!err) {
         const username = registerForm.value.username;
-        await ElMessageBox.alert('<span style="color: red; ">' + t('register.registerSuccess', { username }) + '</font>', '系统提示', {
+        await ElMessageBox.alert('<span style="color: red; ">' + t('register.registerSuccess', { username }) + '</font>', 'System', {
           app: undefined,
           dangerouslyUseHTMLString: true,
           type: 'success'
@@ -199,6 +259,15 @@ const getCode = async () => {
   if (captchaEnabled.value) {
     codeUrl.value = 'data:image/gif;base64,' + data.img;
     registerForm.value.uuid = data.uuid;
+  }
+};
+const getEmailCode = async () => {
+  const res = await getCodeImg();
+  const { data } = res;
+  captchaEnabled.value = data.captchaEnabled === undefined ? true : data.captchaEnabled;
+  if (captchaEnabled.value) {
+    emailCodeUrl.value = 'data:image/gif;base64,' + data.img;
+    emailForm.value.uuid = data.uuid;
   }
 };
 

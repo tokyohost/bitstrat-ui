@@ -11,7 +11,20 @@ export type RegisterForm = {
   uuid?: string;
   userType?: string;
   invitationCode?: string;
+  emailCode?: string;
 };
+export interface EmailCodeBody {
+  /**
+   * 邀请码
+   */
+  invitationCode?: string
+
+  email: string
+
+  uuid: string
+
+  code: string
+}
 
 /**
  * 登录请求

@@ -46,6 +46,23 @@ export function register(data: any) {
     data: params
   });
 }
+// 注册方法
+export function getRegCode(data: any) {
+  const params = {
+    ...data,
+    clientId: clientId,
+  };
+  return request({
+    url: '/auth/getRegCode',
+    headers: {
+      isToken: false,
+      isEncrypt: true,
+      repeatSubmit: false
+    },
+    method: 'post',
+    data: params
+  });
+}
 
 /**
  * 注销
