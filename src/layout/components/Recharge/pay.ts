@@ -13,6 +13,16 @@ export function qrPay(data: PayParams): AxiosPromise<QrPayResponse> {
     // }
   });
 }
+export function payByredict(data: PayParams): AxiosPromise<QrPayResponse> {
+  return request({
+    url: 'pay/payByRedict',
+    method: 'get',
+    params: data
+    // headers: {
+    //   isEncrypt: true
+    // }
+  });
+}
 export function checkPayStatus(data: QueryPayParams): AxiosPromise<QrPayCallBack> {
   return request({
     url: '/pay/checkPayStatus',

@@ -1,6 +1,7 @@
 export interface PayParams {
   payAmount?: number;
   payType?: string;
+  priceId?: string;
 }
 export interface QueryPayParams {
   outTradeNo?: number | string;
@@ -20,6 +21,7 @@ export interface QrPayResponse {
   userId?: number;
 
   qrCodeBase64?: string;
+  redirectUrl?: string;
 
   outTradeNo?: number | string;
 }

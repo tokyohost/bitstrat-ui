@@ -657,7 +657,8 @@ export default {
     balanceStatus: {
       异常: '비정상',
       已完成: '완료',
-      处理中: '처리 중'
+      处理中: '처리 중',
+      已取消: 'Cancelled'
     }
   },
   wallet: {
@@ -690,6 +691,7 @@ export default {
     failureMessage: '결제 실패 또는 시간 초과',
     orderFailedMessage: '결제 주문 생성 실패, 다시 시도하세요',
     paymentSuccess: '결제 성공!',
-    minute: '분'
+    minute: '분',
+    stripeAmountError: '결제 금액을 선택해 주세요'
   }
 };

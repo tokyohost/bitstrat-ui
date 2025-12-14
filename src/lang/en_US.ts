@@ -659,7 +659,8 @@ export default {
     balanceStatus: {
       异常: 'Abnormal',
       已完成: 'Completed',
-      处理中: 'Processing'
+      处理中: 'Processing',
+      已取消: 'Cancelled'
     }
   },
   wallet: {
@@ -692,6 +693,7 @@ export default {
     failureMessage: 'Payment failed or timeout',
     orderFailedMessage: 'Failed to create payment order, please try again',
     paymentSuccess: 'Payment successful!',
-    minute: 'min'
+    minute: 'min',
+    stripeAmountError: 'Please select a payment amount'
   }
 };

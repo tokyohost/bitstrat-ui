@@ -73,7 +73,7 @@
         <el-table-column :label="t('balanceLog.amount')" align="right" prop="changeAmount" min-width="140">
           <template #default="{ row }">
             <span class="font-bold text-lg font-mono" :class="Number(row.changeAmount) > 0 ? 'text-green-500' : 'text-red-500'">
-              {{ Number(row.changeAmount) > 0 ? '+' : '' }}{{ row.changeAmount }}
+              {{ Number(row.changeAmount) > 0 ? '+' : '' }}${{ row.changeAmount }}
             </span>
           </template>
         </el-table-column>

@@ -652,7 +652,8 @@ export default {
     balanceStatus: {
       异常: '异常',
       已完成: '已完成',
-      处理中: '处理中'
+      处理中: '处理中',
+      已取消: '已取消'
     }
   },
 
@@ -687,6 +688,7 @@ export default {
     failureMessage: '支付失败或超时',
     orderFailedMessage: '创建支付订单失败，请重试',
     paymentSuccess: '支付成功！',
-    minute: '分'
+    minute: '分',
+    stripeAmountError: '支付金额必须选择'
   }
 };
