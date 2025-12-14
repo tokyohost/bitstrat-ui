@@ -46,6 +46,10 @@ export default {
     password: '비밀번호',
     confirmPassword: '비밀번호 확인',
     invitationCode: '초대 코드',
+    emailCodePlaceHolder: '이미지 인증 코드를 입력하세요',
+    getEmailCode: '이메일 인증 코드 받기',
+    emailCode: '이메일 인증 코드',
+    emailOk: '이메일 인증 코드가 전송되었습니다',
     register: '등록',
     registering: '등록 중...',
     registerSuccess: '{username} 계정이 성공적으로 등록되었습니다!',
@@ -73,6 +77,9 @@ export default {
       },
       invitationCode: {
         required: '초대 코드를 입력하세요'
+      },
+      emailCode: {
+        required: '이메일 인증 코드를 입력해 주세요'
       },
       email: {
         required: '이메일을 입력하세요',

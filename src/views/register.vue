@@ -188,6 +188,7 @@ const registerRules: ElFormRules = {
     { required: true, validator: equalToPassword, trigger: 'blur' }
   ],
   invitationCode: [{ required: true, trigger: 'blur', message: t('register.rule.invitationCode.required') }],
+  emailCode: [{ required: true, trigger: 'blur', message: t('register.rule.emailCode.required') }],
   email: [
     { required: true, trigger: 'blur', message: t('register.rule.email.required') },
     { required: true, validator: validateEmail, trigger: 'blur' }

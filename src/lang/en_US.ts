@@ -10,6 +10,10 @@ export default {
     username: 'Username',
     password: 'Password',
     email: 'Email',
+    emailCodePlaceHolder: 'Enter the captcha code',
+    getEmailCode: 'Get email verification code',
+    emailCode: 'Email verification code',
+    emailOk: 'Email verification code has been sent',
     login: 'Login',
     logging: 'Logging...',
     code: 'Verification Code',
@@ -75,6 +79,9 @@ export default {
       },
       invitationCode: {
         required: 'Please enter the invitation code'
+      },
+      emailCode: {
+        required: 'Please enter the email verification code'
       },
       email: {
         required: 'Please enter your email',

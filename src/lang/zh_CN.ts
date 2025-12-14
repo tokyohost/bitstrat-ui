@@ -80,6 +80,9 @@ export default {
       invitationCode: {
         required: '请输入邀请码'
       },
+      emailCode: {
+        required: '请输入邮箱验证码'
+      },
       email: {
         required: '请输入邮箱',
         invalid: '请输入正确的邮箱'
