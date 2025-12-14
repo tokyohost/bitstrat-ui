@@ -46,7 +46,7 @@ export default {
     username: '用户名',
     email: '邮箱',
     emailCodePlaceHolder: '填写图形验证码',
-    getEmailCode: '获取邮箱验证码',
+    getEmailCode: '获取验证码',
     emailCode: '邮箱验证码',
     emailOk: '邮箱验证码已发送',
     password: '密码',

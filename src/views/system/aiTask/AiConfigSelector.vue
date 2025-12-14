@@ -4,7 +4,7 @@
       <div v-for="item in list" :key="item.id" class="ai-item" :class="{ active: item.id === modelValue }" @click="select(item.id)">
         <imagePreviewOss :src="item.imgUrl" :width="60" :height="60"></imagePreviewOss>
         <div class="ai-name">{{ item.flowName }}</div>
-        <div class="ai-price">{{ item.price }}RMB/M Token</div>
+        <div class="ai-price">${{ item.price }}/M Token</div>
       </div>
     </div>
   </div>

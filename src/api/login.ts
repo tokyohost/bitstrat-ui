@@ -50,13 +50,13 @@ export function register(data: any) {
 export function getRegCode(data: any) {
   const params = {
     ...data,
-    clientId: clientId,
+    clientId: clientId
   };
   return request({
     url: '/auth/getRegCode',
     headers: {
       isToken: false,
-      isEncrypt: true,
+      isEncrypt: false,
       repeatSubmit: false
     },
     method: 'post',

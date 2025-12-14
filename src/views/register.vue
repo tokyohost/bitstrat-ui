@@ -61,19 +61,32 @@
           ></template>
         </el-input>
       </el-form-item>
-      <el-form-item v-if="captchaEnabled" prop="code">
+      <el-form-item v-if="captchaEnabled" class="flex items-center gap-2">
+        <!-- 输入框 43% -->
         <el-input
           v-model="emailForm.code"
           size="large"
           auto-complete="off"
           :placeholder="proxy.$t('register.emailCodePlaceHolder')"
-          style="width: 63%"
+          class="emailCode"
+          style="width: 43%"
         >
-          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
-          <template #append><el-button :disabled="emailInterval >0" @click="handleMailCode">{{ emailInterval <=0 ? t("register.getEmailCode") :(emailInterval +'s')}}</el-button></template>
+          <template #prefix>
+            <svg-icon icon-class="validCode" class="el-input__icon input-icon" />
+          </template>
         </el-input>
-        <div class="login-code">
-          <img :src="codeUrl" class="login-code-img" @click="getEmailCode" />
+
+        <!-- 右侧区域 57%，内部均分 -->
+        <div class="flex items-center gap-2" style="width: 57%">
+          <!-- 图片 1/2 -->
+          <div style="width: 50%" class="flex ml-1">
+            <img :src="emailCodeUrl" class="w-full h-full cursor-pointer" @click="getEmailCode" />
+          </div>
+
+          <!-- 按钮 1/2 -->
+          <el-button style="width: 50%" :disabled="emailInterval > 0" @click="handleMailCode" v-loading="getEmailCodeLoading">
+            {{ emailInterval <= 0 ? t('register.getEmailCode') : emailInterval + 's' }}
+          </el-button>
         </div>
       </el-form-item>
       <el-form-item v-if="captchaEnabled" prop="emailCode">
@@ -147,7 +160,7 @@ const registerForm = ref<RegisterForm>({
 const emailForm = ref<EmailCodeBody>({
   email: '',
   uuid: '',
-  code: '',
+  code: ''
 });
 
 // 租户开关
@@ -198,6 +211,7 @@ const registerRules: ElFormRules = {
 const codeUrl = ref('');
 const emailCodeUrl = ref('');
 const loading = ref(false);
+const getEmailCodeLoading = ref(false);
 const captchaEnabled = ref(true);
 const registerRef = ref<ElFormInstance>();
 // 租户列表
@@ -205,30 +219,29 @@ const tenantList = ref<TenantVO[]>([]);
 const emailInterval = ref<number>(0);
 
 const handleMailCode = async () => {
-
   emailForm.value.email = registerForm.value.email;
-
-  try{
+  if (registerForm.value.email === '') return ElMessage.warning(t('register.rule.email.required'));
+  getEmailCodeLoading.value = true;
+  try {
     const [err] = await to(getRegCode(emailForm.value));
     if (!err) {
       ElMessage.success(t('register.emailOk'));
-
+      //开始倒计时60s
+      emailInterval.value = 60;
+      const timer = setInterval(() => {
+        emailInterval.value -= 1;
+        if (emailInterval.value <= 0) {
+          clearInterval(timer);
+        }
+      }, 1000);
     } else {
+      getEmailCode();
       loading.value = false;
-
     }
-  }finally {
-    //开始倒计时60s
-    emailInterval.value = 60;
-    const timer = setInterval(() => {
-      emailInterval.value -= 1;
-      if (emailInterval.value <= 0) {
-        clearInterval(timer);
-      }
-    }, 1000);
+  } finally {
+    getEmailCodeLoading.value = false;
   }
 };
-
 
 const handleRegister = () => {
   registerRef.value?.validate(async (valid: boolean) => {
@@ -285,6 +298,10 @@ const initTenantList = async () => {
 
 onMounted(() => {
   getCode();
+  setTimeout(() => {
+    getEmailCode();
+  }, 1000);
+
   initTenantList();
 });
 </script>
@@ -417,5 +434,8 @@ onMounted(() => {
 }
 ::v-deep .link-type {
   color: var(--el-bg-color, var(--el-bg-color)) !important;
+}
+::v-deep .el-input-group__append {
+  padding: 0 !important;
 }
 </style>

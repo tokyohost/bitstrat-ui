@@ -47,7 +47,7 @@ export default {
     confirmPassword: '비밀번호 확인',
     invitationCode: '초대 코드',
     emailCodePlaceHolder: '이미지 인증 코드를 입력하세요',
-    getEmailCode: '이메일 인증 코드 받기',
+    getEmailCode: '이메일  받기',
     emailCode: '이메일 인증 코드',
     emailOk: '이메일 인증 코드가 전송되었습니다',
     register: '등록',
