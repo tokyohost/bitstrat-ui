@@ -211,7 +211,6 @@ const dialogVisible = computed({
 
 const canUserPayType = computed(() => pay_config.value.filter((item) => item.label === '1').map((item) => item.value));
 
-console.log('canUserPayType: ', canUserPayType);
 const presetAmounts = [10, 50, 100, 200, 500, 1000];
 const selectedAmount = ref(null);
 const selectedAmountId = ref(null);
