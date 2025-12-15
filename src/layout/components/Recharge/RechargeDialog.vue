@@ -21,6 +21,7 @@
               class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-colors gap-2"
               :class="payType === 'alipay' ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200'"
               @click="payType = 'alipay'"
+              v-if="canUserPayType.includes('alipay')"
             >
               <i class="i-carbon-logo-alipay text-2xl text-blue-500"></i><img src="../../../assets/icons/png/alipay.png" height="20" width="20" />
               <span class="font-medium text-gray-700">{{ t('recharge.alipay') }}</span>
@@ -193,6 +194,7 @@ const { t } = useI18n();
 const { startPolling, stopPolling } = usePaymentPolling();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { stripe_pay_amount } = toRefs<any>(proxy?.useDict('stripe_pay_amount'));
+const { pay_config } = toRefs<any>(proxy?.useDict('pay_config'));
 
 // --- Props & Emits ---
 const props = defineProps({
@@ -207,6 +209,9 @@ const dialogVisible = computed({
   set: (val) => emit('update:visible', val)
 });
 
+const canUserPayType = computed(() => pay_config.value.filter((item) => item.label === '1').map((item) => item.value));
+
+console.log('canUserPayType: ', canUserPayType);
 const presetAmounts = [10, 50, 100, 200, 500, 1000];
 const selectedAmount = ref(null);
 const selectedAmountId = ref(null);
