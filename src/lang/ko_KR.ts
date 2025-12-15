@@ -183,7 +183,8 @@ export default {
     'AI智能分析': 'AI 지능형 분석',
     '策略广场': '전략 허브',
     'AI任务监控': '작업 모니터링',
-    '账户余额': '계정 크레딧'
+    '账户余额': '계정 크레딧',
+    '个人中心': '마이 페이지'
   },
   //通用
   common: {
@@ -666,6 +667,11 @@ export default {
       已完成: '완료',
       处理中: '처리 중',
       已取消: 'Cancelled'
+    },
+    logType: {
+      充值: 'Recharge',
+      消费: 'Consumption',
+      赠送: 'Gift'
     }
   },
   wallet: {

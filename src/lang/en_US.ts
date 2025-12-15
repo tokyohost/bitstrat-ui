@@ -186,7 +186,8 @@ export default {
     'AI智能分析': 'AI Intelligent Analysis',
     '策略广场': 'Strategy Hub',
     'AI任务监控': 'Task Monitor',
-    '账户余额': 'Account Credits'
+    '账户余额': 'Account Credits',
+    '个人中心': 'Profile'
   },
   //通用
   common: {
@@ -669,6 +670,11 @@ export default {
       已完成: 'Completed',
       处理中: 'Processing',
       已取消: 'Cancelled'
+    },
+    logType: {
+      充值: 'Recharge',
+      消费: 'Consumption',
+      赠送: 'Gift'
     }
   },
   wallet: {
