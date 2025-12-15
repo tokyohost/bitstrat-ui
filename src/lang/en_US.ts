@@ -125,6 +125,21 @@ export default {
       ok: 'OK',
       cancel: 'Cancel',
       done: 'Triggered !'
+    },
+    drawer: {
+      themeStyle: 'Theme Style Settings',
+      themeColor: 'Theme Color',
+      darkMode: 'Dark Mode',
+      layoutConfig: 'System Layout Configuration',
+      topNav: 'Enable TopNav',
+      tagsView: 'Enable Tags-Views',
+      fixedHeader: 'Fixed Header',
+      showLogo: 'Show Logo',
+      dynamicTitle: 'Dynamic Title',
+      save: 'Save',
+      reset: 'Reset',
+      saving: 'Saving to local storage, please wait...',
+      resetting: 'Clearing settings cache and refreshing, please wait...'
     }
   },
   apiSetting: {

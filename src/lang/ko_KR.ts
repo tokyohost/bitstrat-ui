@@ -122,6 +122,21 @@ export default {
       ok: '확인',
       cancel: '취소',
       done: '트리거됨!'
+    },
+    drawer: {
+      themeStyle: '테마 스타일 설정',
+      themeColor: '테마 색상',
+      darkMode: '다크 모드',
+      layoutConfig: '시스템 레이아웃 구성',
+      topNav: 'TopNav 활성화',
+      tagsView: 'Tags-Views 활성화',
+      fixedHeader: '고정 헤더',
+      showLogo: '로고 표시',
+      dynamicTitle: '동적 제목',
+      save: '설정 저장',
+      reset: '설정 초기화',
+      saving: '로컬 저장소에 저장 중, 잠시 기다려주세요...',
+      resetting: '설정 캐시를 지우고 새로 고침 중, 잠시 기다려주세요...'
     }
   },
   apiSetting: {

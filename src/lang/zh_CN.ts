@@ -124,6 +124,21 @@ export default {
       ok: '确定',
       cancel: '取消',
       done: '已触发'
+    },
+    drawer: {
+      themeStyle: '主题风格设置',
+      themeColor: '主题颜色',
+      darkMode: '深色模式',
+      layoutConfig: '系统布局配置',
+      topNav: '开启 TopNav',
+      tagsView: '开启 Tags-Views',
+      fixedHeader: '固定 Header',
+      showLogo: '显示 Logo',
+      dynamicTitle: '动态标题',
+      save: '保存配置',
+      reset: '重置配置',
+      saving: '正在保存到本地，请稍候...',
+      resetting: '正在清除设置缓存并刷新，请稍候...'
     }
   },
   apiSetting: {

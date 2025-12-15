@@ -1,6 +1,6 @@
 <template>
   <el-drawer v-model="showSettings" :with-header="false" direction="rtl" size="300px" close-on-click-modal>
-    <h3 class="drawer-title">主题风格设置</h3>
+    <h3 class="drawer-title">{{ t('setting.drawer.themeStyle') }}</h3>
 
     <div class="setting-drawer-block-checbox">
       <div class="setting-drawer-block-checbox-item" @click="handleTheme(SideThemeEnum.DARK)">
@@ -29,13 +29,13 @@
       </div>
     </div>
     <div class="drawer-item">
-      <span>主题颜色</span>
+      <span>{{ t('setting.drawer.themeColor') }}</span>
       <span class="comp-style">
         <el-color-picker v-model="theme" :predefine="predefineColors" @change="themeChange" />
       </span>
     </div>
     <div class="drawer-item">
-      <span>深色模式</span>
+      <span>{{ t('setting.drawer.darkMode') }}</span>
       <span class="comp-style">
         <el-switch v-model="isDark" class="drawer-switch" @change="toggleDark" />
       </span>
@@ -43,38 +43,38 @@
 
     <el-divider />
 
-    <h3 class="drawer-title">系统布局配置</h3>
+    <h3 class="drawer-title">{{ t('setting.drawer.layoutConfig') }}</h3>
 
     <div class="drawer-item">
-      <span>开启 TopNav</span>
+      <span>{{ t('setting.drawer.topNav') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.topNav" class="drawer-switch" @change="topNavChange" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>开启 Tags-Views</span>
+      <span>{{ t('setting.drawer.tagsView') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.tagsView" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>固定 Header</span>
+      <span>{{ t('setting.drawer.fixedHeader') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.fixedHeader" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>显示 Logo</span>
+      <span>{{ t('setting.drawer.showLogo') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.sidebarLogo" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
-      <span>动态标题</span>
+      <span>{{ t('setting.drawer.dynamicTitle') }}</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.dynamicTitle" class="drawer-switch" @change="dynamicTitleChange" />
       </span>
@@ -82,12 +82,13 @@
 
     <el-divider />
 
-    <el-button type="primary" plain icon="DocumentAdd" @click="saveSetting">保存配置</el-button>
-    <el-button plain icon="Refresh" @click="resetSetting">重置配置</el-button>
+    <el-button type="primary" plain icon="DocumentAdd" @click="saveSetting">{{ t('setting.drawer.save') }}</el-button>
+    <el-button plain icon="Refresh" @click="resetSetting">{{ t('setting.drawer.reset') }}</el-button>
   </el-drawer>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useDynamicTitle } from '@/utils/dynamicTitle';
 import { useAppStore } from '@/store/modules/app';
 import { useSettingsStore } from '@/store/modules/settings';
@@ -96,6 +97,7 @@ import { handleThemeStyle } from '@/utils/theme';
 import { SideThemeEnum } from '@/enums/SideThemeEnum';
 import defaultSettings from '@/settings';
 
+const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
@@ -151,7 +153,7 @@ const handleTheme = (val: string) => {
   settingsStore.sideTheme = val;
 };
 const saveSetting = () => {
-  proxy?.$modal.loading('正在保存到本地，请稍候...');
+  proxy?.$modal.loading(t('setting.drawer.saving'));
   const settings = useStorage<LayoutSetting>('layout-setting', defaultSettings);
   settings.value.topNav = storeSettings.value.topNav;
   settings.value.tagsView = storeSettings.value.tagsView;
@@ -165,7 +167,7 @@ const saveSetting = () => {
   }, 1000);
 };
 const resetSetting = () => {
-  proxy?.$modal.loading('正在清除设置缓存并刷新，请稍候...');
+  proxy?.$modal.loading(t('setting.drawer.resetting'));
   useStorage<any>('layout-setting', null).value = null;
   setTimeout('window.location.reload()', 1000);
 };
