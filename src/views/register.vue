@@ -61,44 +61,22 @@
           ></template>
         </el-input>
       </el-form-item>
-      <el-form-item v-if="captchaEnabled" class="flex items-center gap-2">
-        <!-- 输入框 43% -->
-        <el-input
-          v-model="emailForm.code"
-          size="large"
-          auto-complete="off"
-          :placeholder="proxy.$t('register.emailCodePlaceHolder')"
-          class="emailCode"
-          style="width: 43%"
-        >
-          <template #prefix>
-            <svg-icon icon-class="validCode" class="el-input__icon input-icon" />
-          </template>
-        </el-input>
-
-        <!-- 右侧区域 57%，内部均分 -->
-        <div class="flex items-center gap-2" style="width: 57%">
-          <!-- 图片 1/2 -->
-          <div style="width: 50%" class="flex ml-1">
-            <img :src="emailCodeUrl" class="w-full h-full cursor-pointer" @click="getEmailCode" />
-          </div>
-
-          <!-- 按钮 1/2 -->
-          <el-button style="width: 50%" :disabled="emailInterval > 0" @click="handleMailCode" v-loading="getEmailCodeLoading">
-            {{ emailInterval <= 0 ? t('register.getEmailCode') : emailInterval + 's' }}
-          </el-button>
-        </div>
-      </el-form-item>
       <el-form-item v-if="captchaEnabled" prop="emailCode">
         <el-input
           v-model="registerForm.emailCode"
           size="large"
           auto-complete="off"
           :placeholder="proxy.$t('register.emailCode')"
+          style="width: 63%"
           @keyup.enter="handleRegister"
         >
           <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
         </el-input>
+        <div class="register-code">
+          <el-button class="register-code-img ml-3 w-full" @click="showGetEmailCode = true">
+            {{ t('register.getEmailCode') }}
+          </el-button>
+        </div>
       </el-form-item>
       <el-form-item v-if="captchaEnabled" prop="code">
         <el-input
@@ -129,6 +107,38 @@
     <div class="el-register-footer">
       <span>Copyright © 2018-2025 Bitstrat.org All Rights Reserved.</span>
     </div>
+    <el-dialog v-model="showGetEmailCode">
+      <el-form :model="emailForm" :rules="emailRules" ref="emailFormRef">
+        <el-form-item v-if="captchaEnabled" class="flex items-center gap-2" prop="code">
+          <!-- 输入框 43% -->
+          <el-input
+            v-model="emailForm.code"
+            size="large"
+            auto-complete="off"
+            :placeholder="proxy.$t('register.emailCodePlaceHolder')"
+            style="width: 43%; color: var(--el-text-color-regular)"
+            class="h-[40px]"
+          >
+            <template #prefix>
+              <svg-icon icon-class="validCode" class="el-input__icon input-icon" />
+            </template>
+          </el-input>
+
+          <!-- 右侧区域 57%，内部均分 -->
+          <div class="flex items-center gap-2" style="width: 57%">
+            <!-- 图片 1/2 -->
+            <div style="width: 50%" class="flex ml-1">
+              <img :src="emailCodeUrl" class="w-full h-full cursor-pointer" @click="getEmailCode" />
+            </div>
+
+            <!-- 按钮 1/2 -->
+            <el-button style="width: 50%" :disabled="emailInterval > 0" @click="handleMailCode" v-loading="getEmailCodeLoading">
+              {{ emailInterval <= 0 ? t('register.getEmailCode') : emailInterval + 's' }}
+            </el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -160,11 +170,12 @@ const registerForm = ref<RegisterForm>({
 const emailForm = ref<EmailCodeBody>({
   email: '',
   uuid: '',
-  code: ''
+  code: null
 });
 
 // 租户开关
 const tenantEnabled = ref(false);
+const showGetEmailCode = ref(false);
 
 const equalToPassword = (rule: any, value: string, callback: any) => {
   if (registerForm.value.password !== value) {
@@ -208,6 +219,10 @@ const registerRules: ElFormRules = {
   ],
   code: [{ required: true, trigger: 'change', message: t('register.rule.code.required') }]
 };
+
+const emailRules: ElFormRules = {
+  code: [{ required: true, message: t('register.rule.code.required') }]
+};
 const codeUrl = ref('');
 const emailCodeUrl = ref('');
 const loading = ref(false);
@@ -218,29 +233,35 @@ const registerRef = ref<ElFormInstance>();
 const tenantList = ref<TenantVO[]>([]);
 const emailInterval = ref<number>(0);
 
+const emailFormRef = useTemplateRef('emailFormRef');
 const handleMailCode = async () => {
-  emailForm.value.email = registerForm.value.email;
-  if (registerForm.value.email === '') return ElMessage.warning(t('register.rule.email.required'));
-  getEmailCodeLoading.value = true;
-  try {
-    const [err] = await to(getRegCode(emailForm.value));
-    if (!err) {
-      ElMessage.success(t('register.emailOk'));
-      //开始倒计时60s
-      emailInterval.value = 60;
-      const timer = setInterval(() => {
-        emailInterval.value -= 1;
-        if (emailInterval.value <= 0) {
-          clearInterval(timer);
+  emailFormRef.value.validate(async (valid: boolean) => {
+    if (valid) {
+      emailForm.value.email = registerForm.value.email;
+      if (registerForm.value.email === '') return ElMessage.warning(t('register.rule.email.required'));
+      getEmailCodeLoading.value = true;
+      try {
+        const [err] = await to(getRegCode(emailForm.value));
+        if (!err) {
+          ElMessage.success(t('register.emailOk'));
+          //开始倒计时60s
+          emailInterval.value = 60;
+          const timer = setInterval(() => {
+            emailInterval.value -= 1;
+            if (emailInterval.value <= 0) {
+              clearInterval(timer);
+            }
+          }, 1000);
+          showGetEmailCode.value = false;
+        } else {
+          getEmailCode();
+          loading.value = false;
         }
-      }, 1000);
-    } else {
-      getEmailCode();
-      loading.value = false;
+      } finally {
+        getEmailCodeLoading.value = false;
+      }
     }
-  } finally {
-    getEmailCodeLoading.value = false;
-  }
+  });
 };
 
 const handleRegister = () => {
@@ -400,42 +421,42 @@ onMounted(() => {
   border-bottom: 2px rgba(40, 40, 40, 0.35) solid;
   border-right: 2px rgba(40, 40, 40, 0.35) solid;
 }
-::v-deep .el-input__wrapper {
+.register-form ::v-deep .el-input__wrapper {
   background-color: rgba(0, 191, 255, 0.075) !important;
   border: 1px rgba(255, 255, 255, 0.4) solid;
 }
-::v-deep .el-input__inner {
+.register-form ::v-deep .el-input__inner {
   color: var(--el-bg-color, var(--el-bg-color));
 }
-::v-deep .el-input__prefix {
+.register-form ::v-deep .el-input__prefix {
   color: var(--el-bg-color, var(--el-bg-color));
 }
-::v-deep .el-form-item__error {
+.register-form ::v-deep .el-form-item__error {
   color: var(--el-bg-color, var(--el-bg-color));
 }
-::v-deep .el-input__inner::placeholder {
+.register-form ::v-deep .el-input__inner::placeholder {
   color: var(--el-bg-color, var(--el-bg-color));
 }
-::v-deep .lang-select--style {
+.register-form ::v-deep .lang-select--style {
   color: var(--el-bg-color, var(--el-bg-color)) !important;
   fill: var(--el-bg-color, var(--el-bg-color));
 }
-::v-deep .el-button--primary {
+.register-form ::v-deep .el-button--primary {
   color: var(--el-color-primary, var(--el-color-primary)) !important;
   --el-button-bg-color: var(--el-bg-color, var(--el-bg-color)) !important;
   fill: var(--el-bg-color, var(--el-bg-color));
   --el-button-border-color: var(--el-bg-color, var(--el-bg-color));
 }
-::v-deep .el-button--primary:hover {
+.register-form ::v-deep .el-button--primary:hover {
   color: var(--el-bg-color, var(--el-bg-color)) !important;
   --el-button-bg-color: var(--el-bg-color, var(--el-bg-color)) !important;
   fill: var(--el-bg-color, var(--el-bg-color));
   --el-button-border-color: var(--el-bg-color, var(--el-bg-color));
 }
-::v-deep .link-type {
+.register-form ::v-deep .link-type {
   color: var(--el-bg-color, var(--el-bg-color)) !important;
 }
-::v-deep .el-input-group__append {
+.register-form ::v-deep .el-input-group__append {
   padding: 0 !important;
 }
 </style>
