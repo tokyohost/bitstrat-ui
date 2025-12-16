@@ -4,8 +4,10 @@ import errorCode from '@/utils/errorCode';
 import { blobValidate } from '@/utils/ruoyi';
 import { LoadingInstance } from 'element-plus/es/components/loading/src/loading';
 import { globalHeaders } from '@/utils/request';
+import { getEnv } from '@/env';
 
-const baseURL = import.meta.env.VITE_APP_BASE_API;
+const { BASE_API } = getEnv();
+const baseURL = BASE_API;
 let downloadLoadingInstance: LoadingInstance;
 export default {
   async oss(ossId: string | number) {

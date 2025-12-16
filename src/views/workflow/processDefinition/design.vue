@@ -5,6 +5,8 @@
 </template>
 
 <script setup name="WarmFlow">
+import { getEnv } from '@/env/index.js';
+
 const { proxy } = getCurrentInstance();
 import { onMounted } from 'vue';
 import { getToken } from '@/utils/auth';
@@ -12,7 +14,8 @@ import { getToken } from '@/utils/auth';
 // definitionId为需要查询的流程定义id，
 // disabled为是否可编辑, 例如：查看的时候不可编辑，不可保存
 const iframeUrl = ref('');
-const baseUrl = import.meta.env.VITE_APP_BASE_API;
+const { BASE_API } = getEnv();
+const baseUrl = BASE_API;
 const iframeLoaded = () => {
   // iframe监听组件内设计器保存事件
   window.onmessage = (event) => {
@@ -24,12 +27,12 @@ const iframeLoaded = () => {
   };
 };
 const open = async (definitionId, disabled) => {
-  let url = baseUrl + `/warm-flow-ui/index.html?id=${definitionId}&disabled=${disabled}`;
+  const url = baseUrl + `/warm-flow-ui/index.html?id=${definitionId}&disabled=${disabled}`;
   iframeUrl.value = url + '&Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
 };
 /** 关闭按钮 */
 function close() {
-  const obj = { path: '/workflow/processDefinition', query: {activeName: proxy.$route.query.activeName}};
+  const obj = { path: '/workflow/processDefinition', query: { activeName: proxy.$route.query.activeName } };
   proxy.$tab.closeOpenPage(obj);
 }
 

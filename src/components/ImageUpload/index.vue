@@ -46,6 +46,7 @@ import { OssVO } from '@/api/system/oss/types';
 import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
 import { compressAccurately } from 'image-conversion';
+import { getEnv } from '@/env';
 
 const props = defineProps({
   modelValue: {
@@ -79,7 +80,8 @@ const uploadList = ref<any[]>([]);
 const dialogImageUrl = ref('');
 const dialogVisible = ref(false);
 
-const baseUrl = import.meta.env.VITE_APP_BASE_API;
+const { BASE_API } = getEnv();
+const baseUrl = BASE_API;
 const uploadImgUrl = ref(baseUrl + '/resource/oss/upload'); // 上传的图片服务器地址
 const headers = ref(globalHeaders());
 
@@ -189,7 +191,7 @@ const handleUploadSuccess = (res: any, file: UploadFile) => {
 const handleDelete = (file: UploadFile): boolean => {
   const findex = fileList.value.map((f) => f.name).indexOf(file.name);
   if (findex > -1 && uploadList.value.length === number.value) {
-    let ossId = fileList.value[findex].ossId;
+    const ossId = fileList.value[findex].ossId;
     delOss(ossId);
     fileList.value.splice(findex, 1);
     emit('update:modelValue', listToString(fileList.value));
@@ -225,7 +227,7 @@ const handlePictureCardPreview = (file: any) => {
 const listToString = (list: any[], separator?: string) => {
   let strs = '';
   separator = separator || ',';
-  for (let i in list) {
+  for (const i in list) {
     if (undefined !== list[i].ossId && list[i].url.indexOf('blob:') !== 0) {
       strs += list[i].ossId + separator;
     }

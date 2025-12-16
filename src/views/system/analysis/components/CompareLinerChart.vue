@@ -5,6 +5,7 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { getToken } from '@/utils/auth';
 import PriceDiffBar from '@/views/system/analysis/components/PriceDiffBar.vue';
 import { WebsocketMsgData, WebsocketMsgDataAi } from '@/views/components/type/type';
+import { getEnv } from '@/env';
 
 const props = defineProps<{
   businessType?: string;
@@ -16,7 +17,8 @@ const props = defineProps<{
   typeB: string;
 }>();
 
-const API_SERVER = import.meta.env.VITE_APP_API_WS_SERVER || 'ws://localhost:7400';
+const { API_WS_SERVER } = getEnv();
+const API_SERVER = API_WS_SERVER || 'ws://localhost:7400';
 const token = getToken();
 
 const priceMap = new Map<string, number>(); // 存最近一次每个交易所的价格
@@ -352,33 +354,33 @@ onUnmounted(() => {
               MIN <span class="color-green-7">{{ -priceDiff5Min.max }}%</span>
             </div>
           </div>
-<!--          <div class="flex flex-col gap-col-1 justify-start">-->
-<!--            <div>10min 价差</div>-->
-<!--            <div>-->
-<!--              MAX <span class="color-red">{{ -priceDiff10Min.max }}%</span>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--              MIN <span class="color-green-7">{{ -priceDiff10Min.min }}%</span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="flex flex-col gap-col-1 justify-start">-->
-<!--            <div>20min 价差</div>-->
-<!--            <div>-->
-<!--              MAX <span class="color-red">{{ -priceDiff20Min.max }}%</span>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--              MIN <span class="color-green-7">{{ -priceDiff20Min.min }}%</span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="flex flex-col gap-col-1 justify-start">-->
-<!--            <div>30min 价差</div>-->
-<!--            <div>-->
-<!--              MAX <span class="color-red">{{ -priceDiff30Min.max }}%</span>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--              MIN <span class="color-green-7">{{ -priceDiff30Min.min }}%</span>-->
-<!--            </div>-->
-<!--          </div>-->
+          <!--          <div class="flex flex-col gap-col-1 justify-start">-->
+          <!--            <div>10min 价差</div>-->
+          <!--            <div>-->
+          <!--              MAX <span class="color-red">{{ -priceDiff10Min.max }}%</span>-->
+          <!--            </div>-->
+          <!--            <div>-->
+          <!--              MIN <span class="color-green-7">{{ -priceDiff10Min.min }}%</span>-->
+          <!--            </div>-->
+          <!--          </div>-->
+          <!--          <div class="flex flex-col gap-col-1 justify-start">-->
+          <!--            <div>20min 价差</div>-->
+          <!--            <div>-->
+          <!--              MAX <span class="color-red">{{ -priceDiff20Min.max }}%</span>-->
+          <!--            </div>-->
+          <!--            <div>-->
+          <!--              MIN <span class="color-green-7">{{ -priceDiff20Min.min }}%</span>-->
+          <!--            </div>-->
+          <!--          </div>-->
+          <!--          <div class="flex flex-col gap-col-1 justify-start">-->
+          <!--            <div>30min 价差</div>-->
+          <!--            <div>-->
+          <!--              MAX <span class="color-red">{{ -priceDiff30Min.max }}%</span>-->
+          <!--            </div>-->
+          <!--            <div>-->
+          <!--              MIN <span class="color-green-7">{{ -priceDiff30Min.min }}%</span>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </div>
       </div>
       <div class="flex flex-row gap-2 justify-center">
@@ -387,39 +389,39 @@ onUnmounted(() => {
           <div class="flex flex-col gap-col-1 justify-start">
             <div>5min 价差</div>
             <div>
-              MAX <span class="color-green-7">{{ priceDiff5Min.max  }}%</span>
+              MAX <span class="color-green-7">{{ priceDiff5Min.max }}%</span>
             </div>
             <div>
-              MIN <span class="color-red">{{  priceDiff5Min.min}}%</span>
+              MIN <span class="color-red">{{ priceDiff5Min.min }}%</span>
             </div>
           </div>
-<!--          <div class="flex flex-col gap-col-1 justify-start">-->
-<!--            <div>10min 价差</div>-->
-<!--            <div>-->
-<!--              MAX <span class="color-green-7">{{priceDiff10Min.min }}%</span>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--              MIN <span class="color-red">{{ priceDiff10Min.max }}%</span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="flex flex-col gap-col-1 justify-start">-->
-<!--            <div>20min 价差</div>-->
-<!--            <div>-->
-<!--              MAX <span class="color-green-7">{{ priceDiff20Min.min }}%</span>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--              MIN <span class="color-red">{{ priceDiff20Min.max }}%</span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="flex flex-col gap-col-1 justify-start">-->
-<!--            <div>30min 价差</div>-->
-<!--            <div>-->
-<!--              MAX <span class="color-green-7">{{ priceDiff30Min.min }}%</span>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--              MIN <span class="color-red">{{ priceDiff30Min.max }}%</span>-->
-<!--            </div>-->
-<!--          </div>-->
+          <!--          <div class="flex flex-col gap-col-1 justify-start">-->
+          <!--            <div>10min 价差</div>-->
+          <!--            <div>-->
+          <!--              MAX <span class="color-green-7">{{priceDiff10Min.min }}%</span>-->
+          <!--            </div>-->
+          <!--            <div>-->
+          <!--              MIN <span class="color-red">{{ priceDiff10Min.max }}%</span>-->
+          <!--            </div>-->
+          <!--          </div>-->
+          <!--          <div class="flex flex-col gap-col-1 justify-start">-->
+          <!--            <div>20min 价差</div>-->
+          <!--            <div>-->
+          <!--              MAX <span class="color-green-7">{{ priceDiff20Min.min }}%</span>-->
+          <!--            </div>-->
+          <!--            <div>-->
+          <!--              MIN <span class="color-red">{{ priceDiff20Min.max }}%</span>-->
+          <!--            </div>-->
+          <!--          </div>-->
+          <!--          <div class="flex flex-col gap-col-1 justify-start">-->
+          <!--            <div>30min 价差</div>-->
+          <!--            <div>-->
+          <!--              MAX <span class="color-green-7">{{ priceDiff30Min.min }}%</span>-->
+          <!--            </div>-->
+          <!--            <div>-->
+          <!--              MIN <span class="color-red">{{ priceDiff30Min.max }}%</span>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </div>
       </div>
     </div>

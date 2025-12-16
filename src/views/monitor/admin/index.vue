@@ -5,5 +5,8 @@
 </template>
 
 <script setup lang="ts">
-const url = ref(import.meta.env.VITE_APP_MONITOR_ADMIN);
+import { getEnv } from '@/env';
+
+const { MONITOR_ADMIN } = getEnv();
+const url = ref(MONITOR_ADMIN);
 </script>

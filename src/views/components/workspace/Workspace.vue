@@ -54,6 +54,7 @@ import DraggableCard from './DraggableCard.vue';
 import { defineAsyncComponent, markRaw } from 'vue';
 import { ComponentItem, CompontentData, getdefaultLayout } from '@/views/components/type/type';
 import { initWebSocket } from '@/utils/websocket';
+import { getEnv } from '@/env';
 
 // 异步懒加载组件，并用 markRaw 避免 Vue 响应式包裹
 const ChartWidget = markRaw(defineAsyncComponent(() => import('@/views/components/widgets/ChartWidget.vue')));
@@ -274,8 +275,10 @@ const removeAll = () => {
 onMounted(() => {
   loadLayout();
   // const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  console.log(import.meta.env);
-  initWebSocket(import.meta.env.VITE_APP_USER_WEBSOCKET_SERVER + '');
+  const { USER_WS_SERVER } = getEnv();
+  console.log(USER_WS_SERVER);
+
+  initWebSocket(USER_WS_SERVER + '');
 });
 </script>
 

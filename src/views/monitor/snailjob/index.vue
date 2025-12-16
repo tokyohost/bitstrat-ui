@@ -5,5 +5,8 @@
 </template>
 
 <script setup lang="ts">
-const url = ref(import.meta.env.VITE_APP_SNAILJOB_ADMIN);
+import { getEnv } from '@/env';
+
+const { SNAILJOB_ADMIN } = getEnv();
+const url = ref(SNAILJOB_ADMIN);
 </script>

@@ -264,12 +264,14 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     ]
   }
 ];
+import { getEnv } from '@/env';
 
+const { CONTEXT_PATH } = getEnv();
 /**
  * 创建路由
  */
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_APP_CONTEXT_PATH),
+  history: createWebHistory(CONTEXT_PATH),
   routes: constantRoutes,
   // 刷新时，滚动条位置还原
   scrollBehavior(to, from, savedPosition) {

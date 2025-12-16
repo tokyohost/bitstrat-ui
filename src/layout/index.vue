@@ -28,6 +28,7 @@ import { useAppStore } from '@/store/modules/app';
 import { useSettingsStore } from '@/store/modules/settings';
 import { initWebSocket } from '@/utils/websocket';
 import { initSSE } from '@/utils/sse';
+import { getEnv } from '@/env';
 
 const settingsStore = useSettingsStore();
 const theme = computed(() => settingsStore.theme);
@@ -68,12 +69,14 @@ onMounted(() => {
 });
 
 onMounted(() => {
+  const { USER_WS_SERVER } = getEnv();
   // const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  initWebSocket(import.meta.env.VITE_APP_USER_WEBSOCKET_SERVER+"");
+  initWebSocket(USER_WS_SERVER + '');
 });
 
 onMounted(() => {
-  initSSE(import.meta.env.VITE_APP_BASE_API + '/resource/sse');
+  const { BASE_API } = getEnv();
+  initSSE(BASE_API + '/resource/sse');
 });
 
 const handleClickOutside = () => {

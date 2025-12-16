@@ -1,5 +1,6 @@
 import { AiStreamQuery } from '@/views/aiSummary/type';
 import { getToken } from '@/utils/auth';
+import { getEnv } from '@/env';
 
 export async function streamDifyPost(params: AiStreamQuery) {
   const response = await fetch('/api/aireq', {
@@ -13,7 +14,8 @@ export async function streamDifyPost(params: AiStreamQuery) {
 
 export async function streamAIPost(params: AiStreamQuery, onChunk: (text: string) => void, onError: (err: any) => void) {
   try {
-    const baseUrl = import.meta.env.VITE_APP_BASE_API;
+    const { BASE_API } = getEnv();
+    const baseUrl = BASE_API;
 
     const response = await fetch(baseUrl + '/stream/aireq', {
       method: 'POST',

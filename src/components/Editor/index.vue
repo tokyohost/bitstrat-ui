@@ -32,7 +32,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { QuillEditor, Quill } from '@vueup/vue-quill';
 import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
-
+import { getEnv } from '@/env';
 defineEmits(['update:modelValue']);
 
 const props = defineProps({
@@ -52,9 +52,10 @@ const props = defineProps({
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
+const { BASE_API } = getEnv();
 const upload = reactive<UploadOption>({
   headers: globalHeaders(),
-  url: import.meta.env.VITE_APP_BASE_API + '/resource/oss/upload'
+  url: BASE_API + '/resource/oss/upload'
 });
 const quillEditorRef = ref();
 const uploadRef = ref<HTMLDivElement>();
@@ -95,7 +96,7 @@ const options = ref<any>({
 });
 
 const styles = computed(() => {
-  let style: any = {};
+  const style: any = {};
   if (props.minHeight) {
     style.minHeight = `${props.minHeight}px`;
   }
@@ -121,9 +122,9 @@ const handleUploadSuccess = (res: any) => {
   // 如果上传成功
   if (res.code === 200) {
     // 获取富文本实例
-    let quill = toRaw(quillEditorRef.value).getQuill();
+    const quill = toRaw(quillEditorRef.value).getQuill();
     // 获取光标位置
-    let length = quill.selection.savedRange.index;
+    const length = quill.selection.savedRange.index;
     // 插入图片，res为服务器返回的图片链接地址
     quill.insertEmbed(length, 'image', res.data.url);
     // 调整光标到最后

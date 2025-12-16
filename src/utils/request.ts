@@ -11,6 +11,7 @@ import { getLanguage } from '@/lang';
 import { encryptBase64, encryptWithAes, generateAesKey, decryptWithAes, decryptBase64 } from '@/utils/crypto';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
 import router from '@/router';
+import { getEnv } from '@/env';
 
 const encryptHeader = 'encrypt-key';
 let downloadLoadingInstance: LoadingInstance;
@@ -25,9 +26,10 @@ export const globalHeaders = () => {
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
 axios.defaults.headers['clientid'] = import.meta.env.VITE_APP_CLIENT_ID;
+const { BASE_API } = getEnv();
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_API,
+  baseURL: BASE_API,
   timeout: 50000
 });
 

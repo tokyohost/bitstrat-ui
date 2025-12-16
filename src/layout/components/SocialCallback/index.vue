@@ -6,7 +6,7 @@
 import { login, callback } from '@/api/login';
 import { setToken, getToken } from '@/utils/auth';
 import { LoginData } from '@/api/types';
-
+import { getEnv } from '@/env';
 const route = useRoute();
 const loading = ref(true);
 
@@ -30,14 +30,16 @@ const processResponse = async (res: any) => {
   }
   ElMessage.success(res.msg);
   setTimeout(() => {
-    location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+    const { CONTEXT_PATH } = getEnv();
+    location.href = CONTEXT_PATH + 'index';
   }, 2000);
 };
 
 const handleError = (error: any) => {
   ElMessage.error(error.message);
   setTimeout(() => {
-    location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+    const { CONTEXT_PATH } = getEnv();
+    location.href = CONTEXT_PATH + 'index';
   }, 2000);
 };
 
@@ -63,9 +65,9 @@ const loginByCode = async (data: LoginData) => {
 
 const init = async () => {
   // 如果域名不相等 则重定向处理
-  let host = window.location.host;
+  const host = window.location.host;
   if (domain !== host) {
-    let urlFull = new URL(window.location.href);
+    const urlFull = new URL(window.location.href);
     urlFull.host = domain;
     window.location.href = urlFull.toString();
     return;

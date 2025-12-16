@@ -329,6 +329,7 @@ import { to } from 'await-to-js';
 import { optionselect } from '@/api/system/post';
 import { hasPermi } from '@/directive/permission';
 import { checkPermi } from '@/utils/permission';
+import { getEnv } from '@/env';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -348,6 +349,8 @@ const enabledDeptOptions = ref<DeptTreeVO[]>([]);
 const initPassword = ref<string>('');
 const postOptions = ref<PostVO[]>([]);
 const roleOptions = ref<RoleVO[]>([]);
+
+const { BASE_API } = getEnv();
 /*** 用户导入参数 */
 const upload = reactive<ImportOption>({
   // 是否显示弹出层（用户导入）
@@ -361,7 +364,7 @@ const upload = reactive<ImportOption>({
   // 设置上传的请求头部
   headers: globalHeaders(),
   // 上传的地址
-  url: import.meta.env.VITE_APP_BASE_API + '/system/user/importData'
+  url: BASE_API + '/system/user/importData'
 });
 // 列显隐信息
 const columns = ref<FieldOption[]>([

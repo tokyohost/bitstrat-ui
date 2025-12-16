@@ -48,6 +48,7 @@
 import { propTypes } from '@/utils/propTypes';
 import { delOss, listByIds } from '@/api/system/oss';
 import { globalHeaders } from '@/utils/request';
+import { getEnv } from '@/env';
 
 const props = defineProps({
   modelValue: {
@@ -71,7 +72,8 @@ const emit = defineEmits(['update:modelValue']);
 const number = ref(0);
 const uploadList = ref<any[]>([]);
 
-const baseUrl = import.meta.env.VITE_APP_BASE_API;
+const { BASE_API } = getEnv();
+const baseUrl = BASE_API;
 const uploadFileUrl = ref(baseUrl + '/resource/oss/upload'); // 上传文件服务器地址
 const headers = ref(globalHeaders());
 
@@ -176,7 +178,7 @@ const handleUploadSuccess = (res: any, file: UploadFile) => {
 
 // 删除文件
 const handleDelete = (index: number) => {
-  let ossId = fileList.value[index].ossId;
+  const ossId = fileList.value[index].ossId;
   delOss(ossId);
   fileList.value.splice(index, 1);
   emit('update:modelValue', listToString(fileList.value));
