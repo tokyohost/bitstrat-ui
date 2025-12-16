@@ -1,0 +1,62 @@
+name: Deploy Bitstrat Frontend Application
+
+on:
+  pull_request:
+    branches:
+      - 5.X-position
+  workflow_dispatch:
+
+env:
+  REGISTRY: ${{ secrets.HARBOR_URL }}
+  PROJECT: bitstrat
+  IMAGE_NAME: bitstrat-font
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ 拉代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ 设置短 SHA
+      - name: Set short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::6}" >> $GITHUB_ENV
+
+      # 3️⃣ 安装 Node.js
+      - name: Setup Node.js 20.11.0
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.11.0'
+          cache: 'npm'
+
+      # 4️⃣ 安装依赖
+      - name: Install dependencies
+        run: npm ci
+
+      # 5️⃣ 打包生产
+      - name: Build frontend (prod)
+        run: npm run build:prod
+
+      # 6️⃣ 登录 Harbor
+      - name: Login Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.HARBOR_URL }}
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+
+      # 7️⃣ 构建并推送 Docker 镜像
+      - name: Build & Push Docker image
+        run: |
+          docker build \
+            -t $REGISTRY/$PROJECT/$IMAGE_NAME:${SHORT_SHA} .
+          docker push \
+            $REGISTRY/$PROJECT/$IMAGE_NAME:${SHORT_SHA}
+
+      # 8️⃣ 通知服务器 / Helm 更新（可选）
+#      - name: Notify server to update
+#        run: |
+#          curl -k -X POST \
+#          "你的webhook地址?tag=${SHORT_SHA}"
