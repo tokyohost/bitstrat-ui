@@ -5,7 +5,7 @@
 </template>
 
 <script setup name="WarmFlow">
-import { getEnv } from '@/env/index.js';
+import { getEnv } from '@/env/index.ts';
 
 const { proxy } = getCurrentInstance();
 import { onMounted } from 'vue';
