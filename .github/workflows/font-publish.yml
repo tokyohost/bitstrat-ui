@@ -37,7 +37,11 @@ jobs:
 
       # 5️⃣ 打包生产
       - name: Build frontend (prod)
-        run: npm run build:prod
+        run: |
+          node --max-old-space-size=4096 node_modules/.bin/vite build
+          npm run build:prod
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       # 6️⃣ 登录 Harbor
       - name: Login Harbor
