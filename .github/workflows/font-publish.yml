@@ -33,7 +33,7 @@ jobs:
 
       # 4️⃣ 安装依赖
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       # 5️⃣ 打包生产
       - name: Build frontend (prod)
