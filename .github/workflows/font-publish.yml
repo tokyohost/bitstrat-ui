@@ -55,9 +55,14 @@ jobs:
       - name: Build & Push Docker image
         run: |
           docker build \
-            -t $REGISTRY/$PROJECT/$IMAGE_NAME:${SHORT_SHA} .
+            -t $REGISTRY/$PROJECT/$IMAGE_NAME:${SHORT_SHA} \
+            -t $REGISTRY/$PROJECT/$IMAGE_NAME:latest \
+            .
           docker push \
             $REGISTRY/$PROJECT/$IMAGE_NAME:${SHORT_SHA}
+
+          docker push \
+            $REGISTRY/$PROJECT/$IMAGE_NAME:latest
 
       # 8️⃣ 通知服务器 / Helm 更新（可选）
 #      - name: Notify server to update
