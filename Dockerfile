@@ -15,3 +15,4 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 CMD ["/bin/sh", "-c", "\
   envsubst < env.template.js > env.js && \
   nginx -g 'daemon off;'"]
+EXPOSE 80
