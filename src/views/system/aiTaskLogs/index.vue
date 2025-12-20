@@ -30,7 +30,7 @@
           </div>
         </div>
       </template>
-      <div class="flex flex-col md:flex-row gap-2">
+      <div class="flex flex-col md:flex-row gap-2" v-loading="chartLoading">
         <LineChart
           :key="taskVo?.startBalance || 0"
           :xData="xData"
@@ -60,7 +60,7 @@
       </template>
       <PositionWidget ref="positionWidget" :accountId="taskVo?.apiId"></PositionWidget>
     </el-card>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleClick" v-loading="chartLoading">
       <el-tab-pane :label="t('aiLogs.requestLog')" name="request">
         <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
       </el-tab-pane>
@@ -106,6 +106,7 @@ const aiLogsFormRef = ref<ElFormInstance>();
 const xData = ref<any[]>([]);
 const seriesData = ref<any[]>([]);
 const xDataFreeBalance = ref<any[]>([]);
+const chartLoading = ref(false);
 const seriesDataFreeBalance = ref<any[]>([]);
 
 const positionWidget = useTemplateRef('positionWidget');
@@ -211,7 +212,13 @@ const handleQuery = () => {
   queryParams.value.pageNum = 1;
   queryParams.value.startDate = startDateISO;
   queryParams.value.endDate = endDateISO;
-  handleLoadChat();
+
+  try {
+    chartLoading.value = true;
+    handleLoadChat();
+  } finally {
+    chartLoading.value = false;
+  }
 };
 
 const handleLoadChat = () => {
@@ -343,36 +350,45 @@ let timer: NodeJS.Timeout | null = null;
 onMounted(async () => {
   const shortcutValue = shortcuts.value[0].value() as [Date, Date];
   dateRange.value = shortcutValue;
+  chartLoading.value = true;
+  try {
+    const id = route.query.id;
+    if (!id) {
+      ElMessage.error(t('aiLogs.anomalyWarning'));
+      return;
+    }
+    taskId.value = String(id);
 
-  const id = route.query.id;
-  if (!id) {
-    ElMessage.error(t('aiLogs.anomalyWarning'));
-    return;
+    const res = await getAiTask(String(id));
+    taskVo.value = res.data;
+
+    await getList();
+    handleLoadChat();
+    //初始化就加载一次
+    if (activeName.value === 'request') {
+      aiRequestRef.value?.getList(taskId.value);
+    } else if (activeName.value === 'log') {
+      aiResultref.value?.getList();
+    }
+
+    const loop = () => {
+      timer = setTimeout(() => {
+        handleLoadChat();
+        if (activeName.value === 'request') {
+          aiRequestRef.value?.getList(taskId.value);
+        } else if (activeName.value === 'log') {
+          aiResultref.value?.getList();
+        }
+        // else if (activeName.value === 'history') {
+        //   aiHistoryRef.value?.fetchData(false);
+        // }
+        loop(); // 下一轮
+      }, 1000 * 10);
+    };
+    loop();
+  } finally {
+    chartLoading.value = false;
   }
-  taskId.value = String(id);
-
-  const res = await getAiTask(String(id));
-  taskVo.value = res.data;
-
-  await getList();
-  handleLoadChat();
-
-  const loop = () => {
-    timer = setTimeout(() => {
-      handleLoadChat();
-      if (activeName.value === 'request') {
-        aiRequestRef.value?.getList(taskId.value);
-      } else if (activeName.value === 'log') {
-        aiResultref.value?.getList();
-      }
-      // else if (activeName.value === 'history') {
-      //   aiHistoryRef.value?.fetchData(false);
-      // }
-      loop(); // 下一轮
-    }, 1000 * 10);
-  };
-
-  loop();
 });
 
 onUnmounted(() => {

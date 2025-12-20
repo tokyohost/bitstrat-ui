@@ -25,9 +25,12 @@ const customColor = computed(() => {
 const syncTpsl = () => {
   emits('showTpsl', props.position);
 };
+const marketClose = () => {
+  emits('marketClose', props.position);
+};
 const format = (percentage) => (percentage === 100 ? t('positionWidget.full') : `${percentage}%`); // 修改：支持 i18n
 
-const emits = defineEmits(['showTpsl']);
+const emits = defineEmits(['showTpsl', 'marketClose']);
 </script>
 
 <template>
@@ -48,6 +51,7 @@ const emits = defineEmits(['showTpsl']);
           <el-tag type="success" size="small" disable-transitions>TP:{{ props.position.takeProfit || '-' }}</el-tag>
           <el-tag type="danger" size="small" disable-transitions>SL:{{ props.position.stopLoss || '-' }}</el-tag>
           <el-button type="primary" link size="small" disable-transitions @click="syncTpsl">{{ t('positionWidget.tpslOrder') }}</el-button>
+          <el-button type="primary" link size="small" disable-transitions @click="marketClose">{{ t('positionWidget.marketClose') }}</el-button>
         </div>
 
         <div class="text-right text-xs md:text-sm text-gray-500 font-medium flex-shrink-0">

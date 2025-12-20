@@ -6,9 +6,10 @@ import OrderWidgetItem from '@/views/components/component/OrderWidgetItem.vue';
 import { PositionWsData, WebsocketMsgData } from '@/views/components/type/type';
 import PositionWidgetItem from '@/views/components/component/PositionWidgetItem.vue';
 import { syncPosition } from '@/views/components/type';
-import { queryPositionTpslBySymbol } from '@/views/system/historyPosition';
-import { HistoryPositionTpslQuery, TpSlOrder } from '@/views/system/historyPosition/type';
-
+import { closePositionApi, queryPositionTpslBySymbol } from '@/views/system/historyPosition';
+import { HistoryPositionTpslQuery, PositionCloseParam, TpSlOrder } from '@/views/system/historyPosition/type';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 const positionList = ref<PositionWsData[]>([]);
 
 const props = defineProps({
@@ -67,6 +68,50 @@ const showTpslTable = ref(false);
 const showTpslHandle = (position: PositionWsData) => {
   syncTpsl(position);
 };
+const showMarketClosePanel = async (position: PositionWsData) => {
+  try {
+    await ElMessageBox.confirm(
+      t('positionWidget.marketCloseMsg'),
+      t('positionWidget.marketCloseTitle'), // 弹窗标题，可选
+      {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning'
+      }
+    );
+    const instance = ElLoading.service({
+      lock: true,
+      fullscreen: true,
+      text: t('common.loading'),
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)'
+    });
+    try {
+      // 点击确认后执行 API
+      const data = {
+        exchange: position.exchange,
+        symbol: position.symbol,
+        apiId: props.accountId
+      } as PositionCloseParam;
+      await closePositionApi(data); // 假设 closePositionApi 是封装的接口方法
+
+      ElMessage({
+        message: t('positionWidget.closeSuccess'),
+        type: 'success'
+      });
+    } finally {
+      instance.close();
+    }
+  } catch (err) {
+    // // 点击取消或请求失败
+    // if (err !== 'cancel') {
+    //   ElMessage({
+    //     message: t('positionWidget.closeFailed'),
+    //     type: 'error',
+    //   });
+    // }
+  }
+};
 
 const tpslOrders = ref<TpSlOrder[]>([]);
 
@@ -92,6 +137,7 @@ const syncTpsl = async (position: PositionWsData) => {
           class="hover:cursor-pointer"
           :position="item"
           @show-tpsl="showTpslHandle"
+          @market-close="showMarketClosePanel"
           :accountId="accountId"
         ></PositionWidgetItem>
       </div>

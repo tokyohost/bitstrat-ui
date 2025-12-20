@@ -203,6 +203,9 @@ export default {
   },
   //通用
   common: {
+    confirm: '확인',
+    cancel: '취소',
+    loading: 'loading...',
     direction: {
       long: '롱',
       short: '숏',
@@ -400,6 +403,10 @@ export default {
     syncTime: '동기화 시간',
     updateTime: '포지션 업데이트 시간',
     tpslOrder: 'TP/SL 주문',
+    marketClose: '시장가 평가',
+    marketCloseMsg: '이 포지션을 시장가로 평가하시겠습니까?',
+    marketCloseTitle: '시장가 포지션 평가',
+    closeSuccess: '포지션이 성공적으로 평가되었습니다',
     leverage: '레버리지',
     marginType: '마진 유형'
   },

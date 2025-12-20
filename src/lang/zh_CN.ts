@@ -205,6 +205,9 @@ export default {
   },
   //通用
   common: {
+    confirm: '确 定',
+    cancel: '取 消',
+    loading: 'loading...',
     direction: {
       long: '做多',
       short: '做空',
@@ -400,6 +403,10 @@ export default {
     syncTime: '同步时间',
     updateTime: '仓位变更时间',
     tpslOrder: 'TPSL订单',
+    marketClose: '市价平仓',
+    marketCloseMsg: '确认市价平仓此仓位?',
+    marketCloseTitle: '市价平仓',
+    closeSuccess: '平仓完成',
     leverage: '杠杆',
     marginType: '保证金类型'
   },

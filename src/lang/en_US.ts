@@ -206,6 +206,9 @@ export default {
   },
   //通用
   common: {
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    loading: 'loading...',
     direction: {
       long: 'Long',
       short: 'Short',
@@ -403,6 +406,10 @@ export default {
     syncTime: 'Sync Time',
     updateTime: 'Position Update Time',
     tpslOrder: 'TP/SL Order',
+    marketClose: 'Market Close',
+    marketCloseMsg: 'Confirm to close this position at market price?',
+    marketCloseTitle: 'Market Close Position',
+    closeSuccess: 'Position closed successfully',
     leverage: 'Leverage',
     marginType: 'Margin Type'
   },

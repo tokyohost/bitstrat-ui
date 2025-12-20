@@ -63,6 +63,13 @@ export interface HistoryPositionTpslQuery {
 
   symbol?: string;
 }
+export interface PositionCloseParam {
+  exchange: string;
+
+  apiId: number;
+
+  symbol?: string;
+}
 
 /**
  * @author xuehui_li
