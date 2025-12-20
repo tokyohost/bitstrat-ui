@@ -364,9 +364,10 @@ onMounted(async () => {
         aiRequestRef.value?.getList(taskId.value);
       } else if (activeName.value === 'log') {
         aiResultref.value?.getList();
-      } else if (activeName.value === 'history') {
-        aiHistoryRef.value?.fetchData(false);
       }
+      // else if (activeName.value === 'history') {
+      //   aiHistoryRef.value?.fetchData(false);
+      // }
       loop(); // 下一轮
     }, 1000 * 10);
   };

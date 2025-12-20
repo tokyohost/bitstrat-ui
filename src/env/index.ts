@@ -1,4 +1,4 @@
-import type { RuntimeEnv } from './types';
+import { RuntimeEnv } from '@/env/type';
 
 declare global {
   interface Window {
