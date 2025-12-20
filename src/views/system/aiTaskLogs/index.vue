@@ -65,7 +65,7 @@
         <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
       </el-tab-pane>
       <el-tab-pane :label="t('aiLogs.operationLog')" name="log">
-        <TestAiResult ref="aiResultref"></TestAiResult>
+        <TestAiResult :task-id="taskId" ref="aiResultref"></TestAiResult>
       </el-tab-pane>
       <el-tab-pane :label="t('aiLogs.historyPosition')" name="history">
         <HistoryPosition ref="aiHistoryRef" :task="taskVo as AiTaskVO"></HistoryPosition>
