@@ -386,6 +386,10 @@ export default {
       syncBalance: 'Update Balance',
       select: 'Select',
       save: 'Save'
+    },
+    apiStatus: {
+      '实盘API': 'Live API',
+      '模拟盘/测试API': 'Demo/Test API'
     }
   },
   accountSelectDialog: {
@@ -533,6 +537,25 @@ export default {
       deleteConfirm: 'Are you sure you want to delete the AI task with ID "{id}"?',
       deleteSuccess: 'Deletion successful',
       selectExchangeFirst: 'Please select exchange first'
+    },
+    diy: {
+      metrics: 'Custom Metrics',
+      metricsItem: 'Custom Metric Item',
+      defaultOptions: 'Preset Market Indicators',
+      smartSelectSchema: {
+        required: 'Required!',
+        exists: 'This option already exists',
+        addSuccess: 'Added successfully',
+        diy: 'Custom',
+        placeholder: 'Please select a custom metric item'
+      },
+      dynamicIndicatorConfig: {
+        requiredMessage: 'Please select an indicator',
+        exists: 'This indicator already exists',
+        notEmpty: 'Cannot be empty',
+        add: 'Add Indicator',
+        metric: 'Indicator'
+      }
     }
   },
   aiCardList: {

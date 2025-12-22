@@ -383,6 +383,10 @@ export default {
       syncBalance: '잔액 업데이트',
       select: '선택',
       save: '저장'
+    },
+    apiStatus: {
+      '实盘API': '실거래 API',
+      '模拟盘/测试API': '모의/테스트 API'
     }
   },
   accountSelectDialog: {
@@ -530,6 +534,25 @@ export default {
       deleteConfirm: 'ID가 "{id}"인 AI 작업을 삭제하시겠습니까?',
       deleteSuccess: '삭제 성공',
       selectExchangeFirst: '먼저 거래소를 선택하세요'
+    },
+    diy: {
+      metrics: '사용자 정의 지표',
+      metricsItem: '사용자 정의 지표 항목',
+      defaultOptions: '기본 시장 지표',
+      smartSelectSchema: {
+        required: '필수 입력!',
+        exists: '이미 존재하는 옵션입니다',
+        addSuccess: '성공적으로 추가되었습니다',
+        diy: '사용자 정의',
+        placeholder: '사용자 정의 지표 항목을 선택하세요'
+      },
+      dynamicIndicatorConfig: {
+        requiredMessage: '지표를 선택하세요',
+        exists: '이미 존재하는 지표입니다',
+        notEmpty: '비워둘 수 없습니다',
+        add: '지표 추가',
+        metric: '지표'
+      }
     }
   },
   aiCardList: {

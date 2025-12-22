@@ -17,7 +17,7 @@ import { ref, onMounted } from 'vue';
 import { listAiConfig } from '@/api/system/aiConfig';
 import imagePreviewOss from '@/components/ImagePreviewOss/index.vue';
 
-const props = defineProps<{ modelValue: string | number | null; type: number }>();
+const props = defineProps<{ modelValue: string | number | null | undefined; type: number }>();
 const emit = defineEmits(['update:modelValue']);
 
 const list = ref<AiConfigVO[]>([]);

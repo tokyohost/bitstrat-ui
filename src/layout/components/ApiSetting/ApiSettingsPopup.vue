@@ -18,7 +18,7 @@
           <div class="exchange-item" v-for="item in exchangeList" :key="item.exchangeName" @click="showConfigList(item)">
             <div class="api-seting-item">
               <ExchangeLogo :exchange="item.exchangeName"></ExchangeLogo>
-              <dict-tag :options="api_setting_status" :value="item.status" :i18n-profilx="'setting.api'" />
+              <dict-tag :options="api_setting_status" v-if="item.status" :value="item.status" :i18n-profilx="'setting.api'" />
             </div>
           </div>
         </div>
@@ -33,7 +33,7 @@
         <div class="exchange-item" v-for="item in exchangeList" :key="item.exchangeName" @click="showConfigList(item)">
           <div class="api-seting-item">
             <ExchangeLogo :exchange="item.exchangeName"></ExchangeLogo>
-            <dict-tag :options="api_setting_status" :value="item.status" :i18n-profilx="'setting.api'" />
+            <dict-tag :options="api_setting_status" v-if="item.status" :value="item.status" :i18n-profilx="'setting.api'" />
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@
       <!--        <el-form-item label="Secret">-->
       <!--          <el-input v-model="configForm.secret" />-->
       <!--        </el-form-item>-->
-      <ApiConfigForm :fields="currentFields" :model-value="configForm" i18n-prefix="setting.apiSettingForm"></ApiConfigForm>
+      <ApiConfigForm :fields="currentFields" v-if="configForm" :model-value="configForm"></ApiConfigForm>
       <!--        <el-form-item label="Passphrase" v-if="currentExchange?.needPassphrase">-->
       <!--          <el-input v-model="configForm.passphrase" />-->
       <!--        </el-form-item>-->
@@ -91,7 +91,7 @@ const props = defineProps({
 });
 
 // 当前选中的交易所
-const currentExchange = ref<ApiSettingVo | (typeof exchangeList)[0]>(null);
+const currentExchange = ref<ApiSettingVo>(null);
 const configDialogVisible = ref(false);
 
 const loadApiSetting = async () => {
@@ -135,22 +135,8 @@ const currentFields = computed(() => {
   return fieldConfigs[currentExchange.value?.exchangeName.toLowerCase() as keyof typeof fieldConfigs] || [];
 });
 // 打开配置弹窗
-const showConfigList = async (exchange: (typeof exchangeList)[0]) => {
+const showConfigList = async () => {
   visible.value = true;
-};
-// 打开配置弹窗
-const openConfig = async (exchange: (typeof exchangeList)[0]) => {
-  currentExchange.value = exchange;
-  // 可以根据实际需求加载该交易所的配置
-  const response = await getApiSettingDetail({ exchangeName: exchange.exchangeName });
-  if (response.code == 200) {
-    Object.assign(configForm, response.data);
-    configForm.value = response.data;
-    configForm.value.secret = configForm.value.apiSecurity;
-    configDialogVisible.value = true;
-  } else {
-    ElMessage.error(response.msg);
-  }
 };
 
 // 保存配置

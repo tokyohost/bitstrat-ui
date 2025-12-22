@@ -1,184 +1,185 @@
 <template>
-  <el-dialog
-    v-loading="loading"
-    v-model="dialogVisible"
-    :title="t('recharge.title')"
-    width="600px"
-    class="recharge-dialog rounded-xl"
-    append-to-body
-    destroy-on-close
-    :close-on-click-modal="false"
-    @close="handleClose"
-  >
-    <div class="px-4 pb-2">
-      <div v-if="!showQrCode">
-        <div class="mb-6">
-          <div class="text-sm font-bold text-gray-700 mb-3 flex items-center">
-            <el-icon class="mr-1 text-blue-500"><Wallet /></el-icon> {{ t('recharge.paymentMethod') }}
+  <div v-loading="loading">
+    <el-dialog
+      v-model="dialogVisible"
+      :title="t('recharge.title')"
+      width="600px"
+      class="recharge-dialog rounded-xl"
+      append-to-body
+      destroy-on-close
+      :close-on-click-modal="false"
+      @close="handleClose"
+    >
+      <div class="px-4 pb-2">
+        <div v-if="!showQrCode">
+          <div class="mb-6">
+            <div class="text-sm font-bold text-gray-700 mb-3 flex items-center">
+              <el-icon class="mr-1 text-blue-500"><Wallet /></el-icon> {{ t('recharge.paymentMethod') }}
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div
+                class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-colors gap-2"
+                :class="payType === 'alipay' ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200'"
+                @click="payType = 'alipay'"
+                v-if="canUserPayType.includes('alipay')"
+              >
+                <i class="i-carbon-logo-alipay text-2xl text-blue-500"></i><img src="../../../assets/icons/png/alipay.png" height="20" width="20" />
+                <span class="font-medium text-gray-700">{{ t('recharge.alipay') }}</span>
+                <el-icon v-if="payType === 'alipay'" class="text-blue-500 ml-auto"><Select /></el-icon>
+              </div>
+              <div
+                class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-colors gap-2"
+                :class="payType === 'stripe' ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200'"
+                @click="payType = 'stripe'"
+              >
+                <i class="i-carbon-logo-alipay text-2xl text-blue-500"></i><img src="../../../assets/icons/png/stripe.png" height="20" width="40" />
+                <span class="font-medium text-gray-700">stripe</span>
+                <el-icon v-if="payType === 'stripe'" class="text-blue-500 ml-auto"><Select /></el-icon>
+              </div>
+              <!--            <div-->
+              <!--              disabled="true"-->
+              <!--              class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-colors gap-2 bg-[#ef4444]"-->
+              <!--              :class="payType === 'wechat' ? 'border-green-500 bg-green-50/50' : 'border-gray-200'"-->
+              <!--              @click="payType = 'wechat'"-->
+              <!--            >-->
+              <!--              <i class="i-carbon-logo-wechat text-2xl text-green-500"></i>-->
+              <!--              <span class="font-medium text-gray-700">{{ t('recharge.wechat') }}{{ t('recharge.adapting') }}</span>-->
+              <!--              <el-icon v-if="payType === 'wechat'" class="text-green-500 ml-auto"><Select /></el-icon>-->
+              <!--            </div>-->
+            </div>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="text-sm font-bold text-gray-700 mb-4 flex items-center">
+            <el-icon class="mr-1 text-blue-500"><Money /></el-icon> {{ t('recharge.selectAmount') }}
+          </div>
+          <div class="grid grid-cols-3 gap-4 mb-6" v-if="payType == 'alipay'">
             <div
-              class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-colors gap-2"
-              :class="payType === 'alipay' ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200'"
-              @click="payType = 'alipay'"
-              v-if="canUserPayType.includes('alipay')"
+              v-for="(amount, index) in presetAmounts"
+              :key="index"
+              class="relative cursor-pointer border-2 rounded-xl p-4 text-center transition-all duration-200 hover:shadow-md group"
+              :class="selectedAmount === amount ? 'border-blue-500 bg-blue-50' : 'border-gray-100 bg-white hover:border-blue-300'"
+              @click="selectAmount(amount)"
             >
-              <i class="i-carbon-logo-alipay text-2xl text-blue-500"></i><img src="../../../assets/icons/png/alipay.png" height="20" width="20" />
-              <span class="font-medium text-gray-700">{{ t('recharge.alipay') }}</span>
-              <el-icon v-if="payType === 'alipay'" class="text-blue-500 ml-auto"><Select /></el-icon>
+              <div
+                v-if="index === 2"
+                class="absolute -top-3 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm transform rotate-6"
+              >
+                {{ t('recharge.popular') }}
+              </div>
+
+              <div
+                class="text-xl font-bold font-mono group-hover:scale-105 transition-transform"
+                :class="selectedAmount === amount ? 'text-blue-600' : 'text-gray-800'"
+              >
+                ¥{{ amount }}
+              </div>
             </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 mb-6" v-if="payType == 'stripe'">
             <div
-              class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-colors gap-2"
-              :class="payType === 'stripe' ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200'"
-              @click="payType = 'stripe'"
+              v-for="(amount, index) in stripe_pay_amount"
+              :key="index"
+              class="relative cursor-pointer border-2 rounded-xl p-4 text-center transition-all duration-200 hover:shadow-md group"
+              :class="selectedAmountId === amount.value ? 'border-blue-500 bg-blue-50' : 'border-gray-100 bg-white hover:border-blue-300'"
+              @click="selectAmountId(amount.value)"
             >
-              <i class="i-carbon-logo-alipay text-2xl text-blue-500"></i><img src="../../../assets/icons/png/stripe.png" height="20" width="40" />
-              <span class="font-medium text-gray-700">stripe</span>
-              <el-icon v-if="payType === 'stripe'" class="text-blue-500 ml-auto"><Select /></el-icon>
+              <div
+                v-if="index === 2"
+                class="absolute -top-3 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm transform rotate-6"
+              >
+                {{ t('recharge.popular') }}
+              </div>
+
+              <div
+                class="text-xl font-bold font-mono group-hover:scale-105 transition-transform"
+                :class="selectedAmount === amount.value ? 'text-blue-600' : 'text-gray-800'"
+              >
+                {{ amount.label }}
+              </div>
             </div>
-            <!--            <div-->
-            <!--              disabled="true"-->
-            <!--              class="flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-colors gap-2 bg-[#ef4444]"-->
-            <!--              :class="payType === 'wechat' ? 'border-green-500 bg-green-50/50' : 'border-gray-200'"-->
-            <!--              @click="payType = 'wechat'"-->
-            <!--            >-->
-            <!--              <i class="i-carbon-logo-wechat text-2xl text-green-500"></i>-->
-            <!--              <span class="font-medium text-gray-700">{{ t('recharge.wechat') }}{{ t('recharge.adapting') }}</span>-->
-            <!--              <el-icon v-if="payType === 'wechat'" class="text-green-500 ml-auto"><Select /></el-icon>-->
-            <!--            </div>-->
+          </div>
+
+          <div class="mb-8" v-if="payType == 'alipay'">
+            <div class="text-xs text-gray-500 mb-2">{{ t('recharge.customAmount') }}</div>
+            <el-input-number
+              v-model="customAmount"
+              :min="0.01"
+              :max="50000"
+              :precision="2"
+              controls-position="right"
+              class="!w-full"
+              :placeholder="t('recharge.enterAmount')"
+              size="large"
+              @focus="selectedAmount = 0"
+            >
+              <template #prefix>$</template>
+            </el-input-number>
           </div>
         </div>
-        <div class="text-sm font-bold text-gray-700 mb-4 flex items-center">
-          <el-icon class="mr-1 text-blue-500"><Money /></el-icon> {{ t('recharge.selectAmount') }}
-        </div>
-        <div class="grid grid-cols-3 gap-4 mb-6" v-if="payType == 'alipay'">
-          <div
-            v-for="(amount, index) in presetAmounts"
-            :key="index"
-            class="relative cursor-pointer border-2 rounded-xl p-4 text-center transition-all duration-200 hover:shadow-md group"
-            :class="selectedAmount === amount ? 'border-blue-500 bg-blue-50' : 'border-gray-100 bg-white hover:border-blue-300'"
-            @click="selectAmount(amount)"
-          >
-            <div
-              v-if="index === 2"
-              class="absolute -top-3 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm transform rotate-6"
-            >
-              {{ t('recharge.popular') }}
+
+        <div v-else class="flex flex-col items-center justify-center py-4 animate-fade-in-up">
+          <div class="text-center mb-6">
+            <p class="text-gray-500 text-sm mb-1">{{ t('recharge.payableAmount') }}</p>
+            <p class="text-4xl font-bold font-mono text-gray-900">$ {{ payData.payAmount }}</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 relative mb-6">
+            <div v-if="qrLoading" class="w-48 h-48 flex items-center justify-center bg-gray-50 rounded-lg">
+              <el-icon class="is-loading text-2xl text-gray-400"><Loading /></el-icon>
+            </div>
+            <div v-else class="relative group">
+              <!--            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=SimulatePayment" alt="Payment QR" class="w-48 h-48 rounded-lg" />-->
+              <img :src="payData.qrCodeBase64" :alt="t('recharge.qrCode')" class="w-48 h-48 rounded-lg" />
+              <div
+                v-if="isExpired"
+                class="absolute inset-0 bg-white/90 flex flex-col items-center justify-center cursor-pointer"
+                @click="refreshQrCode"
+              >
+                <el-icon class="text-2xl text-red-500 mb-2"><RefreshRight /></el-icon>
+                <span class="text-sm font-bold text-gray-600">{{ t('recharge.qrExpired') }}</span>
+                <span class="text-xs text-blue-500 mt-1">{{ t('recharge.qrExpiredTip') }}</span>
+              </div>
             </div>
 
-            <div
-              class="text-xl font-bold font-mono group-hover:scale-105 transition-transform"
-              :class="selectedAmount === amount ? 'text-blue-600' : 'text-gray-800'"
-            >
-              ¥{{ amount }}
+            <div class="mt-4 text-center flex items-center justify-center gap-2 text-sm text-gray-600">
+              <el-icon :color="payType === 'alipay' ? '#1677ff' : '#07c160'"></el-icon>
+              {{ t('recharge.qrScanTip', { method: payType === 'alipay' ? t('recharge.alipay') : t('recharge.wechat') }) }}
             </div>
           </div>
-        </div>
-        <div class="grid grid-cols-3 gap-4 mb-6" v-if="payType == 'stripe'">
-          <div
-            v-for="(amount, index) in stripe_pay_amount"
-            :key="index"
-            class="relative cursor-pointer border-2 rounded-xl p-4 text-center transition-all duration-200 hover:shadow-md group"
-            :class="selectedAmountId === amount.value ? 'border-blue-500 bg-blue-50' : 'border-gray-100 bg-white hover:border-blue-300'"
-            @click="selectAmountId(amount.value)"
-          >
-            <div
-              v-if="index === 2"
-              class="absolute -top-3 -right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm transform rotate-6"
-            >
-              {{ t('recharge.popular') }}
-            </div>
 
-            <div
-              class="text-xl font-bold font-mono group-hover:scale-105 transition-transform"
-              :class="selectedAmount === amount.value ? 'text-blue-600' : 'text-gray-800'"
-            >
-              {{ amount.label }}
-            </div>
+          <div class="text-xs text-gray-400">
+            {{ t('recharge.qrValidity') }} <span class="text-red-400">60:00</span>{{ t('recharge.minute') }}{{ t('recharge.instantPayment') }}
           </div>
-        </div>
-
-        <div class="mb-8" v-if="payType == 'alipay'">
-          <div class="text-xs text-gray-500 mb-2">{{ t('recharge.customAmount') }}</div>
-          <el-input-number
-            v-model="customAmount"
-            :min="0.01"
-            :max="50000"
-            :precision="2"
-            controls-position="right"
-            class="!w-full"
-            :placeholder="t('recharge.enterAmount')"
-            size="large"
-            @focus="selectedAmount = 0"
-          >
-            <template #prefix>$</template>
-          </el-input-number>
         </div>
       </div>
 
-      <div v-else class="flex flex-col items-center justify-center py-4 animate-fade-in-up">
-        <div class="text-center mb-6">
-          <p class="text-gray-500 text-sm mb-1">{{ t('recharge.payableAmount') }}</p>
-          <p class="text-4xl font-bold font-mono text-gray-900">$ {{ payData.payAmount }}</p>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 relative mb-6">
-          <div v-if="qrLoading" class="w-48 h-48 flex items-center justify-center bg-gray-50 rounded-lg">
-            <el-icon class="is-loading text-2xl text-gray-400"><Loading /></el-icon>
+      <template #footer>
+        <div class="dialog-footer flex justify-between items-center px-4">
+          <div class="text-xs text-gray-400">
+            <span v-if="!showQrCode">{{ t('recharge.instantPayment') }}</span>
+            <span v-else class="text-blue-500 cursor-pointer hover:underline" @click="showQrCode = false">
+              {{ t('recharge.backToModify') }}
+            </span>
           </div>
-          <div v-else class="relative group">
-            <!--            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=SimulatePayment" alt="Payment QR" class="w-48 h-48 rounded-lg" />-->
-            <img :src="payData.qrCodeBase64" :alt="t('recharge.qrCode')" class="w-48 h-48 rounded-lg" />
-            <div
-              v-if="isExpired"
-              class="absolute inset-0 bg-white/90 flex flex-col items-center justify-center cursor-pointer"
-              @click="refreshQrCode"
+
+          <div>
+            <el-button @click="handleClose">{{ t('recharge.cancel') }}</el-button>
+
+            <el-button
+              v-if="!showQrCode"
+              type="primary"
+              class="!px-8 bg-gradient-to-r from-blue-600 to-blue-500 border-none hover:shadow-lg transition-shadow"
+              @click="toPay"
+              :disabled="finalAmount <= 0 && selectedAmountId == null"
             >
-              <el-icon class="text-2xl text-red-500 mb-2"><RefreshRight /></el-icon>
-              <span class="text-sm font-bold text-gray-600">{{ t('recharge.qrExpired') }}</span>
-              <span class="text-xs text-blue-500 mt-1">{{ t('recharge.qrExpiredTip') }}</span>
-            </div>
-          </div>
+              {{ t('recharge.payNow') }}
+            </el-button>
 
-          <div class="mt-4 text-center flex items-center justify-center gap-2 text-sm text-gray-600">
-            <el-icon :color="payType === 'alipay' ? '#1677ff' : '#07c160'"></el-icon>
-            {{ t('recharge.qrScanTip', { method: payType === 'alipay' ? t('recharge.alipay') : t('recharge.wechat') }) }}
+            <!--          <el-button v-else type="success" @click="simulateSuccess" :loading="checkingStatus"> {{ t('recharge.simulateSuccess') }} ({{ t('recharge.testOnly') }}) </el-button>-->
           </div>
         </div>
-
-        <div class="text-xs text-gray-400">
-          {{ t('recharge.qrValidity') }} <span class="text-red-400">60:00</span>{{ t('recharge.minute') }}{{ t('recharge.instantPayment') }}
-        </div>
-      </div>
-    </div>
-
-    <template #footer>
-      <div class="dialog-footer flex justify-between items-center px-4">
-        <div class="text-xs text-gray-400">
-          <span v-if="!showQrCode">{{ t('recharge.instantPayment') }}</span>
-          <span v-else class="text-blue-500 cursor-pointer hover:underline" @click="showQrCode = false">
-            {{ t('recharge.backToModify') }}
-          </span>
-        </div>
-
-        <div>
-          <el-button @click="handleClose">{{ t('recharge.cancel') }}</el-button>
-
-          <el-button
-            v-if="!showQrCode"
-            type="primary"
-            class="!px-8 bg-gradient-to-r from-blue-600 to-blue-500 border-none hover:shadow-lg transition-shadow"
-            @click="toPay"
-            :disabled="finalAmount <= 0 && selectedAmountId == null"
-          >
-            {{ t('recharge.payNow') }}
-          </el-button>
-
-          <!--          <el-button v-else type="success" @click="simulateSuccess" :loading="checkingStatus"> {{ t('recharge.simulateSuccess') }} ({{ t('recharge.testOnly') }}) </el-button>-->
-        </div>
-      </div>
-    </template>
-  </el-dialog>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -44,7 +44,7 @@
         <el-table-column :label="t('accountSelect.table.freeBalance')" align="center" prop="freeBalance" />
         <el-table-column :label="t('accountSelect.table.type')" align="center" prop="type">
           <template #default="scope">
-            <dict-tag :value="scope.row.type" :options="exchange_api_type"></dict-tag>
+            <dict-tag :value="scope.row.type" :options="exchange_api_type" i18n-profilx="accountSelect.apiStatus"></dict-tag>
           </template>
         </el-table-column>
         <el-table-column :label="t('accountSelect.table.createTime')" align="center" prop="createTime" />
@@ -116,7 +116,7 @@ const queryFormRef = ref<ElFormInstance>();
 const apiFormRef = ref<ElFormInstance>();
 const configDialogVisible = ref(false);
 const props = defineProps<{
-  exchangeName: string;
+  exchangeName: string | undefined;
 }>();
 
 const emit = defineEmits<{

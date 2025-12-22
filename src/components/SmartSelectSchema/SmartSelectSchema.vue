@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue';
+import { ref, watch, reactive, useAttrs } from 'vue';
 import { ElMessage, FormInstance } from 'element-plus';
 import { extConfigItem, FormSchemaItem, OptionsItem, SelectItem } from '@/components/SmartSelectSchema/type';
 import { InfoFilled } from '@element-plus/icons-vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
+const attrs = useAttrs();
 const props = defineProps<{
   modelValue: extConfigItem[];
   options: SelectItem[];
@@ -80,7 +83,7 @@ const buildForm = (formSchema: FormSchemaItem) => {
     rules.push(...formSchema.rules);
   } else {
     if (formSchema.required) {
-      rules.push({ required: true, message: `${formSchema.label}必填`, trigger: 'blur' });
+      rules.push({ required: true, message: `${formSchema.label} ${t('aiTask.diy.smartSelectSchema.required')}`, trigger: 'blur' });
     }
   }
   rules.push({
@@ -89,11 +92,11 @@ const buildForm = (formSchema: FormSchemaItem) => {
       console.log('innerValue.value', innerValue.value);
       const key = formModel[props.formSchema.field] + formModel[children.value.field];
       if (value1.indexOf(key) != -1) {
-        callback(new Error('已存在该选项'));
+        callback(new Error(t('aiTask.diy.smartSelectSchema.exists')));
       } else {
         if (props.options.filter((item) => item.code === key).length === 0) {
         } else {
-          callback(new Error('已存在该选项'));
+          callback(new Error(t('aiTask.diy.smartSelectSchema.exists')));
         }
       }
       callback();
@@ -127,7 +130,7 @@ const submit = async () => {
     innerValue.value = newItem[props.valueKey];
   }
 
-  ElMessage.success('新增成功');
+  ElMessage.success(t('aiTask.diy.smartSelectSchema.addSuccess'));
   visible.value = false;
   children.value = null;
   formRef.value?.resetFields();
@@ -146,10 +149,10 @@ const optionsSelect = async (val, options: OptionsItem[]) => {
 </script>
 
 <template>
-  <el-select v-model="innerValue" :placeholder="placeholder" filterable clearable :multiple="multiple" style="width: 100%">
+  <el-select v-bind="attrs" v-model="innerValue" :placeholder="placeholder" filterable clearable :multiple="multiple" style="width: 100%">
     <el-option v-for="item in options" :key="item[valueKey]" :label="item[labelKey]" :value="item[valueKey]" />
 
-    <el-option v-if="create" :value="CREATE_FLAG" label="自定义" />
+    <el-option v-if="create" :value="CREATE_FLAG" :label="t('aiTask.diy.smartSelectSchema.diy')" />
   </el-select>
 
   <!-- 弹窗 -->
@@ -175,7 +178,7 @@ const optionsSelect = async (val, options: OptionsItem[]) => {
               v-else-if="formSchema.component === 'select'"
               v-model="formModel[formSchema.field]"
               v-bind="formSchema.props"
-              placeholder="请选择自定义指标项"
+              :placeholder="t('aiTask.diy.smartSelectSchema.placeholder')"
               @change="optionsSelect($event, formSchema.options)"
             >
               <el-option v-for="op in formSchema.options" :key="op.value" :label="op.label" :value="op.value">
@@ -205,8 +208,8 @@ const optionsSelect = async (val, options: OptionsItem[]) => {
     </el-form>
 
     <template #footer>
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="submit(formSchema, children)">确定</el-button>
+      <el-button @click="visible = false">{{ t('common.cancel') }}</el-button>
+      <el-button type="primary" @click="submit(formSchema, children)">{{ t('common.confirm') }}</el-button>
     </template>
   </el-dialog>
 </template>

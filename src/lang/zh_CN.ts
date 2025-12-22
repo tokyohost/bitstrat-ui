@@ -383,6 +383,10 @@ export default {
       syncBalance: '更新余额',
       select: '选择',
       save: '保存'
+    },
+    apiStatus: {
+      '实盘API': '实盘API',
+      '模拟盘/测试API': '模拟盘/测试API'
     }
   },
   accountSelectDialog: {
@@ -525,6 +529,25 @@ export default {
       deleteConfirm: '是否确认删除AI任务编号为"{id}"的数据项？',
       deleteSuccess: '删除成功',
       selectExchangeFirst: '请先选择交易所'
+    },
+    diy: {
+      metrics: '自定义指标',
+      metricsItem: '自定义指标项',
+      defaultOptions: '预设行情指标',
+      smartSelectSchema: {
+        required: '必填!',
+        exists: '已存在该选项',
+        addSuccess: '新增成功',
+        diy: '自定义',
+        placeholder: '请选择自定义指标项'
+      },
+      dynamicIndicatorConfig: {
+        requiredMessage: '请选择指标',
+        exists: '该指标已存在',
+        notEmpty: '不能为空',
+        add: '新增指标',
+        metric: '指标'
+      }
     }
   },
   aiCardList: {
@@ -575,8 +598,8 @@ export default {
     tradeDetails: '交易详情',
     realizedPnl: '已实现盈亏',
     closingQuantity: '平仓数量',
-    openingPrice: 'Open Avg Price',
-    closingPrice: 'Close Avg Price',
+    openingPrice: '平均开仓价',
+    closingPrice: '平均平仓价',
     closingTime: '平仓',
     openingTime: '开仓',
     totalFee: '总费用',

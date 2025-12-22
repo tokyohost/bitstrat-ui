@@ -16,7 +16,7 @@ const logoMap = import.meta.glob('@/assets/exchanges/*.png', {
 }) as Record<string, string>;
 
 const props = defineProps<{
-  exchange: string;
+  exchange: string | undefined;
 }>();
 
 const defaultLogo = logoMap['/src/assets/exchanges/default.png'];

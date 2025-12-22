@@ -14,7 +14,7 @@
         <div class="exchange-item" v-for="item in exchangeList" :key="item.exchangeName" @click="openConfig(item)">
           <div class="api-seting-item">
             <ExchangeLogo :exchange="item.exchangeName"></ExchangeLogo>
-            <dict-tag :options="api_setting_status" :value="item.status" :i18n-profilx="'setting.api'" />
+            <dict-tag :options="api_setting_status" v-if="item.status" :value="item.status" :i18n-profilx="'setting.api'" />
           </div>
         </div>
       </div>

@@ -59,7 +59,7 @@
         <el-table-column :label="t('apiSetting.table.apiKey')" align="center" prop="apiKey" />
         <el-table-column :label="t('apiSetting.table.type')" align="center" prop="type">
           <template #default="scope">
-            <dict-tag :options="exchange_api_type" :value="scope.row.type" />
+            <dict-tag :options="exchange_api_type" :value="scope.row.type" i18n-profilx="accountSelect.apiStatus" />
           </template>
         </el-table-column>
         <!--        <el-table-column label="api secret" align="center" prop="apiSecurity" />-->
@@ -99,7 +99,7 @@
         <el-form-item :label="t('apiSetting.form.type')" prop="type">
           <el-select v-model="configForm.type" :placeholder="t('apiSetting.form.selectType')" clearable>
             <el-option v-for="dict in exchange_api_type" :key="dict.value" :label="dict.label" :value="dict.value">
-              <dict-tag :options="exchange_api_type" :value="dict.value" />
+              <dict-tag :options="exchange_api_type" :value="dict.value" i18n-profilx="accountSelect.apiStatus" />
             </el-option>
           </el-select>
         </el-form-item>

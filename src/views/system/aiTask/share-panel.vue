@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" :title="t('sharePanel.title')" destroy-on-close append-to-body>
+  <el-dialog v-model="visible" :title="t('sharePanel.title')" destroy-on-close append-to-body v-bind="attrs">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" label-position="top">
       <el-form-item :label="t('sharePanel.strategyTitle')" prop="title">
         <el-input v-model="form.title" :placeholder="t('sharePanel.strategyTitlePlaceholder')" />
@@ -27,12 +27,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineExpose } from 'vue';
+import { ref, reactive, defineExpose, useAttrs } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElMessage } from 'element-plus';
 import { addFeed, stopFeed, updateFeed } from '@/api/system/feed';
 import { FeedForm, FeedVO } from '@/api/system/feed/types';
 
+const attrs = useAttrs();
 const { t } = useI18n();
 
 // 定义用于 el-select 绑定的临时数组
@@ -49,7 +50,7 @@ let form = reactive<FeedForm>({
 
 const props = defineProps({
   strategyId: {
-    type: Number,
+    type: String,
     required: true
   }
 });

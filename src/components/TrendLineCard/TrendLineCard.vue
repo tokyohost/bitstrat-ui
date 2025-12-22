@@ -2,7 +2,9 @@
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, ChartData, ChartOptions } from 'chart.js';
 import { computed } from 'vue';
+import { useAttrs } from 'vue';
 
+const attrs = useAttrs();
 // 注册 Chart.js 必需的组件 (保持不变)
 ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement);
 
@@ -114,7 +116,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => ({
 </script>
 
 <template>
-  <div class="relative w-full h-full">
+  <div class="relative w-full h-full" v-bind="attrs">
     <Line :data="chartData" :options="chartOptions" class="h-full w-full" />
   </div>
 </template>

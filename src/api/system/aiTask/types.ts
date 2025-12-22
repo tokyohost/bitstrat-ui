@@ -5,7 +5,7 @@ export interface AiTaskVO {
   /**
    * id
    */
-  id: string | number;
+  id: string;
 
   /**
    * 任务名称
@@ -30,7 +30,7 @@ export interface AiTaskVO {
   /**
    * ai 流水线id
    */
-  aiWorkflowId: string | number;
+  aiWorkflowId: string;
 
   /**
    * 系统提示词
@@ -45,7 +45,7 @@ export interface AiTaskVO {
   /**
    * 创建人
    */
-  createUserId: string | number;
+  createUserId: string;
 
   /**
    * 任务状态 1-已创建 2-正在运行 3-已终止

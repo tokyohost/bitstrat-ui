@@ -128,7 +128,7 @@
                   <div class="flex justify-between w-full">
                     <div class="flex gap-x-2 flex-col">
                       <ExchangeLogo :exchange="form.exchange" :key="form.exchange"> </ExchangeLogo>
-                      <div><dict-tag :value="form.account?.type" :options="exchange_api_type" /></div>
+                      <div><dict-tag :value="form.account?.type" :options="exchange_api_type" i18n-profilx="accountSelect.apiStatus" /></div>
                     </div>
                     <div class="flex justify-end hover:cursor-pointer text-xs" @click="openAccountSelect">
                       <div>{{ form.account?.name || '-' }}</div>

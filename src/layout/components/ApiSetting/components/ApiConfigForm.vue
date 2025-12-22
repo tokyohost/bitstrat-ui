@@ -24,7 +24,6 @@ interface FieldConfig {
 const props = defineProps<{
   fields: FieldConfig[];
   modelValue: Record<string, any>;
-  i18nPrefix: string; // 例如 'exchange.api'
 }>();
 
 const { t } = useI18n();

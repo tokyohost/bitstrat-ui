@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { reactive, ref, watch, nextTick } from 'vue';
+import { reactive, ref, watch, nextTick, useAttrs } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
 import { extConfigItem, FormSchemaItem, OptionsItem } from '@/components/SmartSelectSchema/type';
 import { InfoFilled } from '@element-plus/icons-vue';
 
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
+const attrs = useAttrs();
 const props = defineProps<{
   modelValue: extConfigItem[];
   schema: FormSchemaItem;
@@ -73,7 +77,7 @@ function confirmAdd() {
     // 防重复
     const key = dialogForm.type + dialogForm.value;
     if (rows.some((r) => r.type + r.value === key)) {
-      return ElMessage.error('该指标已存在');
+      return ElMessage.error(t('aiTask.diy.dynamicIndicatorConfig.exists'));
     }
 
     rows.push({
@@ -95,13 +99,13 @@ function removeRow(index: number) {
 
 /* ===== 弹框校验规则 ===== */
 const dialogRules: FormRules = {
-  type: [{ required: true, message: '请选择指标', trigger: 'change' }],
+  type: [{ required: true, message: t('aiTask.diy.dynamicIndicatorConfig.requiredMessage'), trigger: 'change' }],
   value: [
     {
       validator: (_r, v, cb) => {
         const opt = findOption(dialogForm.type);
         if (opt?.children?.required && (v === null || v === undefined)) {
-          cb(new Error(`${opt.children.label}不能为空`));
+          cb(new Error(`${opt.children.label}${t('aiTask.diy.dynamicIndicatorConfig.notEmpty')}`));
         } else {
           cb();
         }
@@ -122,7 +126,7 @@ defineExpose({ formRef });
 
 <template>
   <!-- 已确认指标列表（只读） -->
-  <el-form ref="formRef" :model="rows" class="w-full mt-5">
+  <el-form ref="formRef" :model="rows" class="w-full mt-5" v-bind="attrs">
     <div v-for="(row, index) in rows" :key="index" class="config-row">
       <el-form-item :label="`${schema.label}（${index + 1}）`">
         <el-select v-model="row.type" disabled style="width: 140px">
@@ -131,22 +135,23 @@ defineExpose({ formRef });
       </el-form-item>
 
       <el-form-item v-if="findOption(row.type)?.children" :label="findOption(row.type)?.children?.label" style="margin-left: 12px">
-        <el-input-number v-model="row.value" disabled v-bind="findOption(row.type)?.children?.props" />
+        <el-input type="number" v-model.number="row.value" disabled v-bind="findOption(row.type)?.children?.props" />
       </el-form-item>
 
-      <el-button type="danger" text @click="removeRow(index)"> 删除 </el-button>
+      <el-button type="danger" text @click="removeRow(index)"> {{ t('common.opt.delete') }} </el-button>
     </div>
 
-    <el-button type="primary" plain @click="openAddDialog"> + 新增指标 </el-button>
+    <el-button type="primary" plain @click="openAddDialog"> {{ t('aiTask.diy.dynamicIndicatorConfig.add') }} </el-button>
   </el-form>
 
   <!-- 新增弹框 -->
-  <el-dialog v-model="dialogVisible" title="新增指标" destroy-on-close>
+  <el-dialog v-model="dialogVisible" :title="t('aiTask.diy.dynamicIndicatorConfig.add')" destroy-on-close>
     <el-form ref="dialogFormRef" :model="dialogForm" :rules="dialogRules" label-position="top">
       <el-form-item label="指标" prop="type">
         <template #label>
           <span
-            >指标<span
+            >{{ t('aiTask.diy.dynamicIndicatorConfig.metric')
+            }}<span
               ><el-popover :title="option.label" :content="option.desc" placement="top-start" v-if="option?.desc">
                 <template #reference>
                   <el-icon class="hover:cursor-pointer"><InfoFilled /></el-icon>
@@ -165,8 +170,8 @@ defineExpose({ formRef });
     </el-form>
 
     <template #footer>
-      <el-button @click="dialogVisible = false">取消</el-button>
-      <el-button type="primary" @click="confirmAdd">确认</el-button>
+      <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
+      <el-button type="primary" @click="confirmAdd">{{ t('common.confirm') }}</el-button>
     </template>
   </el-dialog>
 </template>

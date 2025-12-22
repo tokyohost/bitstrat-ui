@@ -9,7 +9,7 @@ import { checkWebsocketStatusByAccountId } from '@/views/system/crossExchangeArb
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { socket_status } = toRefs<any>(proxy?.useDict('socket_status'));
 const props = defineProps<{
-  account: WebsocketExStatus[]
+  account: WebsocketExStatus[];
 }>();
 const exchangeConnect = async (item: WebsocketStatus) => {
   ElMessageBox.confirm(proxy.$t('setting.socketStatus.reconnectConfirm'), proxy.$t('setting.socketStatus.title'), {
@@ -29,35 +29,29 @@ const exchangeConnect = async (item: WebsocketStatus) => {
         message: proxy.$t('setting.socketStatus.done')
       });
     })
-    .catch(() => {
-    });
+    .catch(() => {});
 };
 </script>
 
 <template>
   <div class="flex flex-col gap-y-1">
-    <el-card class="w-full" v-for="item in props.account.datas" shadow="hover" :key="new Date().getTime()"  @click="exchangeConnect(item)">
-      <div class="flex flex-row ">
-        <div class="flex justify-between w-full ">
+    <el-card class="w-full" v-for="item in props.account.datas" shadow="hover" :key="new Date().getTime()" @click="exchangeConnect(item)">
+      <div class="flex flex-row">
+        <div class="flex justify-between w-full">
           <div class="flex justify-start text-center align--center gap-col-1 ml-2">
             <ExchangeLogo :exchange="item.exchange"></ExchangeLogo>
-            <dict-tag :options="socket_status" :value="item.status" :size="'small'"  :i18n-profilx="'setting.api'" />
-            <div  class="ml-1 text-xs text-align-center color-#67C23A" v-if="item.status == 'active'">{{ item.dely ?? '0'
-              }}ms
-            </div>
+            <dict-tag :options="socket_status" v-if="item.status" :value="item.status" :size="'small'" :i18n-profilx="'setting.api'" />
+            <div class="ml-1 text-xs text-align-center color-#67C23A" v-if="item.status == 'active'">{{ item.dely ?? '0' }}ms</div>
           </div>
           <div class="flex justify-center">
             <div class="text-xs text-align-center">
               {{ item.apiName ?? '-' }}
             </div>
-
           </div>
         </div>
-
       </div>
       <div class="api-seting-item">
-
-        <div class="flex flex-row  w-full">
+        <div class="flex flex-row w-full">
           <div class="flex flex-1 text-xs">
             <div class="font-400">总金额</div>
             <div class="border-b-unset ml-1 color-blue">{{ item.balance ?? '-' }} U</div>
@@ -67,13 +61,12 @@ const exchangeConnect = async (item: WebsocketStatus) => {
             <div class="border-b-unset ml-1 color-#67C23A">{{ item.freeBalance ?? '-' }} U</div>
           </div>
         </div>
-        <div class="flex justify-end  w-full text-xs mt-2">
-          <div>余额更新时间:{{item.updateTime}}</div>
+        <div class="flex justify-end w-full text-xs mt-2">
+          <div>余额更新时间:{{ item.updateTime }}</div>
         </div>
       </div>
     </el-card>
   </div>
-
 </template>
 
 <style scoped lang="scss">

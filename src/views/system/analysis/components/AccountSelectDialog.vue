@@ -7,7 +7,7 @@ const { t } = useI18n();
 
 const props = defineProps<{
   visible: boolean;
-  exchangeName: string;
+  exchangeName: string | undefined;
 }>();
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void;

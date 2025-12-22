@@ -52,19 +52,19 @@ export interface FeedVO {
   /**
    * 用户id
    */
-  userId: string | number;
+  userId: string;
 }
 
 export interface FeedForm extends BaseEntity {
   /**
    * 主键ID
    */
-  id?: string | number;
+  id?: string;
 
   /**
    * 策略ID
    */
-  strategyId?: string | number;
+  strategyId?: string;
 
   /**
    * 标题
