@@ -81,3 +81,9 @@ export const delAiTask = (id: string | number | Array<string | number>) => {
     method: 'delete'
   });
 };
+export const getModifyConfig = (): AxiosPromise<string> => {
+  return request({
+    url: '/common/modifyConfig',
+    method: 'get'
+  });
+};
