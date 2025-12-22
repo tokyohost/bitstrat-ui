@@ -1,4 +1,5 @@
 import { ApiVO } from '@/api/system/api/types';
+import { ExtConfig, extConfigItem } from '@/components/SmartSelectSchema/type';
 
 export interface AiTaskVO {
   /**
@@ -136,6 +137,7 @@ export interface AiTaskForm extends BaseEntity {
   leverageMax: undefined;
   shortTermInterval: string;
   longTermInterval: string;
+  extConfig: ExtConfig;
 }
 
 export interface AiTaskQuery extends PageQuery {

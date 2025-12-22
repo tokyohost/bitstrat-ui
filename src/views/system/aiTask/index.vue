@@ -245,11 +245,42 @@
               </div>
             </el-form-item>
           </el-tab-pane>
+          <el-tab-pane name="detailSetting" :label="'自定义指标'">
+            <el-form-item
+              prop="extConfigValidate"
+              label-position="top"
+              label="预设行情指标"
+              :key="form.id ? form.id : new Date().getTime()"
+              :rules="[{ validator: validateExtConfig, trigger: 'change' }]"
+              ><div>
+                <SmartSelectSchema
+                  v-model="form.extConfig.defaultOptions"
+                  :options="options"
+                  label-key="name"
+                  value-key="type"
+                  multiple
+                  :form-schema="schema"
+                  dialog-title="新增策略类型"
+                  class="w-full"
+                  @create="handleCreate"
+                  @update:modelValue="aiTaskFormRef?.validateField('extConfigValidate')"
+                />
+                <DynamicIndicatorConfig
+                  v-model="form.extConfig.modify"
+                  :schema="schema"
+                  class="mt5"
+                  @update:modelValue="aiTaskFormRef?.validateField('extConfigValidate')"
+                />
+              </div>
+            </el-form-item>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button :loading="buttonLoading" type="primary" @click="nextForm" v-if="activeTab != 'user'">{{ t('aiTask.nextStep') }}</el-button>
+          <el-button :loading="buttonLoading" type="primary" @click="nextForm" v-if="activeTab != 'detailSetting'">{{
+            t('aiTask.nextStep')
+          }}</el-button>
           <el-button :loading="buttonLoading" type="primary" v-else @click="submitForm">{{ t('aiTask.confirm') }}</el-button>
           <el-button @click="cancel">{{ t('aiTask.cancel') }}</el-button>
         </div>
@@ -260,7 +291,7 @@
 
 <script setup name="AiTask" lang="ts">
 import { useI18n } from 'vue-i18n';
-import { listAiTask, getAiTask, delAiTask, addAiTask, updateAiTask, stopTask, startTask } from '@/api/system/aiTask';
+import { listAiTask, getAiTask, delAiTask, addAiTask, updateAiTask, stopTask, startTask, getModifyConfig } from '@/api/system/aiTask';
 import { AiTaskVO, AiTaskQuery, AiTaskForm } from '@/api/system/aiTask/types';
 import AiConfigSelector from '@/views/system/aiTask/AiConfigSelector.vue';
 import { ElOption, ElSelect, TabsInstance } from 'element-plus';
@@ -295,9 +326,41 @@ const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
+const validateNotEmptyArray = (_: any, value: any[], callback: any) => {
+  console.log('validate=', value);
+  if (!Array.isArray(value) || value.length === 0) {
+    callback(new Error('请至少选择一个预设行情指标'));
+  } else {
+    callback();
+  }
+};
+const validateExtConfig = (_: any, _value: any, callback: any) => {
+  const defaults = form.value.extConfig.defaultOptions;
+  const modifies = form.value.extConfig.modify;
+  console.log('validateExtConfig=', defaults, modifies);
+
+  if (!Array.isArray(defaults) || defaults.length === 0) {
+    return callback(new Error('请至少选择一个预设行情指标'));
+  }
+
+  // if (!Array.isArray(modifies) || modifies.length === 0) {
+  //   return callback(new Error('请至少新增一个指标配置'));
+  // }
+
+  if ((!defaults || defaults.length == 0) && (!modifies || modifies.length == 0)) {
+    return callback(new Error('自定义指标与预设指标不能同时为空'));
+  }
+  const limitConfigCount = 3;
+  const total = (defaults?.length || 0) + (modifies?.length || 0);
+  if (total < limitConfigCount) {
+    return callback(new Error(`指标数量不能低于${limitConfigCount}个`));
+  }
+  callback();
+};
 
 import { CSSProperties } from 'vue';
 import TaskItem from '@/views/system/aiTask/TaskItem.vue';
+import { FormSchemaItem, SelectItem } from '@/components/SmartSelectSchema/type';
 const checkLongInterval = (rule, value, callback) => {
   if (!isLongTermGreater(form.value.shortTermInterval, form.value.longTermInterval)) {
     callback(new Error(t('aiTask.rule.longTermInterval')));
@@ -325,9 +388,10 @@ const fieldTabMap: Record<string, string> = {
 
   systemPrompt: 'system',
 
-  userPrompt: 'user'
+  userPrompt: 'user',
+  'extConfig.default': 'detailSetting'
 };
-const steps = ['basic', 'account', 'system', 'user'];
+const steps = ['basic', 'account', 'system', 'user', 'detailSetting'];
 const initFormData: AiTaskForm = {
   id: undefined,
   name: undefined,
@@ -347,7 +411,11 @@ const initFormData: AiTaskForm = {
   leverageMin: undefined,
   leverageMax: undefined,
   shortTermInterval: '1m',
-  longTermInterval: '4H'
+  longTermInterval: '4H',
+  extConfig: {
+    defaultOptions: [],
+    modify: []
+  }
 };
 const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
   form: { ...initFormData },
@@ -390,12 +458,80 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
         },
         trigger: 'blur'
       }
+    ],
+    'extConfig.default': [
+      {
+        validator: (_, value, callback) => {
+          if (value.length == 0) {
+            callback(new Error(t('aiTask.rule.defaultStrategy')));
+          } else {
+            callback();
+          }
+        },
+        trigger: 'change'
+      }
     ]
   }
 });
 
 const tabPosition = ref<TabsInstance['tabPosition']>('top');
 const { queryParams, form, rules } = toRefs(data);
+
+const options = ref<SelectItem[]>([
+  // { type: 'EMA20', name: 'EMA indicators (20‑period)' },
+  // { type: 'MACD', name: 'MACD' },
+  // { type: 'RSI7', name: 'RSI indicators (7‑Period)' },
+  // { type: 'RSI14', name: 'RSI indicators (14‑Period)' }
+] as SelectItem[]);
+
+const schema = {
+  field: 'profix',
+  label: '指标项',
+  component: 'select',
+  required: true,
+  defaultValue: 'MA',
+  options: [
+    {
+      label: 'MA',
+      value: 'MA',
+      shortcut: 'MA strategy',
+      desc: 'common MA strategy',
+      children: {
+        field: 'maValue',
+        label: 'MA数值',
+        component: 'input-number',
+        required: true,
+        defaultValue: 5,
+        props: {
+          min: 1,
+          max: 50,
+          step: 1
+        }
+      }
+    },
+    {
+      label: 'RSI',
+      value: 'RSI',
+      shortcut: 'RSI strategy',
+      desc: 'common RSI strategy',
+      children: {
+        field: 'rsiValue',
+        label: 'RSI数值',
+        component: 'input-number',
+        required: true,
+        defaultValue: 5,
+        props: {
+          min: 1,
+          max: 50,
+          step: 1
+        }
+      }
+    }
+  ]
+} as FormSchemaItem;
+const handleCreate = (item: SelectItem) => {
+  options.value.push(item);
+};
 interface Mark {
   style: CSSProperties;
   label: string;
@@ -485,6 +621,15 @@ const loadExchange = async () => {
 
   // loading.value = false;
 };
+
+const loadTaskModify = async () => {
+  const modifyConfig = await getModifyConfig();
+  console.log(modifyConfig.data);
+  options.value = JSON.parse(modifyConfig.data);
+
+  form.value.extConfig.defaultOptions = options.value;
+  console.log(modifyConfig);
+};
 const showAccountSelect = ref<boolean>(false);
 
 const openAccountSelect = () => {
@@ -572,6 +717,15 @@ const handleUpdate = async (row?: AiTaskVO) => {
   const _id = row?.id || ids.value[0];
   const res = await getAiTask(_id);
   Object.assign(form.value, res.data);
+  if (!form.value.extConfig) {
+    form.value.extConfig = {
+      defaultOptions: [],
+      modify: []
+    };
+  } else {
+    form.value.extConfig = JSON.parse(form.value.extConfig);
+  }
+  console.log('form', form.value);
   dialog.visible = true;
   dialog.title = t('aiTask.modifyTask');
 };
@@ -599,14 +753,20 @@ const nextForm = () => {
 };
 
 /** 提交按钮 */
-const submitForm = () => {
+const submitForm = async () => {
+  const b = await aiTaskFormRef.value?.validateField('extConfigValidate');
+  if (!b) {
+    return;
+  }
   aiTaskFormRef.value?.validate(async (valid: boolean, fields) => {
     if (valid) {
       buttonLoading.value = true;
+      const data = { ...form.value };
+      data.extConfig = JSON.stringify(data.extConfig);
       if (form.value.id) {
-        await updateAiTask(form.value).finally(() => (buttonLoading.value = false));
+        await updateAiTask(data).finally(() => (buttonLoading.value = false));
       } else {
-        await addAiTask(form.value).finally(() => (buttonLoading.value = false));
+        await addAiTask(data).finally(() => (buttonLoading.value = false));
       }
       proxy?.$modal.msgSuccess(t('aiTask.message.success'));
       dialog.visible = false;
@@ -646,9 +806,11 @@ const handleExport = () => {
     `aiTask_${new Date().getTime()}.xlsx`
   );
 };
-onMounted(() => {
-  getList();
-  loadExchange();
+onMounted(async () => {
+  await loadTaskModify();
+  await getList();
+
+  await loadExchange();
 });
 </script>
 <style scoped lang="scss">

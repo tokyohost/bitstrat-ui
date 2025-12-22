@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { ref, watch, reactive } from 'vue';
 import { ElMessage, FormInstance } from 'element-plus';
-import { FormSchemaItem, OptionsItem, SelectItem } from '@/components/SmartSelectSchema/type';
+import { extConfigItem, FormSchemaItem, OptionsItem, SelectItem } from '@/components/SmartSelectSchema/type';
 import { InfoFilled } from '@element-plus/icons-vue';
 
 const props = defineProps<{
-  modelValue: any;
+  modelValue: extConfigItem[];
   options: SelectItem[];
   labelKey: string;
   valueKey: string;
   formSchema: FormSchemaItem;
   dialogTitle?: string;
   multiple?: boolean;
+  create?: boolean;
   placeholder?: string;
 }>();
 
@@ -19,26 +20,38 @@ const emit = defineEmits(['update:modelValue', 'create']);
 
 const CREATE_FLAG = '__CREATE__';
 const multiple = props.multiple ?? false;
-const innerValue = ref(props.modelValue);
+const innerValue = ref<typeof props.modelValue>(props.modelValue ? props.modelValue.map((item) => item[props.valueKey]) : []);
 
-watch(
-  () => props.modelValue,
-  (v) => (innerValue.value = v)
-);
+// watch(
+//   () => props.modelValue,
+//   (v) => {
+//     if (v && v.length > 0) {
+//       console.log(v);
+//       innerValue.value = v.map((item) => item[props.valueKey]);
+//     }
+//   }
+// );
 
 const visible = ref(false);
 
 watch(innerValue, (val) => {
-  if (multiple) {
+  if (props.create) {
     if (Array.isArray(val) && val.includes(CREATE_FLAG)) {
       openDialog();
       innerValue.value = val.filter((v) => v !== CREATE_FLAG);
     } else {
-      emit('update:modelValue', val);
+      console.log('value', innerValue.value);
+      const newItem = props.options.find((item) => val.indexOf(item[props.valueKey]) != -1);
+      emit('update:modelValue', newItem || []);
     }
   } else {
-    if (val === CREATE_FLAG) openDialog();
-    else emit('update:modelValue', val);
+    if (val === CREATE_FLAG) {
+      openDialog();
+    } else {
+      const newItem = props.options.filter((item) => val.indexOf(item[props.valueKey]) != -1);
+      console.log('newItem', newItem);
+      emit('update:modelValue', newItem);
+    }
   }
 });
 
@@ -136,7 +149,7 @@ const optionsSelect = async (val, options: OptionsItem[]) => {
   <el-select v-model="innerValue" :placeholder="placeholder" filterable clearable :multiple="multiple" style="width: 100%">
     <el-option v-for="item in options" :key="item[valueKey]" :label="item[labelKey]" :value="item[valueKey]" />
 
-    <el-option v-if="multiple || !multiple" :value="CREATE_FLAG" label="自定义" />
+    <el-option v-if="create" :value="CREATE_FLAG" label="自定义" />
   </el-select>
 
   <!-- 弹窗 -->
