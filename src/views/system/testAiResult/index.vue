@@ -6,8 +6,11 @@
           <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="handleQuery"></right-toolbar>
         </el-row>
       </template>
-      <AiCardList :test-ai-result-list="testAiResultList" v-if="testAiResultList.length > 0"></AiCardList>
-      <el-empty v-else></el-empty>
+      <div v-loading="loading">
+        <AiCardList :test-ai-result-list="testAiResultList" v-if="testAiResultList.length > 0"></AiCardList>
+        <el-empty v-else></el-empty>
+      </div>
+
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
   </div>
@@ -75,25 +78,28 @@ const data = reactive<PageData<TestAiResultForm, TestAiResultQuery>>({
 
 const { queryParams, form, rules } = toRefs(data);
 
-const handleQuery = () => {
+const handleQuery = async () => {
   loading.value = true;
   try {
     queryParams.value.pageNum = 1;
-    getList();
+    await getList();
   } finally {
     loading.value = false;
   }
 };
 /** 查询AI 操作日志列表 */
-const getList = async () => {
-  // loading.value = true;
+const getList = async (showLoading = false) => {
+  if (showLoading) {
+    loading.value = true;
+  }
+
   if (props.taskId) {
     queryParams.value.taskId = props.taskId;
   }
   const res = await listTestAiResult(queryParams.value);
   testAiResultList.value = res.rows;
   total.value = res.total;
-  // loading.value = false;
+  loading.value = false;
 };
 
 /** 表单重置 */

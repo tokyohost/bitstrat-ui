@@ -329,7 +329,7 @@ watch(() => [props.xData, props.seriesData, props.title, props.colors, props.loa
   background: #0d0d12;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 

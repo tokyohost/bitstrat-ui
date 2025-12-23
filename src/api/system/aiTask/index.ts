@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { AiTaskVO, AiTaskForm, AiTaskQuery } from '@/api/system/aiTask/types';
+import { AiTaskVO, AiTaskForm, AiTaskQuery, TaskProfitByDay } from '@/api/system/aiTask/types';
 
 /**
  * 查询AI任务列表
@@ -81,6 +81,18 @@ export const delAiTask = (id: string | number | Array<string | number>) => {
     method: 'delete'
   });
 };
+/**
+ * 删除AI任务
+ * @param id
+ */
+export const getAiTaskProfit = (id: string, startTime: string, endTime: string): AxiosPromise<TaskProfitByDay[]> => {
+  return request({
+    url: '/system/aiTask/queryTaskProfit',
+    method: 'get',
+    params: { taskId: id, startTime, endTime }
+  });
+};
+
 export const getModifyConfig = (): AxiosPromise<string> => {
   return request({
     url: '/common/modifyConfig',

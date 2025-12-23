@@ -3,7 +3,7 @@
     <el-card shadow="never">
       <template #header>
         <el-row :gutter="10" class="mb8">
-          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="getList">
+          <right-toolbar v-model:showSearch="showSearch" :search="false" @queryTable="userRefush">
             <template #btn>
               <el-tooltip
                 class="item"
@@ -18,8 +18,10 @@
           </right-toolbar>
         </el-row>
       </template>
-      <AiRequestCardList :list="testAiRequestList" @view="handleView" v-if="testAiRequestList.length > 0"></AiRequestCardList>
-      <el-empty v-else :description="t('testAiRequest.noData')"></el-empty>
+      <div v-loading="loading">
+        <AiRequestCardList :list="testAiRequestList" @view="handleView" v-if="testAiRequestList.length > 0"></AiRequestCardList>
+        <el-empty v-else :description="t('testAiRequest.noData')"></el-empty>
+      </div>
 
       <pagination
         :auto-scroll="false"
@@ -74,7 +76,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const testAiRequestList = ref<TestAiRequestVO[]>([]);
 const buttonLoading = ref(false);
-const loading = ref(true);
+const loading = ref(false);
 const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
 const total = ref(0);
@@ -118,7 +120,6 @@ const props = defineProps({
 
 /** 查询AI测试请求列表 */
 const getList = async (taskId?: string) => {
-  loading.value = true;
   if (taskId) {
     queryParams.value.taskId = taskId;
   } else if (props.taskId) {
@@ -127,10 +128,8 @@ const getList = async (taskId?: string) => {
   const res = await listTestAiRequest(queryParams.value);
   testAiRequestList.value = res.rows;
   total.value = res.total;
-  loading.value = false;
 };
 const loadList = async () => {
-  loading.value = true;
   try {
     const res = await listTestAiRequest(queryParams.value);
     testAiRequestList.value = res.rows;
@@ -138,7 +137,6 @@ const loadList = async () => {
   } catch (error) {
     console.error('Error loading test AI request list:', error);
   } finally {
-    loading.value = false;
   }
 };
 
@@ -167,6 +165,14 @@ const handleView = async (row?: TestAiRequestVO) => {
     dialog.title = t('testAiRequest.viewDetails');
   } catch (error) {
     console.error('Error loading request details:', error);
+  }
+};
+const userRefush = async () => {
+  loading.value = true;
+  try {
+    await getList();
+  } finally {
+    loading.value = false;
   }
 };
 

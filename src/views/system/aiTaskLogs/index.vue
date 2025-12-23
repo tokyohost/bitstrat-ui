@@ -25,7 +25,7 @@
               <el-button type="primary" size="default" @click="handleQuery" class="flex-grow md:w-auto">
                 {{ t('aiLogs.query') }}
               </el-button>
-              <el-button circle icon="Refresh" @click="getChat" class="flex-shrink-0" />
+              <el-button circle icon="Refresh" @click="userRefChat" class="flex-shrink-0" />
             </div>
           </div>
         </div>
@@ -50,6 +50,9 @@
         >
         </LineChart>
       </div>
+      <div class="flex flex-col md:flex-row gap-2 mt-2">
+        <TaskProfitCalendar :task-id="taskId" height="360px"> </TaskProfitCalendar>
+      </div>
     </el-card>
     <el-card shadow="never" class="mt-2">
       <template #header>
@@ -60,16 +63,18 @@
       </template>
       <PositionWidget ref="positionWidget" :accountId="taskVo?.apiId"></PositionWidget>
     </el-card>
-    <el-tabs v-model="activeName" @tab-click="handleClick" v-loading="chartLoading">
-      <el-tab-pane :label="t('aiLogs.requestLog')" name="request">
-        <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
-      </el-tab-pane>
-      <el-tab-pane :label="t('aiLogs.operationLog')" name="log">
-        <TestAiResult :task-id="taskId" ref="aiResultref"></TestAiResult>
-      </el-tab-pane>
-      <el-tab-pane :label="t('aiLogs.historyPosition')" name="history">
-        <HistoryPosition ref="aiHistoryRef" :task="taskVo as AiTaskVO"></HistoryPosition>
-      </el-tab-pane>
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <div v-loading="panelLoading">
+        <el-tab-pane :label="t('aiLogs.requestLog')" name="request">
+          <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
+        </el-tab-pane>
+        <el-tab-pane :label="t('aiLogs.operationLog')" name="log">
+          <TestAiResult :task-id="taskId" ref="aiResultref"></TestAiResult>
+        </el-tab-pane>
+        <el-tab-pane :label="t('aiLogs.historyPosition')" name="history">
+          <HistoryPosition ref="aiHistoryRef" :task="taskVo as AiTaskVO"></HistoryPosition>
+        </el-tab-pane>
+      </div>
     </el-tabs>
   </div>
 </template>
@@ -86,6 +91,7 @@ import { getAiTask } from '@/api/system/aiTask';
 import { AiTaskVO } from '@/api/system/aiTask/types';
 import PositionWidget from '@/views/components/widgets/PositionWidget.vue';
 import HistoryPosition from '@/views/system/historyPosition/HistoryPosition.vue';
+import TaskProfitCalendar from '@/views/system/aiTask/components/TaskProfitCalendar.vue';
 
 const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -107,6 +113,7 @@ const xData = ref<any[]>([]);
 const seriesData = ref<any[]>([]);
 const xDataFreeBalance = ref<any[]>([]);
 const chartLoading = ref(false);
+const panelLoading = ref(false);
 const seriesDataFreeBalance = ref<any[]>([]);
 
 const positionWidget = useTemplateRef('positionWidget');
@@ -157,6 +164,14 @@ const getList = async () => {
   total.value = res.total;
   loading.value = false;
 };
+const userRefChat = async () => {
+  try {
+    chartLoading.value = true;
+    await getChat();
+  } finally {
+    chartLoading.value = false;
+  }
+};
 
 const getChat = async () => {
   loading.value = true;
@@ -191,7 +206,7 @@ const reset = () => {
 /**
  * 搜索按钮操作
  */
-const handleQuery = () => {
+const handleQuery = async () => {
   // 1. 检查日期范围是否有效
   if (!dateRange.value || dateRange.value.length !== 2) {
     proxy?.$modal.msgWarning(t('aiLogs.selectDateRange'));
@@ -215,16 +230,16 @@ const handleQuery = () => {
 
   try {
     chartLoading.value = true;
-    handleLoadChat();
+    await handleLoadChat();
   } finally {
     chartLoading.value = false;
   }
 };
 
-const handleLoadChat = () => {
+const handleLoadChat = async () => {
   console.log('handleLoadChat');
-  getChat();
-  getChatFreeBalance();
+  await getChat();
+  await getChatFreeBalance();
 };
 
 // 时间选择逻辑
@@ -351,6 +366,7 @@ onMounted(async () => {
   const shortcutValue = shortcuts.value[0].value() as [Date, Date];
   dateRange.value = shortcutValue;
   chartLoading.value = true;
+  panelLoading.value = true;
   try {
     const id = route.query.id;
     if (!id) {
@@ -388,6 +404,7 @@ onMounted(async () => {
     loop();
   } finally {
     chartLoading.value = false;
+    panelLoading.value = false;
   }
 });
 
