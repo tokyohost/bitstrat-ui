@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="visible" :title="title" append-to-body destroy-on-close custom-class="mobile-dialog">
-    <el-form ref="aiTaskFormRef" :model="form" :rules="rules" label-width="80px" label-position="top">
+    <el-form ref="aiTaskFormRef" :model="form" :rules="rules" label-position="top">
       <el-tabs v-model="activeTab">
         <!-- ========== 基础配置 ========== -->
         <el-tab-pane name="basic" :label="t('aiTask.basicConfig')">
@@ -82,7 +82,7 @@
             </div>
           </el-form-item>
           <el-form-item :label="t('aiTask.leverage')" prop="leverage">
-            <div style="width: 50%">
+            <div class="flex ml-10 mr-10 justify-center w-full">
               <el-slider v-model="leverageValue" range :marks="marks" :min="1" :max="20" />
             </div>
           </el-form-item>
@@ -102,6 +102,39 @@
               </template>
               <div class="interval-scroll flex items-center gap-1">
                 <el-radio-group v-model="form.shortTermInterval" size="small">
+                  <div class="inline-flex gap-0">
+                    <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
+                      {{ item.name }}
+                    </el-radio>
+                  </div>
+                </el-radio-group>
+              </div>
+            </el-form-item>
+            <el-form-item :label="t('aiTask.needMiddleTerm')" prop="needMiddleTerm">
+              <div class="interval-scroll flex items-center gap-1">
+                <el-switch
+                  v-model="form.needMiddleTerm"
+                  class="ml-2"
+                  :active-value="1"
+                  :inactive-value="0"
+                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                />
+              </div>
+            </el-form-item>
+            <el-form-item :label="t('aiTask.middleTermIndicator')" prop="middleTermInterval" v-if="form.needMiddleTerm === 1">
+              <template #label>
+                <el-popover
+                  :title="t('aiTask.middleTermIndicatorPopoverTitle')"
+                  :content="t('aiTask.middleTermIndicatorPopoverContent')"
+                  placement="top-start"
+                >
+                  <template #reference>
+                    <span>{{ t('aiTask.middleTermIndicator') }}</span>
+                  </template>
+                </el-popover>
+              </template>
+              <div class="interval-scroll flex items-center gap-1">
+                <el-radio-group v-model="form.middleTermInterval" size="small">
                   <div class="inline-flex gap-0">
                     <el-radio border :value="item.value" v-for="(item, index) in termIntervalList()" :key="index">
                       {{ item.name }}
@@ -260,9 +293,9 @@
 <script setup lang="ts">
 import { listAiTask, getAiTask, delAiTask, addAiTask, updateAiTask, stopTask, startTask, getModifyConfig } from '@/api/system/aiTask';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-import { loadDefaultTemplate } from '@/views/system/aiTask/default';
+import { isMiddleTermSmaller, loadDefaultTemplate } from '@/views/system/aiTask/default';
 import { isLongTermGreater, isShortTermSmaller, termIntervalList } from '@/views/system/aiTask/default';
-import { ref, watch } from 'vue';
+import { CSSProperties, ref, watch } from 'vue';
 import { ElForm, ElOption, ElSelect } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import AiConfigSelector from '@/views/system/aiTask/AiConfigSelector.vue';
@@ -275,15 +308,15 @@ import AccountSelectDialog from '@/views/system/analysis/components/AccountSelec
 import { ApiVO } from '@/api/system/api/types';
 import ExchangeLogo from '@/views/system/analysis/components/ExchangeLogo.vue';
 
-import { AiTaskForm, AiTaskVO } from '@/api/system/aiTask/types';
+import { AiTaskForm, AiTaskQuery, AiTaskVO } from '@/api/system/aiTask/types';
 import UserPromptDefault from '@/views/system/aiTask/UserPromptDefault.vue';
+import { FormSchemaItem, SelectItem } from '@/components/SmartSelectSchema/type';
 
 const { t } = useI18n();
 const props = defineProps<{
   modelValue: boolean;
   title: string;
   formData: AiTaskForm;
-  rules: any;
   type: 'add' | 'edit';
 }>();
 const aiTaskFormRef = ref<ElFormInstance>();
@@ -315,7 +348,27 @@ const validateExtConfig = (_: any, _value: any, callback: any) => {
   }
   callback();
 };
-
+const checkLongInterval = (rule, value, callback) => {
+  if (!isLongTermGreater(form.value.shortTermInterval, form.value.longTermInterval)) {
+    callback(new Error(t('aiTask.rule.longTermInterval')));
+  } else {
+    callback();
+  }
+};
+const checkShortInterval = (rule, value, callback) => {
+  if (!isShortTermSmaller(form.value.shortTermInterval, form.value.longTermInterval)) {
+    callback(new Error(t('aiTask.rule.shortTermInterval')));
+  } else {
+    callback();
+  }
+};
+const checkMiddleInterval = (rule, value, callback) => {
+  if (!isMiddleTermSmaller(form.value.shortTermInterval, form.value.middleTermInterval, form.value.longTermInterval)) {
+    callback(new Error(t('aiTask.rule.middleTermInterval')));
+  } else {
+    callback();
+  }
+};
 const options = ref<SelectItem[]>([
   // { type: 'EMA20', name: 'EMA indicators (20‑period)' },
   // { type: 'MACD', name: 'MACD' },
@@ -334,6 +387,7 @@ const fieldTabMap: Record<string, string> = {
   symbols: 'basic',
   startBalance: 'basic',
   aiWorkflowId: 'basic',
+  middleTermInterval: 'basic',
   interval: 'basic',
 
   apiId: 'account',
@@ -364,12 +418,55 @@ const initFormData: AiTaskForm = {
   leverageMin: undefined,
   leverageMax: undefined,
   shortTermInterval: '1m',
+  needMiddleTerm: 0,
+  middleTermInterval: '30m',
   longTermInterval: '4H',
   extConfig: {
     defaultOptions: [],
     modify: []
   }
 };
+
+const rules = {
+  name: [{ required: true, message: t('aiTask.rule.taskName'), trigger: 'blur' }],
+  exchange: [{ required: true, message: t('aiTask.rule.exchange'), trigger: 'blur' }],
+  symbols: [{ required: true, message: t('aiTask.rule.symbols'), trigger: 'blur' }],
+  aiWorkflowId: [{ required: true, message: t('aiTask.rule.aiAgent'), trigger: 'blur' }],
+  interval: [{ required: true, message: t('aiTask.rule.timeGranularity'), trigger: 'blur' }],
+  apiId: [{ required: true, message: t('aiTask.rule.apiId'), trigger: 'blur' }],
+  systemPrompt: [{ required: true, message: t('aiTask.rule.systemPrompt'), trigger: 'blur' }],
+  leverage: [{ required: true, message: t('aiTask.rule.leverage'), trigger: 'blur' }],
+  longTermInterval: [{ required: true, validator: checkLongInterval, trigger: 'change' }],
+  needMiddleTerm: [{ required: true, message: t('aiTask.rule.needMiddleTerm'), trigger: 'change' }],
+  middleTermInterval: [{ required: true, validator: checkMiddleInterval, trigger: 'change' }],
+  shortTermInterval: [{ required: true, validator: checkShortInterval, trigger: 'change' }],
+  startBalance: [
+    { required: true, message: t('aiTask.rule.initialBalance'), trigger: 'blur' },
+    {
+      validator: (_, value, callback) => {
+        if (Number(value) < 10) {
+          callback(new Error(t('aiTask.rule.initialBalanceLessThan10')));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur'
+    }
+  ],
+  'extConfig.default': [
+    {
+      validator: (_, value, callback) => {
+        if (value.length == 0) {
+          callback(new Error(t('aiTask.rule.defaultStrategy')));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'change'
+    }
+  ]
+};
+
 // 本地表单副本（避免直接改父组件）
 const form = ref<AiTaskForm>(initFormData);
 
@@ -620,21 +717,36 @@ defineExpose({ onErrorField, resetFields, setDefaultConfig });
 .interval-scroll {
   overflow-x: auto;
   white-space: nowrap;
-  padding-bottom: 4px; /* 防止滚动条遮挡内容 */
 
-  /* 默认隐藏滚动条 */
-  scrollbar-width: none; /* Firefox */
+  /* 始终预留滚动条高度，防止抖动 */
+  padding-bottom: 6px;
+
+  /* Firefox：始终有滚动条高度 */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
+
+/* Chrome / Edge */
 .interval-scroll::-webkit-scrollbar {
-  height: 6px;
-  display: none; /* Chrome 默认隐藏 */
+  height: 6px; /* 始终固定高度 */
 }
 
-/* 鼠标移入时显示滚动条 */
-.interval-scroll:hover::-webkit-scrollbar {
-  display: block;
+.interval-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
+
+.interval-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+}
+
+/* hover 时仅改变颜色 */
+.interval-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox hover */
 .interval-scroll:hover {
-  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
 </style>

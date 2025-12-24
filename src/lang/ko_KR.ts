@@ -493,6 +493,10 @@ export default {
     shortTermIndicatorPopoverContent: 'AI를 호출할 때 EMA/MACD/RSI 등 단기 지표의 데이터 소스로 K선 데이터를 가져옴',
     longTermIndicator: '장기 지표',
     longTermIndicatorPopoverTitle: '장기 지표',
+    middleTermIndicator: '중기 지표',
+    needMiddleTerm: '중기 지표 필요 여부',
+    middleTermIndicatorPopoverTitle: '중기 지표',
+    middleTermIndicatorPopoverContent: 'AI가 호출될 때마다 EMA/MACD/RSI 등 중기 지표의 데이터 소스로 사용될 K선 데이터의 기간',
     longTermIndicatorPopoverContent:
       'AI를 호출할 때 EMA/MACD/RSI 등 장기 지표의 데이터 소스로 K선 데이터를 가져옴. 주의: 장기 지표는 단기 지표보다 길어야 합니다!!',
     basicConfig: '기본 설정',
@@ -525,6 +529,9 @@ export default {
       systemPrompt: '시스템 프롬프트는 비워둘 수 없습니다',
       leverage: '레버리지 범위를 선택해야 합니다',
       longTermInterval: '장기 주기는 단기 주기보다 커야 합니다',
+      needMiddleTerm: '중기 지표가 필요한지 선택하세요',
+      middleTermInterval: '중기 주기는 단기 주기보다 크고 장기 주기보다 작아야 합니다',
+
       shortTermInterval: '단기 주기는 장기 주기보다 작아야 합니다',
       initialBalance: '초기 잔액을 입력해야 합니다',
       initialBalanceLessThan10: '초기 잔액은 10 미만일 수 없습니다'

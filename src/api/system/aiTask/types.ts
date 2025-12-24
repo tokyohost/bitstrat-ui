@@ -136,6 +136,8 @@ export interface AiTaskForm extends BaseEntity {
   leverageMin: undefined;
   leverageMax: undefined;
   shortTermInterval: string;
+  middleTermInterval: string;
+  needMiddleTerm: number;
   longTermInterval: string;
   extConfig: ExtConfig;
 }

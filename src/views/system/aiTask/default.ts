@@ -120,3 +120,13 @@ export function isShortTermSmaller(shortTerm, longTerm) {
 
   return shortVal < longVal;
 }
+export function isMiddleTermSmaller(shortTerm, middle, longTerm) {
+  console.log('shortTerm:', shortTerm, 'middle', middle, 'longTerm:', longTerm);
+  if (!shortTerm || !longTerm || !middle) return false;
+
+  const shortVal = intervalToMinutes(shortTerm);
+  const middleVal = intervalToMinutes(middle);
+  const longVal = intervalToMinutes(longTerm);
+
+  return shortVal < middleVal && middleVal < longVal;
+}

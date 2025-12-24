@@ -498,6 +498,11 @@ export default {
     longTermIndicatorPopoverTitle: 'Long Term Indicator',
     longTermIndicatorPopoverContent:
       'Get K-line data as a data source for long-term indicators like EMA/MACD/RSI when calling AI. Note: long-term indicators must be longer than short-term indicators!!',
+    middleTermIndicator: 'Mid-term Indicator',
+    needMiddleTerm: 'Require mid-term indicator',
+    middleTermIndicatorPopoverTitle: 'Mid-term Indicator',
+    middleTermIndicatorPopoverContent:
+      'The length of K-line data retrieved each time the AI is called as the data source for mid-term indicators such as EMA/MACD/RSI',
     basicConfig: 'Basic Configuration',
     accountSelect: 'Account Selection',
     selectAccount: 'Select Account',
@@ -528,6 +533,9 @@ export default {
       systemPrompt: 'System prompt cannot be empty',
       leverage: 'Leverage range must be selected',
       longTermInterval: 'Long-term cycle must be greater than short-term cycle',
+      // en-US
+      needMiddleTerm: 'Please select whether a mid-term indicator is required',
+      middleTermInterval: 'The mid-term interval must be greater than the short-term interval and less than the long-term interval',
       shortTermInterval: 'Short-term cycle must be less than long-term cycle',
       initialBalance: 'Initial balance must be filled',
       initialBalanceLessThan10: 'Initial balance cannot be less than 10'

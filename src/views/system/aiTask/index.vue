@@ -45,8 +45,7 @@
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
-    <AiTaskDialog ref="taskDialog" :type="optType" @reload="getList" v-model="dialog.visible" :title="dialog.title" :form-data="form" :rules="rules">
-    </AiTaskDialog>
+    <AiTaskDialog ref="taskDialog" :type="optType" @reload="getList" v-model="dialog.visible" :title="dialog.title" :form-data="form"> </AiTaskDialog>
   </div>
 </template>
 
@@ -55,7 +54,7 @@ import { useI18n } from 'vue-i18n';
 import { listAiTask, getAiTask, delAiTask, addAiTask, updateAiTask, stopTask, startTask, getModifyConfig } from '@/api/system/aiTask';
 import { AiTaskVO, AiTaskQuery, AiTaskForm } from '@/api/system/aiTask/types';
 import { ElOption, ElSelect, TabsInstance } from 'element-plus';
-import { isLongTermGreater, isShortTermSmaller, termIntervalList } from '@/views/system/aiTask/default';
+import { isLongTermGreater, isMiddleTermSmaller, isShortTermSmaller, termIntervalList } from '@/views/system/aiTask/default';
 
 const { t } = useI18n();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -78,24 +77,9 @@ const dialog = reactive<DialogOption>({
   title: ''
 });
 
-import { CSSProperties } from 'vue';
 import TaskItem from '@/views/system/aiTask/TaskItem.vue';
-import { FormSchemaItem, SelectItem } from '@/components/SmartSelectSchema/type';
+
 import AiTaskDialog from '@/views/system/aiTask/AiTaskDialog.vue';
-const checkLongInterval = (rule, value, callback) => {
-  if (!isLongTermGreater(form.value.shortTermInterval, form.value.longTermInterval)) {
-    callback(new Error(t('aiTask.rule.longTermInterval')));
-  } else {
-    callback();
-  }
-};
-const checkShortInterval = (rule, value, callback) => {
-  if (!isShortTermSmaller(form.value.shortTermInterval, form.value.longTermInterval)) {
-    callback(new Error(t('aiTask.rule.shortTermInterval')));
-  } else {
-    callback();
-  }
-};
 
 const taskDialog = useTemplateRef('taskDialog');
 
@@ -118,6 +102,7 @@ const initFormData: AiTaskForm = {
   leverageMin: undefined,
   leverageMax: undefined,
   shortTermInterval: '1m',
+  middleTermInterval: '15m',
   longTermInterval: '4H',
   extConfig: {
     defaultOptions: [],
@@ -141,43 +126,6 @@ const data = reactive<PageData<AiTaskForm, AiTaskQuery>>({
     interval: undefined,
 
     params: {}
-  },
-  rules: {
-    name: [{ required: true, message: t('aiTask.rule.taskName'), trigger: 'blur' }],
-    exchange: [{ required: true, message: t('aiTask.rule.exchange'), trigger: 'blur' }],
-    symbols: [{ required: true, message: t('aiTask.rule.symbols'), trigger: 'blur' }],
-    aiWorkflowId: [{ required: true, message: t('aiTask.rule.aiAgent'), trigger: 'blur' }],
-    interval: [{ required: true, message: t('aiTask.rule.timeGranularity'), trigger: 'blur' }],
-    apiId: [{ required: true, message: t('aiTask.rule.apiId'), trigger: 'blur' }],
-    systemPrompt: [{ required: true, message: t('aiTask.rule.systemPrompt'), trigger: 'blur' }],
-    leverage: [{ required: true, message: t('aiTask.rule.leverage'), trigger: 'blur' }],
-    longTermInterval: [{ required: true, validator: checkLongInterval, trigger: 'change' }],
-    shortTermInterval: [{ required: true, validator: checkShortInterval, trigger: 'change' }],
-    startBalance: [
-      { required: true, message: t('aiTask.rule.initialBalance'), trigger: 'blur' },
-      {
-        validator: (_, value, callback) => {
-          if (Number(value) < 10) {
-            callback(new Error(t('aiTask.rule.initialBalanceLessThan10')));
-          } else {
-            callback();
-          }
-        },
-        trigger: 'blur'
-      }
-    ],
-    'extConfig.default': [
-      {
-        validator: (_, value, callback) => {
-          if (value.length == 0) {
-            callback(new Error(t('aiTask.rule.defaultStrategy')));
-          } else {
-            callback();
-          }
-        },
-        trigger: 'change'
-      }
-    ]
   }
 });
 
