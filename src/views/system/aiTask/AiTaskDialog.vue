@@ -616,3 +616,25 @@ onMounted(async () => {
 });
 defineExpose({ onErrorField, resetFields, setDefaultConfig });
 </script>
+<style lang="scss" scoped>
+.interval-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 4px; /* 防止滚动条遮挡内容 */
+
+  /* 默认隐藏滚动条 */
+  scrollbar-width: none; /* Firefox */
+}
+.interval-scroll::-webkit-scrollbar {
+  height: 6px;
+  display: none; /* Chrome 默认隐藏 */
+}
+
+/* 鼠标移入时显示滚动条 */
+.interval-scroll:hover::-webkit-scrollbar {
+  display: block;
+}
+.interval-scroll:hover {
+  scrollbar-width: thin; /* Firefox */
+}
+</style>
