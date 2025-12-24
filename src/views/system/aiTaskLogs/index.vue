@@ -354,8 +354,8 @@ const handleExport = () => {
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event);
-  aiRequestRef.value?.getList(taskId.value);
-  aiHistoryRef.value?.fetchData(false);
+  // aiRequestRef.value?.getList(taskId.value);
+  // aiHistoryRef.value?.fetchData(false);
 };
 
 const taskId = ref<string>('');
