@@ -401,21 +401,21 @@ onMounted(async () => {
       aiResultref.value?.getList();
     }
 
-    const loop = () => {
-      timer = setTimeout(() => {
-        handleLoadChat();
-        if (activeName.value === 'request') {
-          aiRequestRef.value?.getList(taskId.value);
-        } else if (activeName.value === 'log') {
-          aiResultref.value?.getList();
-        }
-        // else if (activeName.value === 'history') {
-        //   aiHistoryRef.value?.fetchData(false);
-        // }
-        loop(); // 下一轮
-      }, 1000 * 10);
-    };
-    loop();
+    // const loop = () => {
+    //   timer = setTimeout(() => {
+    //     handleLoadChat();
+    //     if (activeName.value === 'request') {
+    //       aiRequestRef.value?.getList(taskId.value);
+    //     } else if (activeName.value === 'log') {
+    //       aiResultref.value?.getList();
+    //     }
+    //     // else if (activeName.value === 'history') {
+    //     //   aiHistoryRef.value?.fetchData(false);
+    //     // }
+    //     loop(); // 下一轮
+    //   }, 1000 * 10);
+    // };
+    // loop();
   } finally {
     chartLoading.value = false;
     panelLoading.value = false;
