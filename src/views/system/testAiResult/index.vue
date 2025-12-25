@@ -22,7 +22,7 @@ import { TestAiResultVO, TestAiResultQuery, TestAiResultForm } from '@/api/syste
 import AiCardList from '@/views/system/testAiResult/AiCardList.vue';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
+import { useChartAutoRegister } from '@/hooks/useChart';
 const testAiResultList = ref<TestAiResultVO[]>([]);
 const buttonLoading = ref(false);
 const loading = ref(false);
@@ -118,7 +118,7 @@ const handleExport = () => {
     `testAiResult_${new Date().getTime()}.xlsx`
   );
 };
-
+useChartAutoRegister(getList);
 onMounted(() => {
   getList();
 });

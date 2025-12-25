@@ -80,6 +80,7 @@ const loading = ref(false);
 const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
 const total = ref(0);
+import { useChartAutoRegister } from '@/hooks/useChart';
 
 const testAiRequestFormRef = ref<ElFormInstance>();
 
@@ -139,6 +140,7 @@ const loadList = async () => {
   } finally {
   }
 };
+useChartAutoRegister(getList);
 
 /** 取消按钮 */
 const cancel = () => {

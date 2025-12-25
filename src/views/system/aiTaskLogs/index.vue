@@ -26,34 +26,41 @@
                 {{ t('aiLogs.query') }}
               </el-button>
               <el-button circle icon="Refresh" @click="userRefChat" class="flex-shrink-0" />
+              <AutoRefresh></AutoRefresh>
             </div>
           </div>
         </div>
       </template>
-      <div class="flex flex-col md:flex-row gap-2" v-loading="chartLoading">
-        <LineChart
-          :key="taskVo?.startBalance || 0"
-          :xData="xData"
-          :seriesData="seriesData"
-          :title="t('aiLogs.accountFundsTrend')"
-          :tooltipUnit="t('aiLogs.usdt')"
-          height="360px"
-          :center-line="true"
-        >
-        </LineChart>
-        <LineChart
-          :xData="xDataFreeBalance"
-          :seriesData="seriesDataFreeBalance"
-          :title="t('aiLogs.accountAvailableTrend')"
-          :tooltipUnit="t('aiLogs.usdt')"
-          height="360px"
-        >
-        </LineChart>
-      </div>
+      <ChartWrapper :refresh-fn="handleLoadChat">
+        <div class="flex flex-col md:flex-row gap-2" v-loading="chartLoading">
+          <LineChart
+            :key="taskVo?.startBalance || 0"
+            :xData="xData"
+            :seriesData="seriesData"
+            :title="t('aiLogs.accountFundsTrend')"
+            :tooltipUnit="t('aiLogs.usdt')"
+            height="360px"
+            :center-line="true"
+          >
+          </LineChart>
+          <LineChart
+            :xData="xDataFreeBalance"
+            :seriesData="seriesDataFreeBalance"
+            :title="t('aiLogs.accountAvailableTrend')"
+            :tooltipUnit="t('aiLogs.usdt')"
+            height="360px"
+          >
+          </LineChart>
+        </div>
+      </ChartWrapper>
+
       <div class="flex flex-col md:flex-row gap-2 mt-2">
-        <TaskProfitCalendar :task-id="taskId" height="360px"> </TaskProfitCalendar>
+        <ChartWrapper>
+          <TaskProfitCalendar :task-id="taskId" height="360px"> </TaskProfitCalendar>
+        </ChartWrapper>
       </div>
     </el-card>
+    <!--    <ChartWrapper :refresh-fn="refshPosition">-->
     <el-card shadow="never" class="mt-2">
       <template #header>
         <el-row :gutter="10" class="mb8 justify-between flex">
@@ -63,16 +70,23 @@
       </template>
       <PositionWidget ref="positionWidget" :accountId="taskVo?.apiId"></PositionWidget>
     </el-card>
+    <!--    </ChartWrapper>-->
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <div v-loading="panelLoading">
         <el-tab-pane :label="t('aiLogs.requestLog')" name="request">
-          <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
+          <ChartWrapper>
+            <TestAiRequest :task-id="taskId" ref="aiRequestRef"></TestAiRequest>
+          </ChartWrapper>
         </el-tab-pane>
         <el-tab-pane :label="t('aiLogs.operationLog')" name="log">
-          <TestAiResult :task-id="taskId" ref="aiResultref"></TestAiResult>
+          <ChartWrapper>
+            <TestAiResult :task-id="taskId" ref="aiResultref"></TestAiResult>
+          </ChartWrapper>
         </el-tab-pane>
         <el-tab-pane :label="t('aiLogs.historyPosition')" name="history">
-          <HistoryPosition ref="aiHistoryRef" :task="taskVo as AiTaskVO"></HistoryPosition>
+          <ChartWrapper>
+            <HistoryPosition ref="aiHistoryRef" :task="taskVo as AiTaskVO"></HistoryPosition>
+          </ChartWrapper>
         </el-tab-pane>
       </div>
     </el-tabs>
@@ -167,7 +181,7 @@ const getList = async () => {
 const userRefChat = async () => {
   try {
     chartLoading.value = true;
-    await getChat();
+    await handleLoadChat();
   } finally {
     chartLoading.value = false;
   }

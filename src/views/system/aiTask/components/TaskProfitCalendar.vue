@@ -41,6 +41,7 @@ import { ref, watch, useAttrs, computed } from 'vue';
 import dayjs from 'dayjs';
 import { getAiTaskProfit } from '@/api/system/aiTask';
 import { TaskProfitByDay } from '@/api/system/aiTask/types';
+import { useChartAutoRegister } from '@/hooks/useChart';
 
 const attrs = useAttrs();
 const props = defineProps<{ taskId: string }>();
@@ -57,9 +58,9 @@ const profitMap = computed(() => {
   return map;
 });
 
-const fetchProfit = async (date: Date) => {
+const fetchProfit = async (date: Date, showLoading: boolean = false) => {
   if (!props.taskId) return;
-  loading.value = true;
+  if (showLoading) loading.value = true;
   const d = dayjs(date);
   const start = d.startOf('month').format('YYYY-MM-DD HH:mm:ss');
   const end = d.endOf('month').format('YYYY-MM-DD HH:mm:ss');
@@ -68,9 +69,7 @@ const fetchProfit = async (date: Date) => {
     const res = await getAiTaskProfit(props.taskId, start, end);
     profitList.value = res.data || [];
   } finally {
-    setTimeout(() => {
-      loading.value = false;
-    }, 200);
+    if (showLoading) loading.value = false;
   }
 };
 
@@ -85,6 +84,10 @@ watch(
   { immediate: true }
 );
 watch(currentDate, (val) => fetchProfit(val));
+
+const refresh = () => fetchProfit(currentDate.value, false);
+useChartAutoRegister(refresh);
+defineExpose({ refresh });
 </script>
 
 <style scoped>

@@ -5,6 +5,7 @@ import { queryHistoryPositionByPage } from '@/views/system/historyPosition/index
 import { HistoryPosition, HistoryPositionQuery } from '@/views/system/historyPosition/type';
 import { AiTaskVO } from '@/api/system/aiTask/types';
 import { ElMessage } from 'element-plus';
+import { useChartAutoRegister } from '@/hooks/useChart';
 
 const { t } = useI18n();
 
@@ -15,6 +16,7 @@ const props = defineProps<{
 // --- 状态定义 ---
 const data = ref<HistoryPosition[]>([]);
 const loading = ref<boolean>(false);
+const morePage = ref<number>(0);
 const moreLoading = ref<boolean>(false); // 加载更多按钮的 loading 状态
 const idLessThan = ref<string | null>(null); // 修复类型: string | null
 const hasMore = ref<boolean>(false); // 是否还有更多数据
@@ -52,7 +54,7 @@ const formatTimestamp = (timestamp: string | number, includeTime = false) => {
  * 获取数据
  * @param isAppend 是否为追加模式（加载更多）
  */
-const fetchData = async (isAppend: boolean = false) => {
+const fetchData = async (isAppend: boolean = false, showLoading = true) => {
   // 设置查询参数
   queryData.value.exchange = props.task?.exchange;
   queryData.value.apiId = props.task?.apiId;
@@ -61,8 +63,10 @@ const fetchData = async (isAppend: boolean = false) => {
   try {
     if (isAppend) {
       moreLoading.value = true;
+      morePage.value += 1;
     } else {
-      loading.value = true;
+      if (showLoading) loading.value = true;
+      morePage.value = 0;
     }
 
     const page = await queryHistoryPositionByPage(queryData.value);
@@ -95,7 +99,7 @@ const fetchData = async (isAppend: boolean = false) => {
   } catch (error) {
     console.error(error);
   } finally {
-    loading.value = false;
+    if (showLoading) loading.value = false;
     moreLoading.value = false;
   }
 };
@@ -103,9 +107,17 @@ const fetchData = async (isAppend: boolean = false) => {
 // 初始查询 / 刷新
 const handleQuery = () => {
   idLessThan.value = null; // 重置游标
-  fetchData(false);
+  fetchData(false, true);
 };
 
+const handleRefresh = () => {
+  if (morePage.value > 0) {
+    console.warn('历史持仓翻页过，不自动刷新');
+    return;
+  }
+  idLessThan.value = null; // 重置游标
+  fetchData(false, false);
+};
 // 加载更多
 const handleLoadMore = () => {
   if (!idLessThan.value) return;
@@ -119,7 +131,7 @@ const viewDetails = (id: string) => {
 defineExpose({
   fetchData
 });
-
+useChartAutoRegister(handleRefresh);
 onMounted(() => {
   handleQuery();
 });
