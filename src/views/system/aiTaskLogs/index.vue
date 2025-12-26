@@ -297,74 +297,7 @@ const handleDateChange = (val: [Date, Date] | null) => {
   console.log('选定的时间范围:', val);
 };
 
-/** 重置按钮操作 */
-const resetQuery = () => {
-  queryFormRef.value?.resetFields();
-  handleQuery();
-};
-
-/** 多选框选中数据 */
-const handleSelectionChange = (selection: AiLogsVO[]) => {
-  ids.value = selection.map((item) => item.id);
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
-};
-
-/** 新增按钮操作 */
-const handleAdd = () => {
-  reset();
-  dialog.visible = true;
-  dialog.title = '添加AI 测试趋势';
-};
-
-/** 修改按钮操作 */
-const handleUpdate = async (row?: AiLogsVO) => {
-  reset();
-  const _id = row?.id || ids.value[0];
-  const res = await getAiLogs(_id);
-  Object.assign(form.value, res.data);
-  dialog.visible = true;
-  dialog.title = '修改AI 测试趋势';
-};
-
-/** 提交按钮 */
-const submitForm = () => {
-  aiLogsFormRef.value?.validate(async (valid: boolean) => {
-    if (valid) {
-      buttonLoading.value = true;
-      if (form.value.id) {
-        await updateAiLogs(form.value).finally(() => (buttonLoading.value = false));
-      } else {
-        await addAiLogs(form.value).finally(() => (buttonLoading.value = false));
-      }
-      proxy?.$modal.msgSuccess('操作成功');
-      dialog.visible = false;
-      await getList();
-    }
-  });
-};
-
-/** 删除按钮操作 */
-const handleDelete = async (row?: AiLogsVO) => {
-  const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除AI 测试趋势编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
-  await delAiLogs(_ids);
-  proxy?.$modal.msgSuccess('删除成功');
-  await getList();
-};
-
 const activeName = ref<string>('request');
-
-/** 导出按钮操作 */
-const handleExport = () => {
-  proxy?.download(
-    'system/aiLogs/export',
-    {
-      ...queryParams.value
-    },
-    `aiLogs_${new Date().getTime()}.xlsx`
-  );
-};
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event);
