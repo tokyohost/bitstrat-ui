@@ -17,7 +17,6 @@
     <!--    </el-tooltip>-->
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Refresh } from '@element-plus/icons-vue';
@@ -40,18 +39,29 @@ const props = defineProps({
 const currentInterval = ref(10000);
 const timeLeft = ref(0);
 const isRefreshing = ref(false);
-let timer: any = null;
 
+// 🔁 只保留一个 timeout
+let timer: ReturnType<typeof setTimeout> | null = null;
+
+/**
+ * 圆环进度
+ */
 const progressStyle = computed(() => {
-  if (currentInterval.value === 0 || isRefreshing.value) return { 'stroke-dashoffset': 63 };
+  if (currentInterval.value === 0 || isRefreshing.value) {
+    return { 'stroke-dashoffset': 63 };
+  }
   const progress = timeLeft.value / currentInterval.value;
   return { 'stroke-dashoffset': 63 * (1 - progress) };
 });
 
+/**
+ * 手动 / 自动刷新
+ */
 const manualRefresh = async () => {
   if (isRefreshing.value) return;
+
   isRefreshing.value = true;
-  if (timer) clearInterval(timer);
+  if (timer) clearTimeout(timer);
 
   const promises: Promise<any>[] = [];
   emitter.emit('dashboard:refresh', promises);
@@ -61,25 +71,52 @@ const manualRefresh = async () => {
     await Promise.allSettled(promises);
   } finally {
     isRefreshing.value = false;
-    resetTimer();
+    startCountdown(); // ✅ 刷新完成后重新计时
   }
 };
 
-const resetTimer = () => {
-  if (timer) clearInterval(timer);
-  if (currentInterval.value > 0) {
-    timeLeft.value = currentInterval.value;
-    timer = setInterval(() => {
+/**
+ * 倒计时（setTimeout 递归）
+ */
+const startCountdown = () => {
+  if (timer) clearTimeout(timer);
+
+  if (currentInterval.value <= 0) return;
+
+  timeLeft.value = currentInterval.value;
+
+  const tick = () => {
+    timer = setTimeout(() => {
       timeLeft.value -= 1000;
-      if (timeLeft.value <= 0) manualRefresh();
+
+      if (timeLeft.value <= 0) {
+        manualRefresh();
+      } else {
+        tick();
+      }
     }, 1000);
-  }
+  };
+
+  tick();
 };
 
-const handleIntervalChange = () => resetTimer();
+/**
+ * 切换刷新间隔
+ */
+const handleIntervalChange = () => {
+  startCountdown();
+};
 
-onMounted(() => resetTimer());
-onUnmounted(() => timer && clearInterval(timer));
+/**
+ * 生命周期
+ */
+onMounted(() => {
+  startCountdown();
+});
+
+onUnmounted(() => {
+  if (timer) clearTimeout(timer);
+});
 </script>
 
 <style scoped lang="scss">
