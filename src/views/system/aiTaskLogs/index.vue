@@ -262,6 +262,15 @@ const dateRange = ref<[Date, Date] | null>(null);
 // 快捷选项配置 - 使用 computed 以支持动态翻译
 const shortcuts = computed(() => [
   {
+    text: 'today',
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24);
+      return [start, end];
+    }
+  },
+  {
     text: t('aiLogs.lastWeek'),
     value: () => {
       const end = new Date();
@@ -270,6 +279,7 @@ const shortcuts = computed(() => [
       return [start, end];
     }
   },
+
   {
     text: t('aiLogs.lastMonth'),
     value: () => {
