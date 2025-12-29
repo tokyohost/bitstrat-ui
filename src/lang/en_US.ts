@@ -214,6 +214,7 @@ export default {
       short: 'Short',
       tpsl: 'TP/SL',
       hold: 'hold',
+      reduce: 'reduce',
       close: 'Close',
       nothing: 'Nothing'
     },

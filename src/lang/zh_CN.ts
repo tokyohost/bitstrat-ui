@@ -212,9 +212,10 @@ export default {
       long: '做多',
       short: '做空',
       tpsl: 'TP/SL',
-      hold: 'hold',
-      close: 'Close',
-      nothing: 'Nothing'
+      hold: '继续持有',
+      reduce: '减仓',
+      close: '平仓',
+      nothing: '无'
     },
     opt: {
       search: '查询',

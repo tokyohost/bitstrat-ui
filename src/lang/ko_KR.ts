@@ -211,6 +211,7 @@ export default {
       short: '숏',
       tpsl: 'TP/SL',
       hold: '보유',
+      reduce: 'reduce',
       close: '청산',
       nothing: '없음'
     },
