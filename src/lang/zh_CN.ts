@@ -769,6 +769,8 @@ export default {
     lsDistribution: '多空分布',
     noData: '暂无数据',
     totalFee: '手续费',
-    fundingFee: '资金费'
+    fundingFee: '资金费',
+    avgHoldHours: '平均持仓时长',
+    hour: '小时'
   }
 };

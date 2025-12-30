@@ -235,4 +235,7 @@ export interface TaskAnalysisByDay {
   longCount?: number;
 
   shortCount?: number;
+  avgHoldHours?: number;
+  fundingFee?: number;
+  totalFee?: number;
 }

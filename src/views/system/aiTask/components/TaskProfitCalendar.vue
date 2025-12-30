@@ -64,10 +64,13 @@
         </el-descriptions-item>
 
         <el-descriptions-item :label="t('taskProfitCalendar.totalFee')">
-          {{ currentDetail?.totalFee }}
+          {{ currentDetail?.totalFee || '-' }}
         </el-descriptions-item>
         <el-descriptions-item :label="t('taskProfitCalendar.fundingFee')">
-          {{ currentDetail?.fundingFee }}
+          {{ currentDetail?.fundingFee || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item :label="t('taskProfitCalendar.avgHoldHours')">
+          {{ currentDetail?.avgHoldHours || '-' }}{{ t('taskProfitCalendar.hour') }}
         </el-descriptions-item>
       </el-descriptions>
 

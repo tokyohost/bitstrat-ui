@@ -773,6 +773,8 @@ export default {
     lsDistribution: '롱/숏 분포',
     noData: '데이터 없음',
     totalFee: '수수료',
-    fundingFee: '펀딩 수수료'
+    fundingFee: '펀딩 수수료',
+    avgHoldHours: '평균 보유 시간',
+    hour: '시간'
   }
 };

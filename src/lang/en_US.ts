@@ -777,6 +777,8 @@ export default {
     lsDistribution: 'Long/Short Distribution',
     noData: 'No Data',
     totalFee: 'Total Fee',
-    fundingFee: 'Funding Fee'
+    fundingFee: 'Funding Fee',
+    avgHoldHours: 'Average Holding Time',
+    hour: 'Hour'
   }
 };
