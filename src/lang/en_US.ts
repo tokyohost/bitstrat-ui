@@ -775,6 +775,8 @@ export default {
     longShort: 'Long / Short',
     winRate: 'Win Rate',
     lsDistribution: 'Long/Short Distribution',
-    noData: 'No Data'
+    noData: 'No Data',
+    totalFee: 'Total Fee',
+    fundingFee: 'Funding Fee'
   }
 };

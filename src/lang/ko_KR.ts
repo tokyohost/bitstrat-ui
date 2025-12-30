@@ -771,6 +771,8 @@ export default {
     longShort: '롱 / 숏',
     winRate: '승률',
     lsDistribution: '롱/숏 분포',
-    noData: '데이터 없음'
+    noData: '데이터 없음',
+    totalFee: '수수료',
+    fundingFee: '펀딩 수수료'
   }
 };

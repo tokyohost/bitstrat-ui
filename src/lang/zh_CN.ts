@@ -767,6 +767,8 @@ export default {
     longShort: '多 / 空',
     winRate: '胜率',
     lsDistribution: '多空分布',
-    noData: '暂无数据'
+    noData: '暂无数据',
+    totalFee: '手续费',
+    fundingFee: '资金费'
   }
 };

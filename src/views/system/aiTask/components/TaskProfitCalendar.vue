@@ -62,6 +62,13 @@
         <el-descriptions-item :label="t('taskProfitCalendar.longShort')">
           {{ currentDetail?.longCount }} / {{ currentDetail?.shortCount }}
         </el-descriptions-item>
+
+        <el-descriptions-item :label="t('taskProfitCalendar.totalFee')">
+          {{ currentDetail?.totalFee }}
+        </el-descriptions-item>
+        <el-descriptions-item :label="t('taskProfitCalendar.fundingFee')">
+          {{ currentDetail?.fundingFee }}
+        </el-descriptions-item>
       </el-descriptions>
 
       <!-- 胜率 -->
