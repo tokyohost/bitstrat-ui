@@ -763,5 +763,18 @@ export default {
     paymentSuccess: 'Payment successful!',
     minute: 'min',
     stripeAmountError: 'Please select a payment amount'
+  },
+  taskProfitCalendar: {
+    lastMonth: 'Last Month',
+    nextMonth: 'Next Month',
+    profit: 'Trade Statistics',
+    profitValue: 'Profit',
+    plRatio: 'P/L Ratio',
+    lsRatio: 'Long/Short Ratio',
+    winLose: 'Win / Loss',
+    longShort: 'Long / Short',
+    winRate: 'Win Rate',
+    lsDistribution: 'Long/Short Distribution',
+    noData: 'No Data'
   }
 };

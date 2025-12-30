@@ -759,5 +759,18 @@ export default {
     paymentSuccess: '결제 성공!',
     minute: '분',
     stripeAmountError: '결제 금액을 선택해 주세요'
+  },
+  taskProfitCalendar: {
+    lastMonth: '지난달',
+    nextMonth: '다음달',
+    profit: '거래 통계',
+    profitValue: '손익',
+    plRatio: '손익비',
+    lsRatio: '롱/숏 비율',
+    winLose: '승 / 패',
+    longShort: '롱 / 숏',
+    winRate: '승률',
+    lsDistribution: '롱/숏 분포',
+    noData: '데이터 없음'
   }
 };

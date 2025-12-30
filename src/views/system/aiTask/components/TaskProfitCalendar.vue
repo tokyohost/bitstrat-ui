@@ -8,8 +8,8 @@
               <div class="custom-header">
                 <span class="month-title">{{ date }}</span>
                 <el-button-group>
-                  <el-button size="small" @click="selectDate('prev-month')">上个月</el-button>
-                  <el-button size="small" @click="selectDate('next-month')">下个月</el-button>
+                  <el-button size="small" @click="selectDate('prev-month')">{{ t('taskProfitCalendar.lastMonth') }}</el-button>
+                  <el-button size="small" @click="selectDate('next-month')">{{ t('taskProfitCalendar.nextMonth') }}</el-button>
                 </el-button-group>
               </div>
             </div>
@@ -22,7 +22,6 @@
               @click="clickDate(data.day, profitAnalysisMap[data.day])"
             >
               <span class="day-num">{{ data.day.split('-').pop() }}</span>
-
               <div class="profit-content">
                 <div v-if="profitMap[data.day] > 0" class="status-badge up">
                   <span class="arrow">▲</span>
@@ -40,34 +39,40 @@
       </div>
     </el-card>
     <!-- ================= 弹窗 ================= -->
-    <el-dialog v-model="showProfit" :title="`交易统计 · ${currentDay}`">
+    <el-dialog v-model="showProfit" :title="`${t('taskProfitCalendar.profit')} · ${currentDay}`">
       <!-- 盈亏 -->
       <div class="dialog-profit">
-        <span :class="currentDetail?.profit > 0 ? 'up' : 'down'">{{ currentDetail?.profit > 0 ? '+' : '' }}{{ currentDetail?.profit }}</span>
+        <span :class="currentDetail?.profit > 0 ? 'up' : 'down'"> {{ currentDetail?.profit > 0 ? '+' : '' }}{{ currentDetail?.profit }} </span>
       </div>
 
       <!-- 统计信息 -->
       <el-descriptions border :column="2" size="small">
-        <el-descriptions-item label="盈亏比">
+        <el-descriptions-item :label="t('taskProfitCalendar.plRatio')">
           {{ formatPlRatio(currentDetail?.plRatio, currentDetail?.winCount, currentDetail?.loseCount) }}
         </el-descriptions-item>
 
-        <el-descriptions-item label="多空比">
+        <el-descriptions-item :label="t('taskProfitCalendar.lsRatio')">
           {{ formatRatio(currentDetail?.lsRatio) }}
         </el-descriptions-item>
-        <el-descriptions-item label="胜 / 负"> {{ currentDetail?.winCount }} / {{ currentDetail?.loseCount }} </el-descriptions-item>
-        <el-descriptions-item label="多 / 空"> {{ currentDetail?.longCount }} / {{ currentDetail?.shortCount }} </el-descriptions-item>
+
+        <el-descriptions-item :label="t('taskProfitCalendar.winLose')">
+          {{ currentDetail?.winCount }} / {{ currentDetail?.loseCount }}
+        </el-descriptions-item>
+
+        <el-descriptions-item :label="t('taskProfitCalendar.longShort')">
+          {{ currentDetail?.longCount }} / {{ currentDetail?.shortCount }}
+        </el-descriptions-item>
       </el-descriptions>
 
       <!-- 胜率 -->
       <div class="section">
-        <div class="section-title">胜率</div>
+        <div class="section-title">{{ t('taskProfitCalendar.winRate') }}</div>
         <el-progress :percentage="winRatePercent" :color="winRatePercent >= 50 ? '#02ad8f' : '#ec5151'" />
       </div>
 
       <!-- 多空柱状图 -->
       <div class="section">
-        <div class="section-title">多空分布</div>
+        <div class="section-title">{{ t('taskProfitCalendar.lsDistribution') }}</div>
         <div ref="lsChartRef" class="ls-chart"></div>
       </div>
     </el-dialog>
@@ -75,13 +80,15 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n';
 import * as echarts from 'echarts';
-import { ref, watch, useAttrs, computed } from 'vue';
+import { ref, watch, useAttrs, computed, nextTick } from 'vue';
 import dayjs from 'dayjs';
 import { getAiTaskDayProfit, getAiTaskProfit } from '@/api/system/aiTask';
 import { TaskAnalysisByDay, TaskProfitByDay } from '@/api/system/aiTask/types';
 import { useChartAutoRegister } from '@/hooks/useChart';
 
+const { t } = useI18n();
 const attrs = useAttrs();
 const props = defineProps<{ taskId: string }>();
 const currentDate = ref<Date>(new Date());
@@ -101,19 +108,16 @@ const formatRatio = (value?: number) => {
 };
 const formatPlRatio = (plRatio?: number, winCount?: number, loseCount?: number) => {
   if (!winCount && !loseCount) return '--';
-
   if (winCount === 0 && loseCount > 0) return '0 : 1';
-
   if (winCount > 0 && loseCount === 0) return '1 : 0';
   const valueNumber = Number(plRatio);
   if (!valueNumber || valueNumber <= 0) return '--';
-
   return `1 : ${valueNumber.toFixed(2)}`;
 };
+
 /* ===== 多空图 ===== */
 const lsChartRef = ref<HTMLDivElement>();
 let lsChart: echarts.ECharts | null = null;
-
 const renderLsChart = () => {
   if (!currentDetail.value || !lsChartRef.value) return;
   lsChart?.dispose();
@@ -121,7 +125,7 @@ const renderLsChart = () => {
 
   lsChart.setOption({
     grid: { top: 20, bottom: 20, left: 30, right: 10 },
-    xAxis: { type: 'category', data: ['多单', '空单'] },
+    xAxis: { type: 'category', data: [t('taskProfitCalendar.longShort').split(' / ')[0], t('taskProfitCalendar.longShort').split(' / ')[1]] },
     yAxis: { type: 'value' },
     series: [
       {
@@ -145,7 +149,7 @@ const clickDate = async (day: string, item: TaskProfitByDay) => {
     await nextTick();
     renderLsChart();
   } else {
-    ElMessage.warning('暂无数据');
+    ElMessage.warning(t('taskProfitCalendar.noData'));
   }
 };
 
@@ -207,7 +211,6 @@ watch(currentDate, (val) => fetchProfit(val));
 
 const refresh = async () => {
   await fetchProfit(currentDate.value, false);
-  // await fetchProfitDetail(currentDate.value, false);
 };
 useChartAutoRegister(refresh);
 defineExpose({ refresh });

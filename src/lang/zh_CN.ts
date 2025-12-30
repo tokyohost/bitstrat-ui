@@ -755,5 +755,18 @@ export default {
     paymentSuccess: '支付成功！',
     minute: '分',
     stripeAmountError: '支付金额必须选择'
+  },
+  taskProfitCalendar: {
+    lastMonth: '上个月',
+    nextMonth: '下个月',
+    profit: '交易统计',
+    profitValue: '盈亏',
+    plRatio: '盈亏比',
+    lsRatio: '多空比',
+    winLose: '胜 / 负',
+    longShort: '多 / 空',
+    winRate: '胜率',
+    lsDistribution: '多空分布',
+    noData: '暂无数据'
   }
 };
