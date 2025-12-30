@@ -207,6 +207,32 @@ export interface AiTaskQuery extends PageQuery {
  */
 export interface TaskProfitByDay {
   day?: string;
-
+  dayAnalysis?: TaskAnalysisByDay;
   profit?: number;
+}
+
+/**
+ * @author xuehui_li
+ * @Version 1.0
+ * @date 2025/12/23 19:03
+ * @Content
+ */
+export interface TaskAnalysisByDay {
+  day?: string;
+
+  plRatio?: number;
+
+  profit?: string | number;
+
+  lsRatio?: number;
+
+  winRatio?: number;
+
+  winCount?: number;
+
+  loseCount?: number;
+
+  longCount?: number;
+
+  shortCount?: number;
 }

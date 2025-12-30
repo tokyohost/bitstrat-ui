@@ -93,6 +93,14 @@ export const getAiTaskProfit = (id: string, startTime: string, endTime: string):
   });
 };
 
+export const getAiTaskDayProfit = (id: string, startTime: string, endTime: string): AxiosPromise<TaskProfitByDay[]> => {
+  return request({
+    url: '/system/aiTask/queryTaskDayProfit',
+    method: 'get',
+    params: { taskId: id, startTime, endTime }
+  });
+};
+
 export const getModifyConfig = (): AxiosPromise<string> => {
   return request({
     url: '/common/modifyConfig',

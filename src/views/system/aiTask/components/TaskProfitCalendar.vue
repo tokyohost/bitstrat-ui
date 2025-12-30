@@ -1,59 +1,165 @@
 <template>
-  <el-card v-bind="attrs" v-loading="loading" class="crypto-profit-calendar" shadow="never">
-    <div class="calendar-wrapper">
-      <el-calendar v-model="currentDate">
-        <template #header="{ date }">
-          <div class="w-full">
-            <div class="custom-header">
-              <span class="month-title">{{ date }}</span>
-              <el-button-group>
-                <el-button size="small" @click="selectDate('prev-month')">上个月</el-button>
-                <el-button size="small" @click="selectDate('next-month')">下个月</el-button>
-              </el-button-group>
-            </div>
-          </div>
-        </template>
-
-        <template #date-cell="{ data }">
-          <div class="profit-cell" :class="{ 'is-today': data.isSelected, 'not-current': !data.isSelected && data.type !== 'current-month' }">
-            <span class="day-num">{{ data.day.split('-').pop() }}</span>
-
-            <div class="profit-content">
-              <div v-if="profitMap[data.day] > 0" class="status-badge up">
-                <span class="arrow">▲</span>
-                <span class="val">{{ profitMap[data.day] }}</span>
+  <div class="crypto-profit-calendar" v-bind="attrs" v-loading="loading">
+    <el-card shadow="never">
+      <div class="calendar-wrapper">
+        <el-calendar v-model="currentDate">
+          <template #header="{ date }">
+            <div class="w-full">
+              <div class="custom-header">
+                <span class="month-title">{{ date }}</span>
+                <el-button-group>
+                  <el-button size="small" @click="selectDate('prev-month')">上个月</el-button>
+                  <el-button size="small" @click="selectDate('next-month')">下个月</el-button>
+                </el-button-group>
               </div>
-              <div v-else-if="profitMap[data.day] < 0" class="status-badge down">
-                <span class="arrow">▼</span>
-                <span class="val">{{ Math.abs(profitMap[data.day]) }}</span>
-              </div>
-              <div v-else class="status-badge none">—</div>
             </div>
-          </div>
-        </template>
-      </el-calendar>
-    </div>
-  </el-card>
+          </template>
+
+          <template #date-cell="{ data }">
+            <div
+              class="profit-cell"
+              :class="{ 'is-today': data.isSelected, 'not-current': !data.isSelected && data.type !== 'current-month' }"
+              @click="clickDate(data.day, profitAnalysisMap[data.day])"
+            >
+              <span class="day-num">{{ data.day.split('-').pop() }}</span>
+
+              <div class="profit-content">
+                <div v-if="profitMap[data.day] > 0" class="status-badge up">
+                  <span class="arrow">▲</span>
+                  <span class="val">{{ profitMap[data.day] }}</span>
+                </div>
+                <div v-else-if="profitMap[data.day] < 0" class="status-badge down">
+                  <span class="arrow">▼</span>
+                  <span class="val">{{ Math.abs(profitMap[data.day]) }}</span>
+                </div>
+                <div v-else class="status-badge none">—</div>
+              </div>
+            </div>
+          </template>
+        </el-calendar>
+      </div>
+    </el-card>
+    <!-- ================= 弹窗 ================= -->
+    <el-dialog v-model="showProfit" :title="`交易统计 · ${currentDay}`">
+      <!-- 盈亏 -->
+      <div class="dialog-profit">
+        <span :class="currentDetail?.profit > 0 ? 'up' : 'down'">{{ currentDetail?.profit > 0 ? '+' : '' }}{{ currentDetail?.profit }}</span>
+      </div>
+
+      <!-- 统计信息 -->
+      <el-descriptions border :column="2" size="small">
+        <el-descriptions-item label="盈亏比">
+          {{ formatPlRatio(currentDetail?.plRatio, currentDetail?.winCount, currentDetail?.loseCount) }}
+        </el-descriptions-item>
+
+        <el-descriptions-item label="多空比">
+          {{ formatRatio(currentDetail?.lsRatio) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="胜 / 负"> {{ currentDetail?.winCount }} / {{ currentDetail?.loseCount }} </el-descriptions-item>
+        <el-descriptions-item label="多 / 空"> {{ currentDetail?.longCount }} / {{ currentDetail?.shortCount }} </el-descriptions-item>
+      </el-descriptions>
+
+      <!-- 胜率 -->
+      <div class="section">
+        <div class="section-title">胜率</div>
+        <el-progress :percentage="winRatePercent" :color="winRatePercent >= 50 ? '#02ad8f' : '#ec5151'" />
+      </div>
+
+      <!-- 多空柱状图 -->
+      <div class="section">
+        <div class="section-title">多空分布</div>
+        <div ref="lsChartRef" class="ls-chart"></div>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script lang="ts" setup>
+import * as echarts from 'echarts';
 import { ref, watch, useAttrs, computed } from 'vue';
 import dayjs from 'dayjs';
-import { getAiTaskProfit } from '@/api/system/aiTask';
-import { TaskProfitByDay } from '@/api/system/aiTask/types';
+import { getAiTaskDayProfit, getAiTaskProfit } from '@/api/system/aiTask';
+import { TaskAnalysisByDay, TaskProfitByDay } from '@/api/system/aiTask/types';
 import { useChartAutoRegister } from '@/hooks/useChart';
 
 const attrs = useAttrs();
 const props = defineProps<{ taskId: string }>();
-
 const currentDate = ref<Date>(new Date());
 const profitList = ref<TaskProfitByDay[]>([]);
+const profitDetailList = ref<TaskAnalysisByDay[]>([]);
 const loading = ref(false);
+const showProfit = ref(false);
+const currentDay = ref('');
+const currentDetail = ref<TaskAnalysisByDay | null>(null);
+
+/* ===== 胜率 ===== */
+const winRatePercent = computed(() => (currentDetail.value ? +(currentDetail.value.winRatio * 100).toFixed(2) : 0));
+const formatRatio = (value?: number) => {
+  const valueNumber = Number(value);
+  if (!valueNumber || valueNumber <= 0) return '--';
+  return `1 : ${valueNumber.toFixed(2)}`;
+};
+const formatPlRatio = (plRatio?: number, winCount?: number, loseCount?: number) => {
+  if (!winCount && !loseCount) return '--';
+
+  if (winCount === 0 && loseCount > 0) return '0 : 1';
+
+  if (winCount > 0 && loseCount === 0) return '1 : 0';
+  const valueNumber = Number(plRatio);
+  if (!valueNumber || valueNumber <= 0) return '--';
+
+  return `1 : ${valueNumber.toFixed(2)}`;
+};
+/* ===== 多空图 ===== */
+const lsChartRef = ref<HTMLDivElement>();
+let lsChart: echarts.ECharts | null = null;
+
+const renderLsChart = () => {
+  if (!currentDetail.value || !lsChartRef.value) return;
+  lsChart?.dispose();
+  lsChart = echarts.init(lsChartRef.value);
+
+  lsChart.setOption({
+    grid: { top: 20, bottom: 20, left: 30, right: 10 },
+    xAxis: { type: 'category', data: ['多单', '空单'] },
+    yAxis: { type: 'value' },
+    series: [
+      {
+        type: 'bar',
+        data: [currentDetail.value.longCount, currentDetail.value.shortCount],
+        itemStyle: {
+          color: (params: any) => (params.dataIndex === 0 ? '#02ad8f' : '#ec5151')
+        }
+      }
+    ]
+  });
+};
+
+/* ===== 交互 ===== */
+const clickDate = async (day: string, item: TaskProfitByDay) => {
+  currentDay.value = day;
+  if (item && item.dayAnalysis) {
+    currentDetail.value = item?.dayAnalysis;
+    currentDetail.value.profit = (item && item?.profit) || '-';
+    showProfit.value = true;
+    await nextTick();
+    renderLsChart();
+  } else {
+    ElMessage.warning('暂无数据');
+  }
+};
 
 const profitMap = computed(() => {
   const map: Record<string, number> = {};
   profitList.value.forEach((item) => {
     map[item.day] = item.profit;
+  });
+  return map;
+});
+const profitAnalysisMap = computed(() => {
+  const map: Record<string, TaskProfitByDay> = {};
+  profitList.value.forEach((item) => {
+    map[item.day] = item;
   });
   return map;
 });
@@ -72,6 +178,20 @@ const fetchProfit = async (date: Date, showLoading: boolean = false) => {
     if (showLoading) loading.value = false;
   }
 };
+const fetchProfitDetail = async (date: Date, showLoading: boolean = false) => {
+  if (!props.taskId) return;
+  if (showLoading) loading.value = true;
+  const d = dayjs(date);
+  const start = d.startOf('month').format('YYYY-MM-DD HH:mm:ss');
+  const end = d.endOf('month').format('YYYY-MM-DD HH:mm:ss');
+
+  try {
+    const res = await getAiTaskDayProfit(props.taskId, start, end);
+    profitDetailList.value = res.data || [];
+  } finally {
+    if (showLoading) loading.value = false;
+  }
+};
 
 const selectDate = (type: 'prev-month' | 'next-month') => {
   const d = dayjs(currentDate.value);
@@ -85,12 +205,15 @@ watch(
 );
 watch(currentDate, (val) => fetchProfit(val));
 
-const refresh = () => fetchProfit(currentDate.value, false);
+const refresh = async () => {
+  await fetchProfit(currentDate.value, false);
+  // await fetchProfitDetail(currentDate.value, false);
+};
 useChartAutoRegister(refresh);
 defineExpose({ refresh });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 /* 仿交易所样式定制 */
 .crypto-profit-calendar {
   --up-color: #02ad8f; /* 交易所绿 */
@@ -191,5 +314,35 @@ defineExpose({ refresh });
   outline: 2px solid #409eff;
   z-index: 1;
   border-radius: 4px;
+}
+
+/* ===== Dialog 样式 ===== */
+.dialog-profit {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.up {
+  color: var(--up-color);
+}
+
+.down {
+  color: var(--down-color);
+}
+
+.section {
+  margin-top: 16px;
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.ls-chart {
+  width: 100%;
+  height: 180px;
 }
 </style>
