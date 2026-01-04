@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading">
+  <div>
     <el-dialog
       v-model="dialogVisible"
       :title="t('recharge.title')"
@@ -9,6 +9,7 @@
       destroy-on-close
       :close-on-click-modal="false"
       @close="handleClose"
+      v-loading="loading"
     >
       <div class="px-4 pb-2">
         <div v-if="!showQrCode">
