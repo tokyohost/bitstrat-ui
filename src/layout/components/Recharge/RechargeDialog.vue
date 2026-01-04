@@ -9,7 +9,6 @@
       destroy-on-close
       :close-on-click-modal="false"
       @close="handleClose"
-      v-loading="loading"
     >
       <div class="px-4 pb-2">
         <div v-if="!showQrCode">
@@ -267,12 +266,20 @@ const redictToStripeCheckout = async () => {
   // 开始 Loading
   showQrCode.value = false;
   loading.value = true;
+  const instance = ElLoading.service({
+    target: '.recharge-dialog',
+    lock: true,
+    background: 'rgba(0, 0, 0, 0.3)'
+  });
   const payCallBack = await payByredict(payParams.value);
   if (payCallBack.code === 200) {
     console.log(payCallBack);
     const stripe = window as any;
     stripe.window.location.href = payCallBack.data.redirectUrl;
-    loading.value = false;
+    setTimeout(() => {
+      loading.value = false;
+      instance.close();
+    }, 3000);
   } else {
     ElMessage.error({
       message: payCallBack?.msg,
@@ -280,6 +287,7 @@ const redictToStripeCheckout = async () => {
       duration: 2000
     });
     loading.value = false;
+    instance.close();
   }
 };
 
