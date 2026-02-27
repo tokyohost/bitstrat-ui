@@ -15,6 +15,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 容器启动时注入 env
 CMD ["/bin/sh", "-c", "\
-  envsubst < env.template.js > env.js && \
+  envsubst < /usr/share/nginx/html/env.template.js > /usr/share/nginx/html/env.js && \
   nginx -g 'daemon off;'"]
 EXPOSE 80

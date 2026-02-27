@@ -672,7 +672,7 @@ export default {
       oldPasswordRequired: '旧密码不能为空',
       newPasswordRequired: '新密码不能为空',
       newPasswordLength: '长度在 6 到 20 个字符',
-      newPasswordPattern: '不能包含非法字符：< > " \' \\ |',
+      newPasswordPattern: '不能包含非法字符',
       confirmPasswordRequired: '确认密码不能为空',
       confirmPasswordNotMatch: '两次输入的密码不一致'
     },

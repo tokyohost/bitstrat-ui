@@ -678,7 +678,7 @@ export default {
       oldPasswordRequired: '기존 비밀번호는 필수입니다',
       newPasswordRequired: '새 비밀번호는 필수입니다',
       newPasswordLength: '길이는 6자 이상 20자 이하여야 합니다',
-      newPasswordPattern: '다음 문자는 포함할 수 없습니다: < > " \' \\ |',
+      newPasswordPattern: '다음 문자는 포함할 수 없습니다',
       confirmPasswordRequired: '비밀번호 확인은 필수입니다',
       confirmPasswordNotMatch: '입력한 비밀번호가 일치하지 않습니다'
     },

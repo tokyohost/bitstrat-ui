@@ -682,7 +682,7 @@ export default {
       oldPasswordRequired: 'Old password is required',
       newPasswordRequired: 'New password is required',
       newPasswordLength: 'Length should be between 6 and 20 characters',
-      newPasswordPattern: 'Cannot contain illegal characters: < > " \' \\ |',
+      newPasswordPattern: 'Cannot contain illegal characters',
       confirmPasswordRequired: 'Confirm password is required',
       confirmPasswordNotMatch: 'The passwords entered do not match'
     },
