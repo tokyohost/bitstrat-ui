@@ -1,15 +1,19 @@
-name: Deploy Bitstrat Frontend Application
+name: Deploy Bitstrat Frontend Application to dockerhub
 
 on:
   pull_request:
     branches:
       - master
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Docker image version (example: v1.0.0)'
+        required: true
+        type: string
 
 env:
-  REGISTRY: ${{ secrets.HARBOR_URL }}
   PROJECT: bitstrat
-  IMAGE_NAME: bitstrat-font
+  IMAGE_NAME: xuehuiz/bitstrat-font
 
 jobs:
   build:
@@ -23,7 +27,8 @@ jobs:
       # 2️⃣ 设置短 SHA
       - name: Set short SHA
         run: echo "SHORT_SHA=${GITHUB_SHA::6}" >> $GITHUB_ENV
-
+      - name: Set VERSION
+        run: echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
       # 3️⃣ 安装 Node.js
       - name: Setup Node.js 20.11.0
         uses: actions/setup-node@v3
@@ -47,22 +52,21 @@ jobs:
       - name: Login Harbor
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.HARBOR_URL }}
-          username: ${{ secrets.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # 7️⃣ 构建并推送 Docker 镜像
       - name: Build & Push Docker image
         run: |
           docker build \
-            -t $REGISTRY/$PROJECT/$IMAGE_NAME:${SHORT_SHA} \
-            -t $REGISTRY/$PROJECT/$IMAGE_NAME:latest \
+            -t $IMAGE_NAME:$VERSION \
+            -t $IMAGE_NAME:latest \
             .
           docker push \
-            $REGISTRY/$PROJECT/$IMAGE_NAME:${SHORT_SHA}
+            $IMAGE_NAME:$VERSION
 
           docker push \
-            $REGISTRY/$PROJECT/$IMAGE_NAME:latest
+            $IMAGE_NAME:latest
 
       # 8️⃣ 通知服务器 / Helm 更新（可选）
 #      - name: Notify server to update
